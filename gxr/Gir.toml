@@ -1,0 +1,14 @@
+[options]
+girs_directories = ["../gir-files", "../xrd-gir-files"]
+library = "Gxr"
+version = "0.15"
+min_cfg_version = "0.15"
+work_mode = "normal"
+concurrency = "send+sync"
+
+external_libraries = [ "Gio", "GLib", "GObject", "cairo", "GdkPixbuf", "Gdk" ]
+
+generate = [
+	"Gxr.Context",
+	"Gxr.Controller",
+]

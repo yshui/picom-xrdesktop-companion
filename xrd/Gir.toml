@@ -1,0 +1,35 @@
+[options]
+girs_directories = ["../gir-files", "../xrd-gir-files"]
+library = "Xrd"
+version = "0.15"
+min_cfg_version = "0.15"
+work_mode = "normal"
+concurrency = "send+sync"
+
+external_libraries = [ "Gio", "Gdk", "GLib", "GObject", "Gxr", "Graphene", "Gulkan" ]
+
+generate = [
+	"Xrd.Client",
+	"Xrd.WindowManager",
+	"Xrd.Window",
+	"Xrd.Container",
+	"Xrd.DesktopCursor",
+	"Xrd.ClientMode",
+	"Xrd.InputSynth",
+]
+
+manual = [
+	"Gio.Settings",
+	"Graphene.Point3D",
+	"Gxr.Context",
+	"Gxr.Controller",
+	"Gulkan.Client",
+	"Gdk.Event",
+]
+
+[[object]]
+name = "Xrd.*"
+status = "generate"
+    [[object.function]]
+    name = "button_set_text"
+    ignore = true

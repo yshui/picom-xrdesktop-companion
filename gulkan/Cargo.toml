@@ -1,0 +1,11 @@
+[package]
+name = "gulkan"
+version = "0.15.0"
+authors = ["Yuxuan Shui <yshuiv7@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+graphene = { package = "graphene-rs", git = "https://github.com/gtk-rs/gtk-rs-core" }
+glib = { git = "https://github.com/gtk-rs/gtk-rs-core" }
+ffi = { package = "gulkan-sys", path = "sys" }
+gxr = { path = "../gxr" }

@@ -1,0 +1,10 @@
+[workspace]
+members = [
+  "xrd",
+  "xrd/sys",
+  "gxr",
+  "gxr/sys",
+  "gulkan",
+  "gulkan/sys",
+  "app",
+]

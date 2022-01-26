@@ -1,0 +1,9 @@
+[package]
+name = "gxr"
+version = "0.15.0"
+authors = ["Yuxuan Shui <yshuiv7@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+glib = { git = "https://github.com/gtk-rs/gtk-rs-core" }
+ffi = { package = "gxr-sys", path = "sys" }

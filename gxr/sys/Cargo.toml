@@ -1,0 +1,47 @@
+[package]
+name = "gxr-sys"
+authors = ["Yuxuan Shui <yshuiv7@gmail.com>"]
+build = "build.rs"
+version = "0.15.0"
+edition = "2021"
+[package.metadata.system-deps.gxr_0_15]
+name = "gxr-0.15"
+version = "0.15"
+[package.metadata.docs.rs]
+features = ["dox"]
+
+[lib]
+name = "gxr_sys"
+
+[build-dependencies]
+system-deps = "6"
+
+[dependencies]
+libc = "0.2"
+
+[dependencies.gdk-pixbuf]
+git = "https://github.com/gtk-rs/gtk-rs-core"
+package = "gdk-pixbuf-sys"
+
+[dependencies.gio]
+git = "https://github.com/gtk-rs/gtk-rs-core"
+package = "gio-sys"
+
+[dependencies.cairo]
+git = "https://github.com/gtk-rs/gtk-rs-core"
+package = "cairo-sys-rs"
+
+[dependencies.glib]
+package = "glib-sys"
+git = "https://github.com/gtk-rs/gtk-rs-core"
+
+[dependencies.gobject]
+package = "gobject-sys"
+git = "https://github.com/gtk-rs/gtk-rs-core"
+
+[dev-dependencies]
+shell-words = "1.0.0"
+tempfile = "3"
+
+[features]
+dox = []

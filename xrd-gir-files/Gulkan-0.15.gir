@@ -1,0 +1,2717 @@
+<?xml version="1.0"?>
+<!-- This file was automatically generated from C sources - DO NOT EDIT!
+To affect the contents of this file, edit the original C definitions,
+and/or use gtk-doc annotations.  -->
+<repository version="1.2"
+            xmlns="http://www.gtk.org/introspection/core/1.0"
+            xmlns:c="http://www.gtk.org/introspection/c/1.0"
+            xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <include name="Gdk" version="3.0"/>
+  <include name="GdkPixbuf" version="2.0"/>
+  <include name="Graphene" version="1.0"/>
+  <include name="Vulkan" version="1.0"/>
+  <include name="cairo" version="1.0"/>
+  <package name="gulkan-0.15"/>
+  <c:include name="gulkan.h"/>
+  <namespace name="Gulkan"
+             version="0.15"
+             shared-library="libgulkan-0.15.so.0"
+             c:identifier-prefixes="Gulkan"
+             c:symbol-prefixes="gulkan">
+    <class name="Buffer"
+           c:symbol-prefix="buffer"
+           c:type="GulkanBuffer"
+           parent="GObject.Object"
+           glib:type-name="GulkanBuffer"
+           glib:get-type="gulkan_buffer_get_type"
+           glib:type-struct="BufferClass">
+      <source-position filename="../src/gulkan-buffer.h" line="21"/>
+      <constructor name="new" c:identifier="gulkan_buffer_new">
+        <source-position filename="../src/gulkan-buffer.h" line="25"/>
+        <return-value transfer-ownership="full">
+          <type name="Buffer" c:type="GulkanBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <type name="Vulkan.DeviceSize" c:type="VkDeviceSize"/>
+          </parameter>
+          <parameter name="usage" transfer-ownership="none">
+            <type name="Vulkan.BufferUsageFlags" c:type="VkBufferUsageFlags"/>
+          </parameter>
+          <parameter name="properties" transfer-ownership="none">
+            <type name="Vulkan.MemoryPropertyFlags"
+                  c:type="VkMemoryPropertyFlags"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_data"
+                   c:identifier="gulkan_buffer_new_from_data">
+        <source-position filename="../src/gulkan-buffer.h" line="31"/>
+        <return-value transfer-ownership="full">
+          <type name="Buffer" c:type="GulkanBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="void*"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <type name="Vulkan.DeviceSize" c:type="VkDeviceSize"/>
+          </parameter>
+          <parameter name="usage" transfer-ownership="none">
+            <type name="Vulkan.BufferUsageFlags" c:type="VkBufferUsageFlags"/>
+          </parameter>
+          <parameter name="properties" transfer-ownership="none">
+            <type name="Vulkan.MemoryPropertyFlags"
+                  c:type="VkMemoryPropertyFlags"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_handle" c:identifier="gulkan_buffer_get_handle">
+        <source-position filename="../src/gulkan-buffer.h" line="50"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-buffer.c"
+               line="212">a #VkBuffer</doc>
+          <type name="Vulkan.Buffer" c:type="VkBuffer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-buffer.c"
+                 line="210">a #GulkanBuffer</doc>
+            <type name="Buffer" c:type="GulkanBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_memory_handle"
+              c:identifier="gulkan_buffer_get_memory_handle">
+        <source-position filename="../src/gulkan-buffer.h" line="53"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-buffer.c"
+               line="224">a #VkDeviceMemory</doc>
+          <type name="Vulkan.DeviceMemory" c:type="VkDeviceMemory"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-buffer.c"
+                 line="222">a #GulkanBuffer</doc>
+            <type name="Buffer" c:type="GulkanBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="map" c:identifier="gulkan_buffer_map">
+        <source-position filename="../src/gulkan-buffer.h" line="38"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Buffer" c:type="GulkanBuffer*"/>
+          </instance-parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="void**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unmap" c:identifier="gulkan_buffer_unmap">
+        <source-position filename="../src/gulkan-buffer.h" line="42"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Buffer" c:type="GulkanBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="upload" c:identifier="gulkan_buffer_upload">
+        <source-position filename="../src/gulkan-buffer.h" line="45"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Buffer" c:type="GulkanBuffer*"/>
+          </instance-parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="void*"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <type name="Vulkan.DeviceSize" c:type="VkDeviceSize"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="BufferClass"
+            c:type="GulkanBufferClass"
+            glib:is-gtype-struct-for="Buffer">
+      <source-position filename="../src/gulkan-buffer.h" line="21"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Client"
+           c:symbol-prefix="client"
+           c:type="GulkanClient"
+           parent="GObject.Object"
+           glib:type-name="GulkanClient"
+           glib:get-type="gulkan_client_get_type"
+           glib:type-struct="ClientClass">
+      <source-position filename="../src/gulkan-client.h" line="32"/>
+      <constructor name="new" c:identifier="gulkan_client_new">
+        <source-position filename="../src/gulkan-client.h" line="34"/>
+        <return-value transfer-ownership="full">
+          <type name="Client" c:type="GulkanClient*"/>
+        </return-value>
+      </constructor>
+      <constructor name="new_from_extensions"
+                   c:identifier="gulkan_client_new_from_extensions">
+        <source-position filename="../src/gulkan-client.h" line="36"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-client.c"
+               line="70">a new #GulkanClient</doc>
+          <type name="Client" c:type="GulkanClient*"/>
+        </return-value>
+        <parameters>
+          <parameter name="instance_ext_list" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-client.c"
+                 line="67">a list of instance extensions</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="utf8"/>
+            </type>
+          </parameter>
+          <parameter name="device_ext_list" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-client.c"
+                 line="68">a list of device extensions</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="get_external_memory_device_extensions"
+                c:identifier="gulkan_client_get_external_memory_device_extensions">
+        <source-position filename="../src/gulkan-client.h" line="58"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-client.c"
+               line="208">the list of external memory
+device extensions</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="utf8"/>
+          </type>
+        </return-value>
+      </function>
+      <function name="get_external_memory_instance_extensions"
+                c:identifier="gulkan_client_get_external_memory_instance_extensions">
+        <source-position filename="../src/gulkan-client.h" line="55"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-client.c"
+               line="181">the list of external memory
+instance extensions</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="utf8"/>
+          </type>
+        </return-value>
+      </function>
+      <method name="get_device" c:identifier="gulkan_client_get_device">
+        <source-position filename="../src/gulkan-client.h" line="46"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-client.c"
+               line="143">the #GulkanDevice</doc>
+          <type name="Device" c:type="GulkanDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-client.c"
+                 line="141">a #GulkanClient</doc>
+            <type name="Client" c:type="GulkanClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_device_handle"
+              c:identifier="gulkan_client_get_device_handle">
+        <source-position filename="../src/gulkan-client.h" line="43"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-client.c"
+               line="130">a #VkDevice</doc>
+          <type name="Vulkan.Device" c:type="VkDevice"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-client.c"
+                 line="128">a #GulkanClient</doc>
+            <type name="Client" c:type="GulkanClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_instance" c:identifier="gulkan_client_get_instance">
+        <source-position filename="../src/gulkan-client.h" line="52"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-client.c"
+               line="169">the #GulkanInstance</doc>
+          <type name="Instance" c:type="GulkanInstance*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-client.c"
+                 line="167">a #GulkanClient</doc>
+            <type name="Client" c:type="GulkanClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_instance_handle"
+              c:identifier="gulkan_client_get_instance_handle">
+        <source-position filename="../src/gulkan-client.h" line="49"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-client.c"
+               line="156">a #VkInstance</doc>
+          <type name="Vulkan.Instance" c:type="VkInstance"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-client.c"
+                 line="154">a #GulkanClient</doc>
+            <type name="Client" c:type="GulkanClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_physical_device_handle"
+              c:identifier="gulkan_client_get_physical_device_handle">
+        <source-position filename="../src/gulkan-client.h" line="40"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-client.c"
+               line="117">a #VkPhysicalDevice</doc>
+          <type name="Vulkan.PhysicalDevice" c:type="VkPhysicalDevice"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-client.c"
+                 line="115">a #GulkanClient</doc>
+            <type name="Client" c:type="GulkanClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="ClientClass"
+            c:type="GulkanClientClass"
+            glib:is-gtype-struct-for="Client">
+      <source-position filename="../src/gulkan-client.h" line="32"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="CmdBuffer"
+           c:symbol-prefix="cmd_buffer"
+           c:type="GulkanCmdBuffer"
+           parent="GObject.Object"
+           glib:type-name="GulkanCmdBuffer"
+           glib:get-type="gulkan_cmd_buffer_get_type"
+           glib:type-struct="CmdBufferClass">
+      <source-position filename="../src/gulkan-cmd-buffer.h" line="18"/>
+      <method name="begin" c:identifier="gulkan_cmd_buffer_begin">
+        <source-position filename="../src/gulkan-cmd-buffer.h" line="22"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="CmdBuffer" c:type="GulkanCmdBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_handle" c:identifier="gulkan_cmd_buffer_get_handle">
+        <source-position filename="../src/gulkan-cmd-buffer.h" line="25"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-cmd-buffer.c"
+               line="101">a #VkCommandBuffer</doc>
+          <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-cmd-buffer.c"
+                 line="99">a #GulkanCmdBuffer</doc>
+            <type name="CmdBuffer" c:type="GulkanCmdBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="CmdBufferClass"
+            c:type="GulkanCmdBufferClass"
+            glib:is-gtype-struct-for="CmdBuffer">
+      <source-position filename="../src/gulkan-cmd-buffer.h" line="18"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <function-macro name="DESCRIPTOR_POOL_NEW"
+                    c:identifier="GULKAN_DESCRIPTOR_POOL_NEW"
+                    introspectable="0">
+      <source-position filename="../src/gulkan-descriptor-pool.h" line="20"/>
+      <parameters>
+        <parameter name="a">
+        </parameter>
+        <parameter name="b">
+        </parameter>
+        <parameter name="c">
+        </parameter>
+        <parameter name="d">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <class name="DescriptorPool"
+           c:symbol-prefix="descriptor_pool"
+           c:type="GulkanDescriptorPool"
+           parent="GObject.Object"
+           glib:type-name="GulkanDescriptorPool"
+           glib:get-type="gulkan_descriptor_pool_get_type"
+           glib:type-struct="DescriptorPoolClass">
+      <source-position filename="../src/gulkan-descriptor-pool.h" line="17"/>
+      <constructor name="new" c:identifier="gulkan_descriptor_pool_new">
+        <source-position filename="../src/gulkan-descriptor-pool.h" line="31"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-descriptor-pool.c"
+               line="152">a new #GulkanDescriptorPool</doc>
+          <type name="DescriptorPool" c:type="GulkanDescriptorPool*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="143">a #VkDevice handle</doc>
+            <type name="Vulkan.Device" c:type="VkDevice"/>
+          </parameter>
+          <parameter name="bindings" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="144">
+an array of #VkDescriptorSetLayoutBinding</doc>
+            <array length="2"
+                   zero-terminated="0"
+                   c:type="const VkDescriptorSetLayoutBinding*">
+              <type name="Vulkan.DescriptorSetLayoutBinding"/>
+            </array>
+          </parameter>
+          <parameter name="binding_count" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="146">the number of #VkDescriptorSetLayoutBinding</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+          <parameter name="pool_sizes" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="147">
+an array of #VkDescriptorPoolSize</doc>
+            <array length="4"
+                   zero-terminated="0"
+                   c:type="const VkDescriptorPoolSize*">
+              <type name="Vulkan.DescriptorPoolSize"/>
+            </array>
+          </parameter>
+          <parameter name="pool_size_count" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="149">the number of #VkDescriptorPoolSize</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+          <parameter name="set_count" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="150">the maximum number of descriptor sets that can be allocated</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_layout"
+                   c:identifier="gulkan_descriptor_pool_new_from_layout">
+        <source-position filename="../src/gulkan-descriptor-pool.h" line="24"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-descriptor-pool.c"
+               line="118">a new #GulkanDescriptorPool</doc>
+          <type name="DescriptorPool" c:type="GulkanDescriptorPool*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="111">a #VkDevice handle</doc>
+            <type name="Vulkan.Device" c:type="VkDevice"/>
+          </parameter>
+          <parameter name="layout" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="112">a #VkDescriptorSetLayout</doc>
+            <type name="Vulkan.DescriptorSetLayout"
+                  c:type="VkDescriptorSetLayout"/>
+          </parameter>
+          <parameter name="pool_sizes" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="113">
+an array of #VkDescriptorPoolSize</doc>
+            <array length="3"
+                   zero-terminated="0"
+                   c:type="const VkDescriptorPoolSize*">
+              <type name="Vulkan.DescriptorPoolSize"/>
+            </array>
+          </parameter>
+          <parameter name="pool_size_count" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="115">the number of #VkDescriptorPoolSize</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+          <parameter name="set_count" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="116">the maximum number of descriptor sets that can be allocated</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="allocate_sets"
+              c:identifier="gulkan_descriptor_pool_allocate_sets">
+        <source-position filename="../src/gulkan-descriptor-pool.h" line="39"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-descriptor-pool.c"
+               line="184">%TRUE if the sets have been allocated</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="180">a #VkDevice handle</doc>
+            <type name="DescriptorPool" c:type="GulkanDescriptorPool*"/>
+          </instance-parameter>
+          <parameter name="count" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="181">the number of #VkDescriptorSet</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+          <parameter name="sets" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="182">an array of #VkDescriptorSet</doc>
+            <array length="0" zero-terminated="0" c:type="VkDescriptorSet*">
+              <type name="Vulkan.DescriptorSet"/>
+            </array>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_pipeline_layout"
+              c:identifier="gulkan_descriptor_pool_get_pipeline_layout">
+        <source-position filename="../src/gulkan-descriptor-pool.h" line="44"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-descriptor-pool.c"
+               line="208">a #VkPipelineLayout</doc>
+          <type name="Vulkan.PipelineLayout" c:type="VkPipelineLayout"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-descriptor-pool.c"
+                 line="206">a #GulkanDescriptorPool</doc>
+            <type name="DescriptorPool" c:type="GulkanDescriptorPool*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="DescriptorPoolClass"
+            c:type="GulkanDescriptorPoolClass"
+            glib:is-gtype-struct-for="DescriptorPool">
+      <source-position filename="../src/gulkan-descriptor-pool.h" line="17"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Device"
+           c:symbol-prefix="device"
+           c:type="GulkanDevice"
+           parent="GObject.Object"
+           glib:type-name="GulkanDevice"
+           glib:get-type="gulkan_device_get_type"
+           glib:type-struct="DeviceClass">
+      <source-position filename="../src/gulkan-device.h" line="25"/>
+      <constructor name="new" c:identifier="gulkan_device_new">
+        <source-position filename="../src/gulkan-device.h" line="28"/>
+        <return-value transfer-ownership="full">
+          <type name="Device" c:type="GulkanDevice*"/>
+        </return-value>
+      </constructor>
+      <method name="create" c:identifier="gulkan_device_create">
+        <source-position filename="../src/gulkan-device.h" line="31"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-device.c"
+               line="266">%TRUE on success</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="261">a #GulkanDevice</doc>
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+          <parameter name="instance" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="262">a #GulkanInstance</doc>
+            <type name="Instance" c:type="GulkanInstance*"/>
+          </parameter>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="263">a #VkPhysicalDevice</doc>
+            <type name="Vulkan.PhysicalDevice" c:type="VkPhysicalDevice"/>
+          </parameter>
+          <parameter name="extensions" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="264">A list of extensions to enable</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_graphics_queue"
+              c:identifier="gulkan_device_get_graphics_queue">
+        <source-position filename="../src/gulkan-device.h" line="69"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-device.c"
+               line="416">the graphics queue</doc>
+          <type name="Queue" c:type="GulkanQueue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="414">a #GulkanDevice</doc>
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_handle" c:identifier="gulkan_device_get_handle">
+        <source-position filename="../src/gulkan-device.h" line="46"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-device.c"
+               line="392">a #VkDevice</doc>
+          <type name="Vulkan.Device" c:type="VkDevice"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="390">a #GulkanDevice</doc>
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_heap_budget"
+              c:identifier="gulkan_device_get_heap_budget">
+        <source-position filename="../src/gulkan-device.h" line="66"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-device.c"
+               line="553">a #VkDeviceSize</doc>
+          <type name="Vulkan.DeviceSize" c:type="VkDeviceSize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="550">a #GulkanDevice</doc>
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+          <parameter name="i" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="551">the the memory heap number</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_memory_fd" c:identifier="gulkan_device_get_memory_fd">
+        <source-position filename="../src/gulkan-device.h" line="52"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+          <parameter name="image_memory" transfer-ownership="none">
+            <type name="Vulkan.DeviceMemory" c:type="VkDeviceMemory"/>
+          </parameter>
+          <parameter name="fd" transfer-ownership="none">
+            <type name="gint" c:type="int*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_physical_device_properties"
+              c:identifier="gulkan_device_get_physical_device_properties">
+        <source-position filename="../src/gulkan-device.h" line="75"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-device.c"
+               line="582">a #VkPhysicalDeviceProperties</doc>
+          <type name="Vulkan.PhysicalDeviceProperties"
+                c:type="VkPhysicalDeviceProperties*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="580">a #GulkanDevice</doc>
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_physical_handle"
+              c:identifier="gulkan_device_get_physical_handle">
+        <source-position filename="../src/gulkan-device.h" line="49"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-device.c"
+               line="404">a #VkPhysicalDevice</doc>
+          <type name="Vulkan.PhysicalDevice" c:type="VkPhysicalDevice"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="402">a #GulkanDevice</doc>
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_transfer_queue"
+              c:identifier="gulkan_device_get_transfer_queue">
+        <source-position filename="../src/gulkan-device.h" line="72"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-device.c"
+               line="428">the transfer queue</doc>
+          <type name="Queue" c:type="GulkanQueue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-device.c"
+                 line="426">a #GulkanDevice</doc>
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="memory_type_from_properties"
+              c:identifier="gulkan_device_memory_type_from_properties">
+        <source-position filename="../src/gulkan-device.h" line="37"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+          <parameter name="memory_type_bits" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+          <parameter name="memory_property_flags" transfer-ownership="none">
+            <type name="Vulkan.MemoryPropertyFlags"
+                  c:type="VkMemoryPropertyFlags"/>
+          </parameter>
+          <parameter name="type_index_out" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="print_memory_budget"
+              c:identifier="gulkan_device_print_memory_budget">
+        <source-position filename="../src/gulkan-device.h" line="63"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="print_memory_properties"
+              c:identifier="gulkan_device_print_memory_properties">
+        <source-position filename="../src/gulkan-device.h" line="60"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="wait_idle" c:identifier="gulkan_device_wait_idle">
+        <source-position filename="../src/gulkan-device.h" line="57"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="DeviceClass"
+            c:type="GulkanDeviceClass"
+            glib:is-gtype-struct-for="Device">
+      <source-position filename="../src/gulkan-device.h" line="25"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="FrameBuffer"
+           c:symbol-prefix="frame_buffer"
+           c:type="GulkanFrameBuffer"
+           parent="GObject.Object"
+           glib:type-name="GulkanFrameBuffer"
+           glib:get-type="gulkan_frame_buffer_get_type"
+           glib:type-struct="FrameBufferClass">
+      <source-position filename="../src/gulkan-frame-buffer.h" line="27"/>
+      <constructor name="new" c:identifier="gulkan_frame_buffer_new">
+        <source-position filename="../src/gulkan-frame-buffer.h" line="31"/>
+        <return-value transfer-ownership="full">
+          <type name="FrameBuffer" c:type="GulkanFrameBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="render_pass" transfer-ownership="none">
+            <type name="RenderPass" c:type="GulkanRenderPass*"/>
+          </parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="sample_count" transfer-ownership="none">
+            <type name="Vulkan.SampleCountFlagBits"
+                  c:type="VkSampleCountFlagBits"/>
+          </parameter>
+          <parameter name="color_format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+          <parameter name="use_depth" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_image"
+                   c:identifier="gulkan_frame_buffer_new_from_image">
+        <source-position filename="../src/gulkan-frame-buffer.h" line="47"/>
+        <return-value transfer-ownership="full">
+          <type name="FrameBuffer" c:type="GulkanFrameBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="render_pass" transfer-ownership="none">
+            <type name="RenderPass" c:type="GulkanRenderPass*"/>
+          </parameter>
+          <parameter name="color_image" transfer-ownership="none">
+            <type name="Vulkan.Image" c:type="VkImage"/>
+          </parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="color_format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_image_with_depth"
+                   c:identifier="gulkan_frame_buffer_new_from_image_with_depth">
+        <source-position filename="../src/gulkan-frame-buffer.h" line="39"/>
+        <return-value transfer-ownership="full">
+          <type name="FrameBuffer" c:type="GulkanFrameBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="render_pass" transfer-ownership="none">
+            <type name="RenderPass" c:type="GulkanRenderPass*"/>
+          </parameter>
+          <parameter name="color_image" transfer-ownership="none">
+            <type name="Vulkan.Image" c:type="VkImage"/>
+          </parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="sample_count" transfer-ownership="none">
+            <type name="Vulkan.SampleCountFlagBits"
+                  c:type="VkSampleCountFlagBits"/>
+          </parameter>
+          <parameter name="color_format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_color_image"
+              c:identifier="gulkan_frame_buffer_get_color_image">
+        <source-position filename="../src/gulkan-frame-buffer.h" line="54"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-frame-buffer.c"
+               line="505">a #VkImage</doc>
+          <type name="Vulkan.Image" c:type="VkImage"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-frame-buffer.c"
+                 line="503">a #GulkanFrameBuffer</doc>
+            <type name="FrameBuffer" c:type="GulkanFrameBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_handle" c:identifier="gulkan_frame_buffer_get_handle">
+        <source-position filename="../src/gulkan-frame-buffer.h" line="57"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-frame-buffer.c"
+               line="517">a #VkFramebuffer</doc>
+          <type name="Vulkan.Framebuffer" c:type="VkFramebuffer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-frame-buffer.c"
+                 line="515">a #GulkanFrameBuffer</doc>
+            <type name="FrameBuffer" c:type="GulkanFrameBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="FrameBufferClass"
+            c:type="GulkanFrameBufferClass"
+            glib:is-gtype-struct-for="FrameBuffer">
+      <source-position filename="../src/gulkan-frame-buffer.h" line="27"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Instance"
+           c:symbol-prefix="instance"
+           c:type="GulkanInstance"
+           parent="GObject.Object"
+           glib:type-name="GulkanInstance"
+           glib:get-type="gulkan_instance_get_type"
+           glib:type-struct="InstanceClass">
+      <doc xml:space="preserve"
+           filename="../src/gulkan-instance.c"
+           line="301">A #GulkanInstance-struct which represents the Vulkan instance.</doc>
+      <source-position filename="../src/gulkan-instance.h" line="37"/>
+      <constructor name="new" c:identifier="gulkan_instance_new">
+        <source-position filename="../src/gulkan-instance.h" line="40"/>
+        <return-value transfer-ownership="full">
+          <type name="Instance" c:type="GulkanInstance*"/>
+        </return-value>
+      </constructor>
+      <method name="create" c:identifier="gulkan_instance_create">
+        <source-position filename="../src/gulkan-instance.h" line="43"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-instance.c"
+               line="401">%TRUE on success</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-instance.c"
+                 line="398">a #GulkanInstance</doc>
+            <type name="Instance" c:type="GulkanInstance*"/>
+          </instance-parameter>
+          <parameter name="required_extensions" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-instance.c"
+                 line="399">A list of extensions to enable</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_handle" c:identifier="gulkan_instance_get_handle">
+        <source-position filename="../src/gulkan-instance.h" line="47"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-instance.c"
+               line="457">a #VkInstance</doc>
+          <type name="Vulkan.Instance" c:type="VkInstance"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-instance.c"
+                 line="455">a #GulkanInstance</doc>
+            <type name="Instance" c:type="GulkanInstance*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="InstanceClass"
+            c:type="GulkanInstanceClass"
+            glib:is-gtype-struct-for="Instance">
+      <source-position filename="../src/gulkan-instance.h" line="37"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Queue"
+           c:symbol-prefix="queue"
+           c:type="GulkanQueue"
+           parent="GObject.Object"
+           glib:type-name="GulkanQueue"
+           glib:get-type="gulkan_queue_get_type"
+           glib:type-struct="QueueClass">
+      <source-position filename="../src/gulkan-queue.h" line="26"/>
+      <constructor name="new" c:identifier="gulkan_queue_new">
+        <source-position filename="../src/gulkan-queue.h" line="29"/>
+        <return-value transfer-ownership="full">
+          <type name="Queue" c:type="GulkanQueue*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="family_index" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="free_cmd_buffer"
+              c:identifier="gulkan_queue_free_cmd_buffer">
+        <doc xml:space="preserve"
+             filename="../src/gulkan-queue.c"
+             line="186">Frees the #GulkanCmdBuffer returned by gulkan_queue_request_cmd_buffer()</doc>
+        <source-position filename="../src/gulkan-queue.h" line="50"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-queue.c"
+                 line="188">a #GulkanQueue</doc>
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-queue.c"
+                 line="189">a #GulkanCmdBuffer</doc>
+            <type name="CmdBuffer" c:type="GulkanCmdBuffer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_command_pool"
+              c:identifier="gulkan_queue_get_command_pool">
+        <source-position filename="../src/gulkan-queue.h" line="32"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-queue.c"
+               line="108">the #VkCommandPool</doc>
+          <type name="Vulkan.CommandPool" c:type="VkCommandPool"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-queue.c"
+                 line="106">a #GulkanQueue</doc>
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_family_index"
+              c:identifier="gulkan_queue_get_family_index">
+        <source-position filename="../src/gulkan-queue.h" line="39"/>
+        <return-value transfer-ownership="none">
+          <type name="guint32" c:type="uint32_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_handle" c:identifier="gulkan_queue_get_handle">
+        <source-position filename="../src/gulkan-queue.h" line="42"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-queue.c"
+               line="139">the #VkQueue</doc>
+          <type name="Vulkan.Queue" c:type="VkQueue"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-queue.c"
+                 line="137">a #GulkanQueue</doc>
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pool_mutex" c:identifier="gulkan_queue_get_pool_mutex">
+        <source-position filename="../src/gulkan-queue.h" line="57"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-queue.c"
+               line="44">the pool #GMutex</doc>
+          <type name="GLib.Mutex" c:type="GMutex*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-queue.c"
+                 line="42">a #GulkanQueue</doc>
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="initialize" c:identifier="gulkan_queue_initialize">
+        <source-position filename="../src/gulkan-queue.h" line="45"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="request_cmd_buffer"
+              c:identifier="gulkan_queue_request_cmd_buffer">
+        <source-position filename="../src/gulkan-queue.h" line="48"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-queue.c"
+               line="175">a new #GulkanCmdBuffer</doc>
+          <type name="CmdBuffer" c:type="GulkanCmdBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-queue.c"
+                 line="173">a #GulkanQueue</doc>
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="submit" c:identifier="gulkan_queue_submit">
+        <source-position filename="../src/gulkan-queue.h" line="54"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="CmdBuffer" c:type="GulkanCmdBuffer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="supports_surface"
+              c:identifier="gulkan_queue_supports_surface">
+        <source-position filename="../src/gulkan-queue.h" line="35"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Queue" c:type="GulkanQueue*"/>
+          </instance-parameter>
+          <parameter name="surface" transfer-ownership="none">
+            <type name="Vulkan.SurfaceKHR" c:type="VkSurfaceKHR"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="QueueClass"
+            c:type="GulkanQueueClass"
+            glib:is-gtype-struct-for="Queue">
+      <source-position filename="../src/gulkan-queue.h" line="26"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="RenderPass"
+           c:symbol-prefix="render_pass"
+           c:type="GulkanRenderPass"
+           parent="GObject.Object"
+           glib:type-name="GulkanRenderPass"
+           glib:get-type="gulkan_render_pass_get_type"
+           glib:type-struct="RenderPassClass">
+      <source-position filename="../src/gulkan-render-pass.h" line="27"/>
+      <constructor name="new" c:identifier="gulkan_render_pass_new">
+        <source-position filename="../src/gulkan-render-pass.h" line="31"/>
+        <return-value transfer-ownership="full">
+          <type name="RenderPass" c:type="GulkanRenderPass*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="samples" transfer-ownership="none">
+            <type name="Vulkan.SampleCountFlagBits"
+                  c:type="VkSampleCountFlagBits"/>
+          </parameter>
+          <parameter name="color_format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+          <parameter name="final_color_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="use_depth" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="begin" c:identifier="gulkan_render_pass_begin">
+        <source-position filename="../src/gulkan-render-pass.h" line="38"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RenderPass" c:type="GulkanRenderPass*"/>
+          </instance-parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="clear_color" transfer-ownership="none">
+            <type name="Vulkan.ClearColorValue" c:type="VkClearColorValue"/>
+          </parameter>
+          <parameter name="frame_buffer" transfer-ownership="none">
+            <type name="FrameBuffer" c:type="GulkanFrameBuffer*"/>
+          </parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_handle" c:identifier="gulkan_render_pass_get_handle">
+        <source-position filename="../src/gulkan-render-pass.h" line="45"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-render-pass.c"
+               line="180">a #VkRenderPass</doc>
+          <type name="Vulkan.RenderPass" c:type="VkRenderPass"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-render-pass.c"
+                 line="178">a #GulkanRenderPass</doc>
+            <type name="RenderPass" c:type="GulkanRenderPass*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="RenderPassClass"
+            c:type="GulkanRenderPassClass"
+            glib:is-gtype-struct-for="RenderPass">
+      <source-position filename="../src/gulkan-render-pass.h" line="27"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Renderer"
+           c:symbol-prefix="renderer"
+           c:type="GulkanRenderer"
+           parent="GObject.Object"
+           glib:type-name="GulkanRenderer"
+           glib:get-type="gulkan_renderer_get_type"
+           glib:type-struct="RendererClass">
+      <source-position filename="../src/gulkan-renderer.h" line="29"/>
+      <virtual-method name="draw" invoker="draw">
+        <source-position filename="../src/gulkan-renderer.h" line="28"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <method name="create_shader_module"
+              c:identifier="gulkan_renderer_create_shader_module">
+        <source-position filename="../src/gulkan-renderer.h" line="32"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-renderer.c"
+               line="79">%TRUE if the shader has been created</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-renderer.c"
+                 line="75">a #GulkanRenderer</doc>
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+          <parameter name="resource_name" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-renderer.c"
+                 line="76">the name of the #GResource to use</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="module"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-renderer.c"
+                 line="77">the created #VkShaderModule</doc>
+            <type name="Vulkan.ShaderModule" c:type="VkShaderModule*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="draw" c:identifier="gulkan_renderer_draw">
+        <source-position filename="../src/gulkan-renderer.h" line="55"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_aspect" c:identifier="gulkan_renderer_get_aspect">
+        <source-position filename="../src/gulkan-renderer.h" line="49"/>
+        <return-value transfer-ownership="none">
+          <type name="gfloat" c:type="float"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_client" c:identifier="gulkan_renderer_get_client">
+        <source-position filename="../src/gulkan-renderer.h" line="37"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-renderer.c"
+               line="114">a #GulkanClient</doc>
+          <type name="Client" c:type="GulkanClient*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-renderer.c"
+                 line="112">a #GulkanRenderer</doc>
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_extent" c:identifier="gulkan_renderer_get_extent">
+        <source-position filename="../src/gulkan-renderer.h" line="40"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-renderer.c"
+               line="135">a #VkExtent2D</doc>
+          <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-renderer.c"
+                 line="133">a #GulkanRenderer</doc>
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_msec_since_start"
+              c:identifier="gulkan_renderer_get_msec_since_start">
+        <source-position filename="../src/gulkan-renderer.h" line="52"/>
+        <return-value transfer-ownership="none">
+          <type name="gint64" c:type="int64_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_client" c:identifier="gulkan_renderer_set_client">
+        <source-position filename="../src/gulkan-renderer.h" line="43"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+          <parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="GulkanClient*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_extent" c:identifier="gulkan_renderer_set_extent">
+        <source-position filename="../src/gulkan-renderer.h" line="46"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="GulkanRenderer*"/>
+          </instance-parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="RendererClass"
+            c:type="GulkanRendererClass"
+            glib:is-gtype-struct-for="Renderer">
+      <source-position filename="../src/gulkan-renderer.h" line="29"/>
+      <field name="parent">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="draw">
+        <callback name="draw">
+          <source-position filename="../src/gulkan-renderer.h" line="28"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Renderer" c:type="GulkanRenderer*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <class name="Swapchain"
+           c:symbol-prefix="swapchain"
+           c:type="GulkanSwapchain"
+           parent="GObject.Object"
+           glib:type-name="GulkanSwapchain"
+           glib:get-type="gulkan_swapchain_get_type"
+           glib:type-struct="SwapchainClass">
+      <source-position filename="../src/gulkan-swapchain.h" line="24"/>
+      <constructor name="new" c:identifier="gulkan_swapchain_new">
+        <source-position filename="../src/gulkan-swapchain.h" line="28"/>
+        <return-value transfer-ownership="full">
+          <type name="Swapchain" c:type="GulkanSwapchain*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="GulkanClient*"/>
+          </parameter>
+          <parameter name="surface" transfer-ownership="none">
+            <type name="Vulkan.SurfaceKHR" c:type="VkSurfaceKHR"/>
+          </parameter>
+          <parameter name="present_mode" transfer-ownership="none">
+            <type name="Vulkan.PresentModeKHR" c:type="VkPresentModeKHR"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+          <parameter name="colorspace" transfer-ownership="none">
+            <type name="Vulkan.ColorSpaceKHR" c:type="VkColorSpaceKHR"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="acquire" c:identifier="gulkan_swapchain_acquire">
+        <source-position filename="../src/gulkan-swapchain.h" line="41"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Swapchain" c:type="GulkanSwapchain*"/>
+          </instance-parameter>
+          <parameter name="signal_semaphore" transfer-ownership="none">
+            <type name="Vulkan.Semaphore" c:type="VkSemaphore"/>
+          </parameter>
+          <parameter name="index" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_extent" c:identifier="gulkan_swapchain_get_extent">
+        <source-position filename="../src/gulkan-swapchain.h" line="55"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-swapchain.c"
+               line="335">a #VkExtent2D</doc>
+          <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain.c"
+                 line="333">a #GulkanSwapchain</doc>
+            <type name="Swapchain" c:type="GulkanSwapchain*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_format" c:identifier="gulkan_swapchain_get_format">
+        <source-position filename="../src/gulkan-swapchain.h" line="38"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-swapchain.c"
+               line="280">a #VkFormat</doc>
+          <type name="Vulkan.Format" c:type="VkFormat"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain.c"
+                 line="278">a #GulkanSwapchain</doc>
+            <type name="Swapchain" c:type="GulkanSwapchain*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_images" c:identifier="gulkan_swapchain_get_images">
+        <source-position filename="../src/gulkan-swapchain.h" line="51"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain.c"
+                 line="235">a #GulkanSwapchain</doc>
+            <type name="Swapchain" c:type="GulkanSwapchain*"/>
+          </instance-parameter>
+          <parameter name="swap_chain_images"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain.c"
+                 line="236">an array of #VkImage</doc>
+            <array c:type="VkImage*">
+              <type name="Vulkan.Image" c:type="VkImage"/>
+            </array>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_size" c:identifier="gulkan_swapchain_get_size">
+        <source-position filename="../src/gulkan-swapchain.h" line="35"/>
+        <return-value transfer-ownership="none">
+          <type name="guint32" c:type="uint32_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Swapchain" c:type="GulkanSwapchain*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="present" c:identifier="gulkan_swapchain_present">
+        <source-position filename="../src/gulkan-swapchain.h" line="46"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Swapchain" c:type="GulkanSwapchain*"/>
+          </instance-parameter>
+          <parameter name="wait_semaphore" transfer-ownership="none">
+            <type name="Vulkan.Semaphore" c:type="VkSemaphore*"/>
+          </parameter>
+          <parameter name="index" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reset_surface"
+              c:identifier="gulkan_swapchain_reset_surface">
+        <source-position filename="../src/gulkan-swapchain.h" line="58"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Swapchain" c:type="GulkanSwapchain*"/>
+          </instance-parameter>
+          <parameter name="surface" transfer-ownership="none">
+            <type name="Vulkan.SurfaceKHR" c:type="VkSurfaceKHR"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="SwapchainClass"
+            c:type="GulkanSwapchainClass"
+            glib:is-gtype-struct-for="Swapchain">
+      <source-position filename="../src/gulkan-swapchain.h" line="24"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="SwapchainRenderer"
+           c:symbol-prefix="swapchain_renderer"
+           c:type="GulkanSwapchainRenderer"
+           parent="Renderer"
+           glib:type-name="GulkanSwapchainRenderer"
+           glib:get-type="gulkan_swapchain_renderer_get_type"
+           glib:type-struct="SwapchainRendererClass">
+      <source-position filename="../src/gulkan-swapchain-renderer.h"
+                       line="33"/>
+      <virtual-method name="init_draw_cmd">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="27"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="init_pipeline">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="31"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gconstpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="begin_render_pass"
+              c:identifier="gulkan_swapchain_renderer_begin_render_pass">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="59"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+          <parameter name="clear_color" transfer-ownership="none">
+            <type name="Vulkan.ClearColorValue" c:type="VkClearColorValue"/>
+          </parameter>
+          <parameter name="index" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_cmd_buffer"
+              c:identifier="gulkan_swapchain_renderer_get_cmd_buffer">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="45"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-swapchain-renderer.c"
+               line="210">a #VkCommandBuffer</doc>
+          <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain-renderer.c"
+                 line="207">a #GulkanSwapchainRenderer</doc>
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain-renderer.c"
+                 line="208">the index of the buffer</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_frame_buffer"
+              c:identifier="gulkan_swapchain_renderer_get_frame_buffer">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="49"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-swapchain-renderer.c"
+               line="227">the #GulkanFrameBuffer</doc>
+          <type name="FrameBuffer" c:type="GulkanFrameBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain-renderer.c"
+                 line="224">a #GulkanSwapchainRenderer</doc>
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain-renderer.c"
+                 line="225">the buffer index</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_render_pass"
+              c:identifier="gulkan_swapchain_renderer_get_render_pass">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="36"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-swapchain-renderer.c"
+               line="185">the #GulkanRenderPass</doc>
+          <type name="RenderPass" c:type="GulkanRenderPass*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain-renderer.c"
+                 line="183">a #GulkanSwapchainRenderer</doc>
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_render_pass_handle"
+              c:identifier="gulkan_swapchain_renderer_get_render_pass_handle">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="39"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-swapchain-renderer.c"
+               line="170">a #VkRenderPass</doc>
+          <type name="Vulkan.RenderPass" c:type="VkRenderPass"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-swapchain-renderer.c"
+                 line="168">a #GulkanSwapchainRenderer</doc>
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_swapchain_size"
+              c:identifier="gulkan_swapchain_renderer_get_swapchain_size">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="42"/>
+        <return-value transfer-ownership="none">
+          <type name="guint32" c:type="uint32_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="init_draw_cmd_buffers"
+              c:identifier="gulkan_swapchain_renderer_init_draw_cmd_buffers">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="68"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="initialize"
+              c:identifier="gulkan_swapchain_renderer_initialize">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="53"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+          <parameter name="surface" transfer-ownership="none">
+            <type name="Vulkan.SurfaceKHR" c:type="VkSurfaceKHR"/>
+          </parameter>
+          <parameter name="clear_color" transfer-ownership="none">
+            <type name="Vulkan.ClearColorValue" c:type="VkClearColorValue"/>
+          </parameter>
+          <parameter name="pipeline_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gconstpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="resize" c:identifier="gulkan_swapchain_renderer_resize">
+        <source-position filename="../src/gulkan-swapchain-renderer.h"
+                         line="64"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SwapchainRenderer" c:type="GulkanSwapchainRenderer*"/>
+          </instance-parameter>
+          <parameter name="surface" transfer-ownership="none">
+            <type name="Vulkan.SurfaceKHR" c:type="VkSurfaceKHR"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="Renderer" c:type="GulkanRenderer"/>
+      </field>
+    </class>
+    <record name="SwapchainRendererClass"
+            c:type="GulkanSwapchainRendererClass"
+            glib:is-gtype-struct-for="SwapchainRenderer">
+      <source-position filename="../src/gulkan-swapchain-renderer.h"
+                       line="33"/>
+      <field name="parent">
+        <type name="RendererClass" c:type="GulkanRendererClass"/>
+      </field>
+      <field name="init_draw_cmd">
+        <callback name="init_draw_cmd">
+          <source-position filename="../src/gulkan-swapchain-renderer.h"
+                           line="27"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SwapchainRenderer"
+                    c:type="GulkanSwapchainRenderer*"/>
+            </parameter>
+            <parameter name="cmd_buffer" transfer-ownership="none">
+              <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="init_pipeline">
+        <callback name="init_pipeline">
+          <source-position filename="../src/gulkan-swapchain-renderer.h"
+                           line="31"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SwapchainRenderer"
+                    c:type="GulkanSwapchainRenderer*"/>
+            </parameter>
+            <parameter name="data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="gpointer" c:type="gconstpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <class name="Texture"
+           c:symbol-prefix="texture"
+           c:type="GulkanTexture"
+           parent="GObject.Object"
+           glib:type-name="GulkanTexture"
+           glib:get-type="gulkan_texture_get_type"
+           glib:type-struct="TextureClass">
+      <source-position filename="../src/gulkan-texture.h" line="26"/>
+      <constructor name="new" c:identifier="gulkan_texture_new">
+        <source-position filename="../src/gulkan-texture.h" line="36"/>
+        <return-value transfer-ownership="full">
+          <type name="Texture" c:type="GulkanTexture*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="GulkanClient*"/>
+          </parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_export_fd"
+                   c:identifier="gulkan_texture_new_export_fd">
+        <doc xml:space="preserve"
+             filename="../src/gulkan-texture.c"
+             line="568">Allocates a #GulkanTexture and exports it via external memory to an fd and
+provides the size of the external memory.
+
+based on code from
+https://github.com/lostgoat/ogl-samples/blob/master/tests/gl-450-culling.cpp
+https://gitlab.com/beVR_nz/VulkanIPC_Demo/</doc>
+        <source-position filename="../src/gulkan-texture.h" line="60"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-texture.c"
+               line="584">the initialized #GulkanTexture</doc>
+          <type name="Texture" c:type="GulkanTexture*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="570">a #GulkanClient</doc>
+            <type name="Client" c:type="GulkanClient*"/>
+          </parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="571">Extent in pixels</doc>
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="572">VkFormat of the texture</doc>
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+          <parameter name="layout" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="573">VkImageLayout of the texture</doc>
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="size"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="574">Return value of allocated size</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+          <parameter name="fd"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="575">Return value for allocated fd</doc>
+            <type name="gint" c:type="int*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_cairo_surface"
+                   c:identifier="gulkan_texture_new_from_cairo_surface">
+        <source-position filename="../src/gulkan-texture.h" line="48"/>
+        <return-value transfer-ownership="full">
+          <type name="Texture" c:type="GulkanTexture*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="GulkanClient*"/>
+          </parameter>
+          <parameter name="surface" transfer-ownership="none">
+            <type name="cairo.Surface" c:type="cairo_surface_t*"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+          <parameter name="layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_dmabuf"
+                   c:identifier="gulkan_texture_new_from_dmabuf">
+        <source-position filename="../src/gulkan-texture.h" line="54"/>
+        <return-value transfer-ownership="full">
+          <type name="Texture" c:type="GulkanTexture*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="GulkanClient*"/>
+          </parameter>
+          <parameter name="fd" transfer-ownership="none">
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_pixbuf"
+                   c:identifier="gulkan_texture_new_from_pixbuf">
+        <source-position filename="../src/gulkan-texture.h" line="41"/>
+        <return-value transfer-ownership="full">
+          <type name="Texture" c:type="GulkanTexture*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="GulkanClient*"/>
+          </parameter>
+          <parameter name="pixbuf" transfer-ownership="none">
+            <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+          <parameter name="layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="create_mipmaps" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_mip_levels"
+                   c:identifier="gulkan_texture_new_mip_levels">
+        <source-position filename="../src/gulkan-texture.h" line="30"/>
+        <return-value transfer-ownership="full">
+          <type name="Texture" c:type="GulkanTexture*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="GulkanClient*"/>
+          </parameter>
+          <parameter name="extent" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="mip_levels" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="Vulkan.Format" c:type="VkFormat"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_extent" c:identifier="gulkan_texture_get_extent">
+        <source-position filename="../src/gulkan-texture.h" line="120"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-texture.c"
+               line="920">a #VkExtent2D</doc>
+          <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="918">a #GulkanTexture</doc>
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_format" c:identifier="gulkan_texture_get_format">
+        <source-position filename="../src/gulkan-texture.h" line="123"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-texture.c"
+               line="932">a #VkFormat</doc>
+          <type name="Vulkan.Format" c:type="VkFormat"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="930">a #GulkanTexture</doc>
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_image" c:identifier="gulkan_texture_get_image">
+        <source-position filename="../src/gulkan-texture.h" line="117"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-texture.c"
+               line="908">a #VkImage</doc>
+          <type name="Vulkan.Image" c:type="VkImage"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="906">a #GulkanTexture</doc>
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_image_view"
+              c:identifier="gulkan_texture_get_image_view">
+        <source-position filename="../src/gulkan-texture.h" line="114"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-texture.c"
+               line="896">a #VkImageView</doc>
+          <type name="Vulkan.ImageView" c:type="VkImageView"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-texture.c"
+                 line="894">a #GulkanTexture</doc>
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mip_levels"
+              c:identifier="gulkan_texture_get_mip_levels">
+        <source-position filename="../src/gulkan-texture.h" line="126"/>
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="record_transfer"
+              c:identifier="gulkan_texture_record_transfer">
+        <source-position filename="../src/gulkan-texture.h" line="68"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+          <parameter name="src_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="dst_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="record_transfer_full"
+              c:identifier="gulkan_texture_record_transfer_full">
+        <source-position filename="../src/gulkan-texture.h" line="74"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+          <parameter name="src_access_mask" transfer-ownership="none">
+            <type name="Vulkan.AccessFlags" c:type="VkAccessFlags"/>
+          </parameter>
+          <parameter name="dst_access_mask" transfer-ownership="none">
+            <type name="Vulkan.AccessFlags" c:type="VkAccessFlags"/>
+          </parameter>
+          <parameter name="src_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="dst_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="src_stage_mask" transfer-ownership="none">
+            <type name="Vulkan.PipelineStageFlags"
+                  c:type="VkPipelineStageFlags"/>
+          </parameter>
+          <parameter name="dst_stage_mask" transfer-ownership="none">
+            <type name="Vulkan.PipelineStageFlags"
+                  c:type="VkPipelineStageFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="transfer_layout"
+              c:identifier="gulkan_texture_transfer_layout">
+        <source-position filename="../src/gulkan-texture.h" line="84"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+          <parameter name="src_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="dst_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="transfer_layout_full"
+              c:identifier="gulkan_texture_transfer_layout_full">
+        <source-position filename="../src/gulkan-texture.h" line="89"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+          <parameter name="src_access_mask" transfer-ownership="none">
+            <type name="Vulkan.AccessFlags" c:type="VkAccessFlags"/>
+          </parameter>
+          <parameter name="dst_access_mask" transfer-ownership="none">
+            <type name="Vulkan.AccessFlags" c:type="VkAccessFlags"/>
+          </parameter>
+          <parameter name="src_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="dst_layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+          <parameter name="src_stage_mask" transfer-ownership="none">
+            <type name="Vulkan.PipelineStageFlags"
+                  c:type="VkPipelineStageFlags"/>
+          </parameter>
+          <parameter name="dst_stage_mask" transfer-ownership="none">
+            <type name="Vulkan.PipelineStageFlags"
+                  c:type="VkPipelineStageFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="upload_cairo_surface"
+              c:identifier="gulkan_texture_upload_cairo_surface">
+        <source-position filename="../src/gulkan-texture.h" line="104"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+          <parameter name="surface" transfer-ownership="none">
+            <type name="cairo.Surface" c:type="cairo_surface_t*"/>
+          </parameter>
+          <parameter name="layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="upload_pixbuf" c:identifier="gulkan_texture_upload_pixbuf">
+        <source-position filename="../src/gulkan-texture.h" line="109"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+          <parameter name="pixbuf" transfer-ownership="none">
+            <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
+          </parameter>
+          <parameter name="layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="upload_pixels" c:identifier="gulkan_texture_upload_pixels">
+        <source-position filename="../src/gulkan-texture.h" line="98"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Texture" c:type="GulkanTexture*"/>
+          </instance-parameter>
+          <parameter name="pixels" transfer-ownership="none">
+            <type name="guint8" c:type="guchar*"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="layout" transfer-ownership="none">
+            <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="TextureClass"
+            c:type="GulkanTextureClass"
+            glib:is-gtype-struct-for="Texture">
+      <source-position filename="../src/gulkan-texture.h" line="26"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="UniformBuffer"
+           c:symbol-prefix="uniform_buffer"
+           c:type="GulkanUniformBuffer"
+           parent="GObject.Object"
+           glib:type-name="GulkanUniformBuffer"
+           glib:get-type="gulkan_uniform_buffer_get_type"
+           glib:type-struct="UniformBufferClass">
+      <source-position filename="../src/gulkan-uniform-buffer.h" line="26"/>
+      <constructor name="new" c:identifier="gulkan_uniform_buffer_new">
+        <source-position filename="../src/gulkan-uniform-buffer.h" line="30"/>
+        <return-value transfer-ownership="full">
+          <type name="UniformBuffer" c:type="GulkanUniformBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <type name="Vulkan.DeviceSize" c:type="VkDeviceSize"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_handle"
+              c:identifier="gulkan_uniform_buffer_get_handle">
+        <source-position filename="../src/gulkan-uniform-buffer.h" line="38"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/gulkan-uniform-buffer.c"
+               line="98">a #VkBuffer</doc>
+          <type name="Vulkan.Buffer" c:type="VkBuffer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/gulkan-uniform-buffer.c"
+                 line="96">a #GulkanUniformBuffer</doc>
+            <type name="UniformBuffer" c:type="GulkanUniformBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="update" c:identifier="gulkan_uniform_buffer_update">
+        <source-position filename="../src/gulkan-uniform-buffer.h" line="34"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="UniformBuffer" c:type="GulkanUniformBuffer*"/>
+          </instance-parameter>
+          <parameter name="s"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="UniformBufferClass"
+            c:type="GulkanUniformBufferClass"
+            glib:is-gtype-struct-for="UniformBuffer">
+      <source-position filename="../src/gulkan-uniform-buffer.h" line="26"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <function-macro name="VERTEX_BUFFER_NEW_FROM_ATTRIBS"
+                    c:identifier="GULKAN_VERTEX_BUFFER_NEW_FROM_ATTRIBS"
+                    introspectable="0">
+      <source-position filename="../src/gulkan-vertex-buffer.h" line="30"/>
+      <parameters>
+        <parameter name="a">
+        </parameter>
+        <parameter name="b">
+        </parameter>
+        <parameter name="c">
+        </parameter>
+        <parameter name="d">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <class name="VertexBuffer"
+           c:symbol-prefix="vertex_buffer"
+           c:type="GulkanVertexBuffer"
+           parent="GObject.Object"
+           glib:type-name="GulkanVertexBuffer"
+           glib:get-type="gulkan_vertex_buffer_get_type"
+           glib:type-struct="VertexBufferClass">
+      <source-position filename="../src/gulkan-vertex-buffer.h" line="25"/>
+      <constructor name="new" c:identifier="gulkan_vertex_buffer_new">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="28"/>
+        <return-value transfer-ownership="full">
+          <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+        </return-value>
+      </constructor>
+      <constructor name="new_from_attribs"
+                   c:identifier="gulkan_vertex_buffer_new_from_attribs">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="37"/>
+        <return-value transfer-ownership="full">
+          <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="positions" transfer-ownership="none">
+            <type name="gfloat" c:type="const float*"/>
+          </parameter>
+          <parameter name="positions_size" transfer-ownership="none">
+            <type name="gsize" c:type="size_t"/>
+          </parameter>
+          <parameter name="colors" transfer-ownership="none">
+            <type name="gfloat" c:type="const float*"/>
+          </parameter>
+          <parameter name="colors_size" transfer-ownership="none">
+            <type name="gsize" c:type="size_t"/>
+          </parameter>
+          <parameter name="normals" transfer-ownership="none">
+            <type name="gfloat" c:type="const float*"/>
+          </parameter>
+          <parameter name="normals_size" transfer-ownership="none">
+            <type name="gsize" c:type="size_t"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="alloc_array"
+              c:identifier="gulkan_vertex_buffer_alloc_array">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="65"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="alloc_data" c:identifier="gulkan_vertex_buffer_alloc_data">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="69"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="void*"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <type name="Vulkan.DeviceSize" c:type="VkDeviceSize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="alloc_empty"
+              c:identifier="gulkan_vertex_buffer_alloc_empty">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="60"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="multiplier" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="alloc_index_data"
+              c:identifier="gulkan_vertex_buffer_alloc_index_data">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="75"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GulkanDevice*"/>
+          </parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="void*"/>
+          </parameter>
+          <parameter name="element_size" transfer-ownership="none">
+            <type name="Vulkan.DeviceSize" c:type="VkDeviceSize"/>
+          </parameter>
+          <parameter name="element_count" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="append_position_uv"
+              c:identifier="gulkan_vertex_buffer_append_position_uv">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="82"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="vec" transfer-ownership="none">
+            <type name="Graphene.Vec4" c:type="graphene_vec4_t*"/>
+          </parameter>
+          <parameter name="u" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+          <parameter name="v" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="append_with_color"
+              c:identifier="gulkan_vertex_buffer_append_with_color">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="87"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="vec" transfer-ownership="none">
+            <type name="Graphene.Vec4" c:type="graphene_vec4_t*"/>
+          </parameter>
+          <parameter name="color" transfer-ownership="none">
+            <type name="Graphene.Vec3" c:type="graphene_vec3_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="bind_with_offsets"
+              c:identifier="gulkan_vertex_buffer_bind_with_offsets">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="95"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="draw" c:identifier="gulkan_vertex_buffer_draw">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="46"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="draw_indexed"
+              c:identifier="gulkan_vertex_buffer_draw_indexed">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="50"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="is_initialized"
+              c:identifier="gulkan_vertex_buffer_is_initialized">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="92"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="map_array" c:identifier="gulkan_vertex_buffer_map_array">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="57"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="reset" c:identifier="gulkan_vertex_buffer_reset">
+        <source-position filename="../src/gulkan-vertex-buffer.h" line="54"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="VertexBufferClass"
+            c:type="GulkanVertexBufferClass"
+            glib:is-gtype-struct-for="VertexBuffer">
+      <source-position filename="../src/gulkan-vertex-buffer.h" line="25"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <function name="geometry_append_axes"
+              c:identifier="gulkan_geometry_append_axes">
+      <source-position filename="../src/gulkan-geometry.h" line="20"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="self" transfer-ownership="none">
+          <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+        </parameter>
+        <parameter name="center" transfer-ownership="none">
+          <type name="Graphene.Vec4" c:type="graphene_vec4_t*"/>
+        </parameter>
+        <parameter name="length" transfer-ownership="none">
+          <type name="gfloat" c:type="float"/>
+        </parameter>
+        <parameter name="mat" transfer-ownership="none">
+          <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="geometry_append_plane"
+              c:identifier="gulkan_geometry_append_plane">
+      <source-position filename="../src/gulkan-geometry.h" line="32"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="self" transfer-ownership="none">
+          <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+        </parameter>
+        <parameter name="from" transfer-ownership="none">
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="to" transfer-ownership="none">
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="mat" transfer-ownership="none">
+          <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="geometry_append_ray"
+              c:identifier="gulkan_geometry_append_ray">
+      <source-position filename="../src/gulkan-geometry.h" line="26"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="self" transfer-ownership="none">
+          <type name="VertexBuffer" c:type="GulkanVertexBuffer*"/>
+        </parameter>
+        <parameter name="center" transfer-ownership="none">
+          <type name="Graphene.Vec4" c:type="graphene_vec4_t*"/>
+        </parameter>
+        <parameter name="length" transfer-ownership="none">
+          <type name="gfloat" c:type="float"/>
+        </parameter>
+        <parameter name="mat" transfer-ownership="none">
+          <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="has_error" c:identifier="gulkan_has_error">
+      <source-position filename="../src/gulkan-instance.h" line="27"/>
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="res" transfer-ownership="none">
+          <type name="Vulkan.Result" c:type="VkResult"/>
+        </parameter>
+        <parameter name="fun" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="file" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="line" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+      </parameters>
+    </function>
+  </namespace>
+</repository>
