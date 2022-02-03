@@ -297,6 +297,9 @@ impl App {
         if !proxy.mapped().await? {
             return Ok(());
         }
+        if proxy.type_().await? != "normal" {
+            return Ok(());
+        }
         let wid: u32 = parse_int::parse(wid)?;
         // TODO: cache root geometry
         let root_win = self.x11.setup().roots[self.screen as usize].root;

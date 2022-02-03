@@ -63,4 +63,8 @@ trait Window {
     /// RawFocused property
     #[dbus_proxy(property)]
     fn raw_focused(&self) -> zbus::Result<bool>;
+
+    /// Type property
+    #[dbus_proxy(property)]
+    fn type_(&self) -> zbus::Result<String>;
 }
