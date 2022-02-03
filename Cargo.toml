@@ -8,3 +8,6 @@ members = [
   "gulkan/sys",
   "app",
 ]
+
+[patch.crates-io]
+glium = { path = "./glium" }

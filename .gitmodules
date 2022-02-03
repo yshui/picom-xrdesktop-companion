@@ -1,3 +1,6 @@
 [submodule "gir-files"]
 	path = gir-files
 	url = https://github.com/gtk-rs/gir-files
+[submodule "glium"]
+	path = glium
+	url = https://github.com/yshui/glium
