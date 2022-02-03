@@ -2,10 +2,37 @@
 name = "app"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
+
 
 [dependencies]
 env_logger = "0.9.0"
 log = "0.4.14"
 gio = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 glib = { git = "https://github.com/gtk-rs/gtk-rs-core" }
+gobject-sys = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 xrd = { path = "../xrd" }
+zbus = { version = "2.0.1", features = ["xml"] }
+async-io = "1.6.0"
+futures = "0.3.19"
+glium = "0.31.0"
+glutin = "0.28.0"
+gulkan = { path = "../gulkan" }
+x11rb = { version = "0.9.0", features = [ "composite", "randr" ] }
+thiserror = "1.0.30"
+anyhow = "1.0.53"
+parse_int = "0.6.0"
+tokio = { version = "1.16.1", features = ["rt-multi-thread", "macros", "sync"] }
+glutin_glx_sys = "0.1.7"
+libloading = "0.7.3"
+libc = "0.2.116"
+graphene = { package = "graphene-rs", git = "https://github.com/gtk-rs/gtk-rs-core" }
+paste = "1.0.6"
+ash = "0.35.1"
+
+[build-dependencies]
+bindgen = "0.59.2"
+pkg-config = "0.3.24"
+gl_generator = "0.14.0"
+
+[features]
