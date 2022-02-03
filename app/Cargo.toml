@@ -18,7 +18,7 @@ futures = "0.3.19"
 glium = "0.31.0"
 glutin = "0.28.0"
 gulkan = { path = "../gulkan" }
-x11rb = { version = "0.9.0", features = [ "composite", "randr" ] }
+x11rb = { version = "0.9.0", features = [ "composite", "randr", "damage" ] }
 thiserror = "1.0.30"
 anyhow = "1.0.53"
 parse_int = "0.6.0"

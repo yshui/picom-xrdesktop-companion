@@ -1,9 +1,9 @@
-use glium::{Texture2d, framebuffer::ToColorAttachment, uniforms::AsUniformValue, backend::Facade};
-use glutin::platform::unix::WindowExtUnix;
+use glium::{backend::Facade, framebuffer::ToColorAttachment, uniforms::AsUniformValue, Texture2d};
+use glutin::platform::{unix::{WindowExtUnix, RawHandle}, ContextTraitExt};
 use std::{collections::HashMap, ffi::c_void, os::unix::prelude::RawFd, sync::Arc};
 
 use tokio::sync::{mpsc, oneshot};
-use x11rb::{protocol::xproto, rust_connection::RustConnection, connection::Connection};
+use x11rb::{connection::Connection, protocol::xproto, rust_connection::RustConnection};
 #[derive(Debug)]
 pub struct Texture {
     id: usize,
@@ -124,6 +124,7 @@ struct GlInner {
     bind_tex_image: unsafe extern "C" fn(*mut c_void, libc::c_int, libc::c_int, *const c_void),
     gl: ffi::Gl,
     textures: HashMap<usize, TextureInner>,
+    blit_shader: glium::Program,
 }
 
 impl Drop for GlInner {
@@ -140,7 +141,7 @@ impl Drop for GlInner {
     }
 }
 
-use glium::{implement_vertex, Surface, texture::srgb_texture2d::SrgbTexture2d};
+use glium::{implement_vertex, texture::srgb_texture2d::SrgbTexture2d, Surface};
 #[derive(Copy, Clone)]
 struct Vertex {
     position: [f32; 2],
@@ -171,10 +172,37 @@ impl GlInner {
                     .unwrap_or(std::ptr::null_mut())
             })
         };
+        use glium::program;
+        let blit_shader = program!(&display,
+            330 => {
+                vertex: "
+                    #version 330
+                    in vec2 position;
+                    out vec2 tex_coord;
+                    void main() {
+                        gl_Position = vec4(position, 0, 1);
+                        tex_coord = position / 2.0 + vec2(0.5);
+                    }
+                ",
+                fragment: "
+                    #version 330
+                    uniform sampler2D tex;
+                    in vec4 gl_FragCoord;
+                    in vec2 tex_coord;
+                    out vec4 color;
+                    void main() {
+                        color = texture(tex, tex_coord);
+                    }
+                ",
+                outputs_srgb: true,
+            }
+        )
+        .unwrap();
         Ok(Self {
             x11depths: x11.setup().roots[screen as usize].allowed_depths.clone(),
             gl: ffi::Gl::load_with(|s| display.gl_window().get_proc_address(s)),
             glium: display,
+            blit_shader,
             bind_tex_image: unsafe {
                 std::mem::transmute(
                     glx.GetProcAddress(
@@ -427,34 +455,10 @@ impl GlInner {
         Ok(())
     }
     fn blit(&mut self, src: usize, dst: usize) -> Result<()> {
-        use glium::{program, uniform};
+        use glium::uniform;
+        log::info!("blit {} -> {}", src, dst);
         let src = self.textures.get(&src).unwrap();
         let dst = self.textures.get(&dst).unwrap();
-        let program = program!(&self.glium,
-            330 => {
-                vertex: "
-                    #version 330
-                    in vec2 position;
-                    out vec2 tex_coord;
-                    void main() {
-                        gl_Position = vec4(position, 0, 1);
-                        tex_coord = position / 2.0 + vec2(0.5);
-                    }
-                ",
-                fragment: "
-                    #version 330
-                    uniform sampler2D tex;
-                    in vec4 gl_FragCoord;
-                    in vec2 tex_coord;
-                    out vec4 color;
-                    void main() {
-                        color = texture(tex, tex_coord);
-                    }
-                ",
-                outputs_srgb: true,
-            }
-        )
-        .unwrap();
         let mut fb = glium::framebuffer::SimpleFrameBuffer::new(&self.glium, &dst.texture)?;
         let uniform = uniform! {
             tex: &src.texture
@@ -483,15 +487,20 @@ impl GlInner {
             &[1 as u16, 2, 0, 3],
         )
         .unwrap();
-        //fb.clear_color(1.0, 0.0, 1.0, 1.0);
-        fb.draw(&vbo, &indices, &program, &uniform, &Default::default())?;
+        //let time = std::time::SystemTime::now()
+        //    .duration_since(std::time::SystemTime::UNIX_EPOCH)
+        //    .unwrap()
+        //    .as_secs_f64();
+        //let color = f64::sin(time * 2.0);
+        //log::info!("!!{} {}", color, time);
+        //fb.clear_color(color as f32, 0.0, 1.0, 1.0);
+        fb.draw(&vbo, &indices, &self.blit_shader, &uniform, &Default::default())?;
         self.glium.get_context().finish();
         Ok(())
     }
     fn import_fd(&mut self, width: u32, height: u32, fd: RawFd, size: u64) -> Result<Texture> {
         use glium::texture::{
-            Dimensions, ExternalTilingMode, ImportParameters, MipmapsOption,
-            SrgbFormat,
+            Dimensions, ExternalTilingMode, ImportParameters, MipmapsOption, SrgbFormat,
         };
         use glium::GlObject;
         use std::os::unix::io::FromRawFd;

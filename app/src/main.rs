@@ -1,15 +1,19 @@
 #![feature(never_type, backtrace, map_try_insert)]
 use std::sync::Arc;
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, Context};
 use gio::prelude::*;
 use glib::translate::ToGlibPtr;
 use libc::c_void;
 use log::*;
 use tokio::task::spawn_blocking;
 use x11rb::{
-    connection::{Connection, RequestConnection},
-    protocol::xproto,
+    connection::Connection,
+    protocol::{
+        composite::ConnectionExt as _,
+        damage::{self, ConnectionExt as _},
+        xproto::{self, ConnectionExt as _},
+    },
     rust_connection::RustConnection,
 };
 use xrd::{ClientExt, WindowExt};
@@ -18,7 +22,7 @@ mod gl;
 mod picom;
 
 const PIXELS_PER_METER: f32 = 900.0;
-type AnyResult<T> = anyhow::Result<T>;
+type Result<T> = anyhow::Result<T>;
 
 #[allow(non_camel_case_types, dead_code)]
 mod inputsynth {
@@ -74,15 +78,15 @@ struct TextureSet {
 }
 
 impl TextureSet {
-    fn free(this: &mut Option<Self>, gl: &gl::Gl, x11: &RustConnection) -> Result<()> {
+    async fn free(this: Option<Self>, gl: &gl::Gl, x11: &RustConnection) -> Result<()> {
         if let Some(Self {
             x11_texture,
             x11_pixmap,
             ..
-        }) = this.take()
+        }) = this
         {
-            gl.release_texture_sync(x11_texture)?;
-            xproto::free_pixmap(x11, x11_pixmap)?.check()?;
+            gl.release_texture(x11_texture).await?;
+            x11.free_pixmap(x11_pixmap)?.check()?;
         }
         Ok(())
     }
@@ -92,6 +96,7 @@ impl TextureSet {
 struct Window {
     id: xproto::Window,
     gl: gl::Gl,
+    damage: damage::Damage,
     x11: Arc<RustConnection>,
     textures: Option<TextureSet>,
     xrd_window: xrd::Window,
@@ -99,7 +104,10 @@ struct Window {
 
 impl Drop for Window {
     fn drop(&mut self) {
-        TextureSet::free(&mut self.textures, &self.gl, &self.x11).unwrap()
+        let textures = self.textures.take();
+        let gl = self.gl.clone();
+        let x11 = self.x11.clone();
+        tokio::spawn(async move { TextureSet::free(textures, &gl, &x11).await.unwrap() });
     }
 }
 
@@ -137,6 +145,9 @@ impl App {
         let input_synth = InputSynth::new().expect("Failed to initialize inputsynth");
         let (x11, screen) = RustConnection::connect(None)?;
         let x11 = Arc::new(x11);
+        let (damage_major, damage_minor) = x11rb::protocol::damage::X11_XML_VERSION;
+        x11.damage_query_version(damage_major, damage_minor)?
+            .reply()?;
         Ok(Self {
             gl: gl::Gl::new(x11.clone(), screen as u32)?,
             dbus,
@@ -145,44 +156,65 @@ impl App {
             input_synth,
             screen: screen as u32,
             x11,
-            display: std::env::var("DISPLAY").unwrap().replace(':', "_"),
+            display: "_0".to_owned(), //std::env::var("DISPLAY").unwrap().replace(':', "_"),
         })
     }
 
     async fn run(&mut self) -> Result<!> {
         self.setup_initial_windows().await?;
-        futures::future::pending().await
+        loop {
+            let x11_clone = self.x11.clone();
+            let event = spawn_blocking(move || x11_clone.wait_for_event()).await??;
+            trace!("{:?}", event);
+            use x11rb::protocol::Event;
+            match event {
+                Event::DamageNotify(damage::NotifyEvent { drawable, .. }) => {
+                    let mut windows = self.windows.borrow_mut();
+                    let w = windows.get_mut(&drawable).unwrap();
+                    let damage = w.damage;
+                    let x11_clone = self.x11.clone();
+                    spawn_blocking(move || {
+                        Result::Ok(
+                            x11_clone
+                                .damage_subtract(damage, x11rb::NONE, x11rb::NONE)?
+                                .check()?,
+                        )
+                    })
+                    .await??;
+                    self.render_win(w).await?;
+                }
+                _ => (),
+            }
+            //TODO: optimization: handle all queued events here using poll_for_event
+        }
     }
 
     async fn refresh_texture(&self, w: &mut Window) -> Result<bool> {
         let x11_clone = self.x11.clone();
         let wid = w.id;
-        let win_geometry = spawn_blocking(move || {
-            AnyResult::Ok(xproto::get_geometry(x11_clone.as_ref(), wid)?.reply()?)
-        })
-        .await??;
+        let win_geometry =
+            spawn_blocking(move || Result::Ok(x11_clone.as_ref().get_geometry(wid)?.reply()?))
+                .await??;
         if let Some((width, height)) = w
             .textures
             .as_ref()
             .map(|ts| (ts.x11_texture.width(), ts.x11_texture.height()))
         {
             if width != win_geometry.width.into() || height != win_geometry.height.into() {
-                TextureSet::free(&mut w.textures, &self.gl, &self.x11)?;
+                info!("Free old textures for {}", wid);
+                TextureSet::free(w.textures.take(), &self.gl, &self.x11).await?;
             }
         }
 
         if w.textures.is_none() {
             let x11_clone = self.x11.clone();
             let (attrs, x11_pixmap) = spawn_blocking(move || {
-                let attrs = xproto::get_window_attributes(x11_clone.as_ref(), wid)?.reply()?;
+                let attrs = x11_clone.get_window_attributes(wid)?.reply()?;
                 let x11_pixmap = x11_clone.generate_id()?;
-                x11rb::protocol::composite::name_window_pixmap(
-                    x11_clone.as_ref(),
-                    wid,
-                    x11_pixmap,
-                )?
-                .check()?;
-                AnyResult::Ok((attrs, x11_pixmap))
+                x11_clone
+                    .composite_name_window_pixmap(wid, x11_pixmap)?
+                    .check()?;
+                Result::Ok((attrs, x11_pixmap))
             })
             .await??;
             let x11_texture = self.gl.bind_texture(x11_pixmap, attrs.visual).await?;
@@ -229,6 +261,17 @@ impl App {
         if !w.xrd_window.is_visible() {
             //return Ok(());
         }
+        //if w.textures.is_none() {
+        //    self.refresh_texture(w).await?;
+        //    let textures = w.textures.as_ref().unwrap();
+        //    self.gl
+        //        .blit(&textures.x11_texture, &textures.imported_texture)
+        //        .await?;
+        //    w.xrd_window
+        //        .set_and_submit_texture(&textures.remote_texture);
+        //} else {
+        //    w.xrd_window.submit_texture();
+        //}
         let refreshed = self.refresh_texture(w).await?;
         let textures = w.textures.as_ref().unwrap();
         self.gl
@@ -259,9 +302,9 @@ impl App {
         let root_win = self.x11.setup().roots[self.screen as usize].root;
         let x11_clone = self.x11.clone();
         let (root_geometry, win_geometry) = spawn_blocking(move || {
-            AnyResult::Ok((
-                xproto::get_geometry(x11_clone.as_ref(), root_win)?.reply()?,
-                xproto::get_geometry(x11_clone.as_ref(), wid)?.reply()?,
+            Result::Ok((
+                x11_clone.get_geometry(root_win)?.reply()?,
+                x11_clone.get_geometry(wid)?.reply()?,
             ))
         })
         .await??;
@@ -286,7 +329,6 @@ impl App {
         .with_context(|| anyhow::anyhow!("failed to create xrdWindow"))?;
         unsafe {
             let pspec = glib::ObjectExt::find_property(&xrd_window, "native").unwrap();
-            log::info!("{:?}", pspec);
             gobject_sys::g_object_set(
                 xrd_window.as_object_ref().to_glib_none().0,
                 pspec.name().as_ptr() as *const _,
@@ -314,11 +356,22 @@ impl App {
         xrd_window.set_transformation(&mut transform);
         xrd_window.set_reset_transformation(&mut transform);
 
+        let damage = self.x11.generate_id()?;
+        let x11_clone = self.x11.clone();
+        spawn_blocking(move || {
+            x11_clone
+                .damage_create(damage, wid, x11rb::protocol::damage::ReportLevel::NON_EMPTY)?
+                .check()?;
+            Result::Ok(())
+        })
+        .await??;
+
         let window = Window {
             id: wid,
             gl: self.gl.clone(),
             x11: self.x11.clone(),
             xrd_window,
+            damage,
             textures: None,
         };
         let mut windows = self.windows.borrow_mut();
