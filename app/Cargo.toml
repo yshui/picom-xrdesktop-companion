@@ -29,6 +29,8 @@ libc = "0.2.116"
 graphene = { package = "graphene-rs", git = "https://github.com/gtk-rs/gtk-rs-core" }
 paste = "1.0.6"
 ash = "0.35.1"
+renderdoc = "0.10.1"
+lazy_static = "1.4.0"
 
 [build-dependencies]
 bindgen = "0.59.2"

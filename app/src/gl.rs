@@ -1,5 +1,8 @@
 use glium::{backend::Facade, framebuffer::ToColorAttachment, uniforms::AsUniformValue, Texture2d};
-use glutin::platform::{unix::{WindowExtUnix, RawHandle}, ContextTraitExt};
+use glutin::platform::{
+    unix::{RawHandle, WindowExtUnix},
+    ContextTraitExt,
+};
 use std::{collections::HashMap, ffi::c_void, os::unix::prelude::RawFd, sync::Arc};
 
 use tokio::sync::{mpsc, oneshot};
@@ -39,6 +42,10 @@ enum Request {
     Blit {
         src: usize,
         dst: usize,
+        reply: oneshot::Sender<Result<()>>,
+    },
+    Capture {
+        start: bool,
         reply: oneshot::Sender<Result<()>>,
     },
 }
@@ -454,9 +461,25 @@ impl GlInner {
         }
         Ok(())
     }
+    fn capture(&mut self, start: bool) -> Result<()> {
+        let mut rd = crate::RENDERDOC.lock().unwrap();
+        if let Some(rd) = rd.as_mut() {
+            let glxcontext =
+                if let RawHandle::Glx(glx) = unsafe { self.glium.gl_window().raw_handle() } {
+                    glx
+                } else {
+                    panic!()
+                };
+            if start {
+                rd.start_frame_capture(glxcontext, std::ptr::null());
+            } else {
+                rd.end_frame_capture(glxcontext, std::ptr::null());
+            }
+        }
+        Ok(())
+    }
     fn blit(&mut self, src: usize, dst: usize) -> Result<()> {
         use glium::uniform;
-        log::info!("blit {} -> {}", src, dst);
         let src = self.textures.get(&src).unwrap();
         let dst = self.textures.get(&dst).unwrap();
         let mut fb = glium::framebuffer::SimpleFrameBuffer::new(&self.glium, &dst.texture)?;
@@ -494,7 +517,13 @@ impl GlInner {
         //let color = f64::sin(time * 2.0);
         //log::info!("!!{} {}", color, time);
         //fb.clear_color(color as f32, 0.0, 1.0, 1.0);
-        fb.draw(&vbo, &indices, &self.blit_shader, &uniform, &Default::default())?;
+        fb.draw(
+            &vbo,
+            &indices,
+            &self.blit_shader,
+            &uniform,
+            &Default::default(),
+        )?;
         self.glium.get_context().finish();
         Ok(())
     }
@@ -557,6 +586,9 @@ impl GlInner {
                 Blit { src, dst, reply } => {
                     let _: std::result::Result<_, _> = reply.send(self.blit(src, dst));
                 }
+                Capture { start, reply } => {
+                    let _: std::result::Result<_, _> = reply.send(self.capture(start));
+                }
             }
         }
         Ok(())
@@ -602,6 +634,7 @@ impl Gl {
         fd: RawFd,
         size: u64
     );
+    gen_proxy!(capture, Capture, (), start: bool);
 
     pub async fn blit(&self, src: &Texture, dst: &Texture) -> Result<()> {
         let (tx, rx) = oneshot::channel();

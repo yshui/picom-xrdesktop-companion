@@ -261,22 +261,19 @@ impl App {
         if !w.xrd_window.is_visible() {
             //return Ok(());
         }
-        //if w.textures.is_none() {
-        //    self.refresh_texture(w).await?;
-        //    let textures = w.textures.as_ref().unwrap();
-        //    self.gl
-        //        .blit(&textures.x11_texture, &textures.imported_texture)
-        //        .await?;
-        //    w.xrd_window
-        //        .set_and_submit_texture(&textures.remote_texture);
-        //} else {
-        //    w.xrd_window.submit_texture();
-        //}
+
+        #[cfg(debug_assertions)]
+        self.gl.capture(true).await?;
+
         let refreshed = self.refresh_texture(w).await?;
         let textures = w.textures.as_ref().unwrap();
         self.gl
             .blit(&textures.x11_texture, &textures.imported_texture)
             .await?;
+
+        #[cfg(debug_assertions)]
+        self.gl.capture(false).await?;
+
         if refreshed {
             w.xrd_window
                 .set_and_submit_texture(&textures.remote_texture);
@@ -401,6 +398,22 @@ impl App {
 }
 
 const PICOM_OBJECT_PATH: &str = "/com/github/chjj/compton";
+type RenderDoc = renderdoc::RenderDoc<renderdoc::V141>;
+fn maybe_load_renderdoc() -> Option<RenderDoc> {
+    use libloading::os::unix::{Library, RTLD_NOW};
+    let lib = unsafe { Library::open(Some("librenderdoc.so"), libc::RTLD_NOLOAD | RTLD_NOW) };
+    if lib.is_ok() {
+        info!("RenderDoc loaded");
+        Some(RenderDoc::new().unwrap())
+    } else {
+        info!("RenderDoc not loaded {:?}", lib);
+        None
+    }
+}
+lazy_static::lazy_static! {
+    pub static ref RENDERDOC: std::sync::Mutex<Option<RenderDoc>> =
+        std::sync::Mutex::new(maybe_load_renderdoc());
+}
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::builder().format_timestamp_millis().init();
