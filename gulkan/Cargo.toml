@@ -9,3 +9,4 @@ graphene = { package = "graphene-rs", git = "https://github.com/gtk-rs/gtk-rs-co
 glib = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 ffi = { package = "gulkan-sys", path = "sys" }
 gxr = { path = "../gxr" }
+vulkan-sys = "0.1.1"

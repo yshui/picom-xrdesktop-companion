@@ -7,7 +7,7 @@ work_mode = "normal"
 concurrency = "send+sync"
 
 external_libraries = [ "GLib", "GObject", "Graphene", "cairo", "GdkPixbuf" ]
-
+generate = [ "Gulkan.Texture" ]
 
 [[object]]
 name = "Gulkan.Client"

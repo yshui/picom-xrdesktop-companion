@@ -21,9 +21,11 @@ generate = [
 manual = [
 	"Gio.Settings",
 	"Graphene.Point3D",
+	"Graphene.Matrix",
 	"Gxr.Context",
 	"Gxr.Controller",
 	"Gulkan.Client",
+	"Gulkan.Texture",
 	"Gdk.Event",
 ]
 
