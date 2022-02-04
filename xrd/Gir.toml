@@ -4,7 +4,7 @@ library = "Xrd"
 version = "0.15"
 min_cfg_version = "0.15"
 work_mode = "normal"
-concurrency = "send+sync"
+concurrency = "send"
 
 external_libraries = [ "Gio", "Gdk", "GLib", "GObject", "Gxr", "Graphene", "Gulkan" ]
 
