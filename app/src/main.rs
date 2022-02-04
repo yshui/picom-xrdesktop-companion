@@ -2,6 +2,7 @@
 use std::sync::Arc;
 
 use anyhow::{anyhow, Context};
+use futures::StreamExt;
 use gio::prelude::*;
 use glib::translate::ToGlibPtr;
 use libc::c_void;
@@ -147,6 +148,7 @@ impl App {
 
     async fn run(self: Arc<Self>) -> Result<!> {
         Self::setup_initial_windows(self.clone()).await?;
+        info!("Existing windows mapped, entering mainloop");
         loop {
             let x11_clone = self.x11.clone();
             let event = spawn_blocking(move || x11_clone.wait_for_event()).await??;
@@ -275,7 +277,6 @@ impl App {
     }
 
     async fn map_win(&self, wid: &str) -> Result<()> {
-        info!("Beginning of map_win {}", wid);
         let picom_service = format!("com.github.chjj.compton.{}", self.display);
         let proxy = picom::WindowProxy::builder(&self.dbus)
             .destination(picom_service)?
@@ -283,7 +284,6 @@ impl App {
             .map(|pb| pb.cache_properties(zbus::CacheProperties::No))?
             .build()
             .await?;
-        info!("dbus connected {}", wid);
         if !proxy.mapped().await? {
             return Ok(());
         }
@@ -291,7 +291,6 @@ impl App {
             return Ok(());
         }
         let window_name = proxy.name().await?;
-        info!("property read {}", wid);
         let wid: u32 = parse_int::parse(wid)?;
         // TODO: cache root geometry
         let root_win = self.x11.setup().roots[self.screen as usize].root;
@@ -312,7 +311,7 @@ impl App {
             // Firefox does this and has a 1x1 window outside the screen
             return Ok(());
         }
-        info!("{}", wid);
+        println!("{}", wid);
 
         let xrd_window = {
             let xrd_client = self.xrd_client.lock().await;
@@ -341,7 +340,6 @@ impl App {
             };
             xrd_window
         };
-        info!("xrd window created {}", wid);
 
         let point = graphene::Point3D::new(
             (win_geometry.x + win_geometry.width as i16 / 2 - root_geometry.width as i16 / 2)
@@ -376,9 +374,7 @@ impl App {
         };
         let mut windows = self.windows.lock().await;
         let window = windows.try_insert(wid, window).unwrap();
-        info!("before render_win {}", wid);
         self.render_win(window).await?;
-        info!("after render_win {}", wid);
         Ok(())
     }
 
@@ -392,12 +388,16 @@ impl App {
             .await?;
 
         let windows = zbus::xml::Node::from_reader(proxy.introspect().await?.as_bytes())?;
-        for w in windows.nodes().into_iter() {
-            let wid = w.name().unwrap();
-            if let Err(e) = self.map_win(&wid).await {
-                error!("Failed to map window {}, {}", wid, e);
+        let futs: futures::stream::FuturesUnordered<_> = windows.nodes().into_iter().map(|w| {
+            let self_clone = self.clone();
+            async move {
+                let wid = w.name().unwrap().to_owned();
+                if let Err(e) = self_clone.map_win(&wid).await {
+                    error!("Failed to map window {}, {}", wid, e);
+                };
             }
-        }
+        }).collect();
+        let () = futs.collect().await;
         Ok(())
     }
 }
