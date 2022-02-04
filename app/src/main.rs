@@ -1,4 +1,4 @@
-#![feature(never_type, backtrace, map_try_insert)]
+#![feature(never_type, backtrace, map_try_insert, box_into_inner)]
 use std::sync::Arc;
 
 use anyhow::{anyhow, Context};
@@ -19,6 +19,7 @@ use x11rb::{
 use xrd::{ClientExt, WindowExt};
 
 mod gl;
+mod utils;
 mod picom;
 
 const PIXELS_PER_METER: f32 = 900.0;
@@ -29,23 +30,6 @@ mod inputsynth {
     include!(concat!(env!("OUT_DIR"), "/inputsynth.rs"));
 }
 
-#[macro_export]
-macro_rules! gen_proxy {
-    ($name:ident, $req:ident, $reply:ty, $($arg:ident : $ty:path),*) => {
-        pub async fn $name(&self, $($arg: $ty),*) -> Result<$reply> {
-            let (tx, rx) = oneshot::channel();
-            self.inner.send(Request::$req { $($arg),*, reply: tx }).map_err(|_| self::Error::Send)?;
-            rx.await?
-        }
-        paste::paste! {
-            pub fn [<$name _sync>](&self, $($arg: $ty),*) -> Result<$reply> {
-                let (tx, rx) = oneshot::channel();
-                self.inner.send(Request::$req{ $($arg),*, reply: tx }).map_err(|_| self::Error::Send)?;
-                rx.blocking_recv()?
-            }
-        }
-    }
-}
 
 struct InputSynth(Option<&'static mut inputsynth::InputSynth>);
 impl InputSynth {
@@ -149,7 +133,7 @@ impl App {
         x11.damage_query_version(damage_major, damage_minor)?
             .reply()?;
         Ok(Self {
-            gl: gl::Gl::new(x11.clone(), screen as u32)?,
+            gl: gl::Gl::new(x11.clone(), screen as u32).await?,
             dbus,
             windows: Default::default(),
             xrd_client: client,

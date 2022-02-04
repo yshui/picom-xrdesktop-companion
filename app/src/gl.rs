@@ -5,7 +5,6 @@ use glutin::platform::{
 };
 use std::{collections::HashMap, ffi::c_void, os::unix::prelude::RawFd, sync::Arc};
 
-use tokio::sync::{mpsc, oneshot};
 use x11rb::{connection::Connection, protocol::xproto, rust_connection::RustConnection};
 #[derive(Debug)]
 pub struct Texture {
@@ -20,34 +19,6 @@ impl Texture {
     pub fn height(&self) -> u32 {
         self.height
     }
-}
-#[derive(Debug)]
-enum Request {
-    BindTexture {
-        pixmap: xproto::Pixmap,
-        visual: xproto::Visualid,
-        reply: oneshot::Sender<Result<Texture>>,
-    },
-    ImportFd {
-        width: u32,
-        height: u32,
-        fd: RawFd,
-        size: u64,
-        reply: oneshot::Sender<Result<Texture>>,
-    },
-    ReleaseTexture {
-        texture: Texture,
-        reply: oneshot::Sender<Result<()>>,
-    },
-    Blit {
-        src: usize,
-        dst: usize,
-        reply: oneshot::Sender<Result<()>>,
-    },
-    Capture {
-        start: bool,
-        reply: oneshot::Sender<Result<()>>,
-    },
 }
 
 const GLX_BIND_TO_TEXTURE_TARGETS_EXT: libc::c_int = 0x20D3;
@@ -67,9 +38,7 @@ pub enum Error {
     #[error("{0}")]
     IncompatibleOpenGl(#[from] glium::IncompatibleOpenGl),
     #[error("{0}")]
-    Recv(#[from] tokio::sync::oneshot::error::RecvError),
-    #[error("send error")]
-    Send,
+    Remote(#[from] crate::utils::Error),
     #[error("can't load libGLX {0}")]
     Loading(#[from] libloading::Error),
     #[error("{0}")]
@@ -156,8 +125,8 @@ struct Vertex {
 implement_vertex!(Vertex, position);
 
 impl GlInner {
-    fn new(x11: Arc<RustConnection>, screen: u32) -> Result<Self> {
-        use glutin::platform::{unix::EventLoopExtUnix, ContextTraitExt};
+    fn new(x11: Arc<RustConnection>, screen: u32) -> Result<GlInner> {
+        use glutin::platform::unix::EventLoopExtUnix;
         let el = glutin::event_loop::EventLoop::<()>::new_any_thread();
         let wb = glutin::window::WindowBuilder::new().with_visible(false);
         let cb = glutin::ContextBuilder::new()
@@ -205,7 +174,7 @@ impl GlInner {
             }
         )
         .unwrap();
-        Ok(Self {
+        Ok(GlInner {
             x11depths: x11.setup().roots[screen as usize].allowed_depths.clone(),
             gl: ffi::Gl::load_with(|s| display.gl_window().get_proc_address(s)),
             glium: display,
@@ -226,6 +195,7 @@ impl GlInner {
             textures: Default::default(),
         })
     }
+
     fn find_visual(&self, visual: xproto::Visualid) -> Option<(u8, &xproto::Visualtype)> {
         for d in &self.x11depths {
             for v in &d.visuals {
@@ -450,7 +420,7 @@ impl GlInner {
             height: geometry.height as _,
         })
     }
-    fn release_pixmap(&mut self, tex: Texture) -> Result<()> {
+    fn release_texture(&mut self, tex: Texture) -> Result<()> {
         let raw_display = self.glium.gl_window().window().xlib_display().unwrap();
         if let Some(TextureInner {
             glxpixmap: Some(pixmap),
@@ -558,46 +528,13 @@ impl GlInner {
         );
         Ok(Texture { id, width, height })
     }
-    fn run(&mut self, mut rx: mpsc::UnboundedReceiver<Request>) -> Result<()> {
-        while let Some(req) = rx.blocking_recv() {
-            use Request::*;
-            match req {
-                BindTexture {
-                    pixmap,
-                    visual,
-                    reply,
-                } => {
-                    let _: std::result::Result<_, _> =
-                        reply.send(self.bind_texture(pixmap, visual));
-                }
-                ReleaseTexture { texture, reply } => {
-                    let _: std::result::Result<_, _> = reply.send(self.release_pixmap(texture));
-                }
-                ImportFd {
-                    width,
-                    height,
-                    fd,
-                    size,
-                    reply,
-                } => {
-                    let _: std::result::Result<_, _> =
-                        reply.send(self.import_fd(width, height, fd, size));
-                }
-                Blit { src, dst, reply } => {
-                    let _: std::result::Result<_, _> = reply.send(self.blit(src, dst));
-                }
-                Capture { start, reply } => {
-                    let _: std::result::Result<_, _> = reply.send(self.capture(start));
-                }
-            }
-        }
-        Ok(())
-    }
 }
+
+use crate::utils::Remote;
 
 #[derive(Clone, Debug)]
 pub struct Gl {
-    inner: mpsc::UnboundedSender<Request>,
+    inner: Remote<GlInner>,
 }
 
 #[allow(clippy::all)]
@@ -605,46 +542,30 @@ mod ffi {
     include!(concat!(env!("OUT_DIR"), "/gl_bindings.rs"));
 }
 
-use crate::gen_proxy;
+use crate::gen_remote_fn;
+
 #[allow(dead_code)]
 impl Gl {
-    pub fn new(x11: Arc<RustConnection>, screen: u32) -> Result<Self> {
-        let (tx, rx) = mpsc::unbounded_channel();
-        let x11 = x11.clone();
-        std::thread::spawn(move || {
-            let mut inner = GlInner::new(x11, screen)?;
-            inner.run(rx)
-        });
-        Ok(Self { inner: tx })
+    pub async fn new(x11: Arc<RustConnection>, screen: u32) -> Result<Self> {
+        Ok(Self {
+            inner: Remote::new(move || GlInner::new(x11, screen)).await?,
+        })
     }
-    gen_proxy!(
-        bind_texture,
-        BindTexture,
-        Texture,
-        pixmap: xproto::Pixmap,
-        visual: xproto::Visualid
-    );
-    gen_proxy!(release_texture, ReleaseTexture, (), texture: Texture);
-    gen_proxy!(
-        import_fd,
-        ImportFd,
-        Texture,
-        width: u32,
-        height: u32,
-        fd: RawFd,
-        size: u64
-    );
-    gen_proxy!(capture, Capture, (), start: bool);
 
+    gen_remote_fn!(import_fd(width: u32, height: u32, fd: RawFd, size: u64) -> Texture);
+    gen_remote_fn!(bind_texture(pixmap: xproto::Pixmap, visual: xproto::Visualid) -> Texture);
+    gen_remote_fn!(capture(start: bool) -> ());
+    gen_remote_fn!(release_texture(texture: Texture) -> ());
     pub async fn blit(&self, src: &Texture, dst: &Texture) -> Result<()> {
-        let (tx, rx) = oneshot::channel();
-        self.inner
-            .send(Request::Blit {
-                src: src.id,
-                dst: dst.id,
-                reply: tx,
-            })
-            .map_err(|_| self::Error::Send)?;
-        rx.await?
+        let src = src.id;
+        let dst = dst.id;
+        self.inner.call(move |inner| inner.blit(src, dst)).await?
+    }
+    #[allow(dead_code)]
+    pub async fn with_glium<R: 'static + Send>(
+        &self,
+        f: impl FnOnce(&mut glium::Display) -> R + 'static + Send,
+    ) -> Result<R> {
+        Ok(self.inner.call(move |inner| f(&mut inner.glium)).await?)
     }
 }
