@@ -12,3 +12,4 @@ gdk = { git = "https://github.com/gtk-rs/gtk3-rs" }
 ffi = { package = "xrd-sys", path = "sys" }
 gxr = { path = "../gxr" }
 gulkan = { path = "../gulkan" }
+libc = "0.2.117"
