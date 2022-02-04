@@ -356,25 +356,27 @@ impl App {
 
         let damage = self.x11.generate_id()?;
         let x11_clone = self.x11.clone();
-        spawn_blocking(move || {
-            x11_clone
-                .damage_create(damage, wid, x11rb::protocol::damage::ReportLevel::NON_EMPTY)?
-                .check()?;
-            Result::Ok(())
-        })
-        .await??;
+        {
+            let mut windows = self.windows.lock().await;
+            spawn_blocking(move || {
+                x11_clone
+                    .damage_create(damage, wid, x11rb::protocol::damage::ReportLevel::NON_EMPTY)?
+                    .check()?;
+                Result::Ok(())
+            })
+            .await??;
 
-        let window = Window {
-            id: wid,
-            gl: self.gl.clone(),
-            x11: self.x11.clone(),
-            xrd_window,
-            damage,
-            textures: None,
-        };
-        let mut windows = self.windows.lock().await;
-        let window = windows.try_insert(wid, window).unwrap();
-        self.render_win(window).await?;
+            let window = Window {
+                id: wid,
+                gl: self.gl.clone(),
+                x11: self.x11.clone(),
+                xrd_window,
+                damage,
+                textures: None,
+            };
+            let window = windows.try_insert(wid, window).unwrap();
+            self.render_win(window).await?;
+        }
         Ok(())
     }
 
@@ -388,15 +390,19 @@ impl App {
             .await?;
 
         let windows = zbus::xml::Node::from_reader(proxy.introspect().await?.as_bytes())?;
-        let futs: futures::stream::FuturesUnordered<_> = windows.nodes().into_iter().map(|w| {
-            let self_clone = self.clone();
-            async move {
-                let wid = w.name().unwrap().to_owned();
-                if let Err(e) = self_clone.map_win(&wid).await {
-                    error!("Failed to map window {}, {}", wid, e);
-                };
-            }
-        }).collect();
+        let futs: futures::stream::FuturesUnordered<_> = windows
+            .nodes()
+            .into_iter()
+            .map(|w| {
+                let self_clone = self.clone();
+                async move {
+                    let wid = w.name().unwrap().to_owned();
+                    if let Err(e) = self_clone.map_win(&wid).await {
+                        error!("Failed to map window {}, {}", wid, e);
+                    };
+                }
+            })
+            .collect();
         let () = futs.collect().await;
         Ok(())
     }
