@@ -6,7 +6,7 @@ use gio::prelude::*;
 use glib::translate::ToGlibPtr;
 use libc::c_void;
 use log::*;
-use tokio::task::spawn_blocking;
+use tokio::{sync::Mutex, task::spawn_blocking};
 use x11rb::{
     connection::Connection,
     protocol::{
@@ -19,8 +19,8 @@ use x11rb::{
 use xrd::{ClientExt, WindowExt};
 
 mod gl;
-mod utils;
 mod picom;
+mod utils;
 
 const PIXELS_PER_METER: f32 = 900.0;
 type Result<T> = anyhow::Result<T>;
@@ -30,8 +30,9 @@ mod inputsynth {
     include!(concat!(env!("OUT_DIR"), "/inputsynth.rs"));
 }
 
-
 struct InputSynth(Option<&'static mut inputsynth::InputSynth>);
+unsafe impl Send for InputSynth {}
+unsafe impl Sync for InputSynth {}
 impl InputSynth {
     fn new() -> Option<Self> {
         unsafe {
@@ -95,13 +96,13 @@ impl Drop for Window {
     }
 }
 
-type WindowMap = std::cell::RefCell<std::collections::HashMap<u32, Window>>;
+type WindowMap = Mutex<std::collections::HashMap<u32, Window>>;
 
 struct App {
     gl: gl::Gl,
     dbus: zbus::Connection,
     windows: WindowMap,
-    xrd_client: xrd::Client,
+    xrd_client: Mutex<xrd::Client>,
     input_synth: InputSynth,
     x11: Arc<RustConnection>,
     screen: u32,
@@ -136,7 +137,7 @@ impl App {
             gl: gl::Gl::new(x11.clone(), screen as u32).await?,
             dbus,
             windows: Default::default(),
-            xrd_client: client,
+            xrd_client: Mutex::new(client),
             input_synth,
             screen: screen as u32,
             x11,
@@ -144,8 +145,8 @@ impl App {
         })
     }
 
-    async fn run(&mut self) -> Result<!> {
-        self.setup_initial_windows().await?;
+    async fn run(self: Arc<Self>) -> Result<!> {
+        Self::setup_initial_windows(self.clone()).await?;
         loop {
             let x11_clone = self.x11.clone();
             let event = spawn_blocking(move || x11_clone.wait_for_event()).await??;
@@ -153,7 +154,7 @@ impl App {
             use x11rb::protocol::Event;
             match event {
                 Event::DamageNotify(damage::NotifyEvent { drawable, .. }) => {
-                    let mut windows = self.windows.borrow_mut();
+                    let mut windows = self.windows.lock().await;
                     let w = windows.get_mut(&drawable).unwrap();
                     let damage = w.damage;
                     let x11_clone = self.x11.clone();
@@ -202,23 +203,29 @@ impl App {
             })
             .await??;
             let x11_texture = self.gl.bind_texture(x11_pixmap, attrs.visual).await?;
-            let gulkan_client = self.xrd_client.gulkan().unwrap();
-            let extent = ash::vk::Extent2D {
-                width: win_geometry.width.into(),
-                height: win_geometry.height.into(),
-            };
-            let layout = self.xrd_client.upload_layout();
-            let mut size = 0;
-            let mut fd = 0;
-            let remote_texture = unsafe {
-                glib::translate::from_glib_full(gulkan::sys::gulkan_texture_new_export_fd(
-                    gulkan_client.as_ptr(),
-                    std::mem::transmute(extent),
-                    ash::vk::Format::R8G8B8A8_SRGB.as_raw() as _,
-                    layout,
-                    &mut size,
-                    &mut fd,
-                ))
+
+            let (remote_texture, fd, size) = {
+                let xrd_client = self.xrd_client.lock().await; // Need to keep this alive for gulkan_client
+                let gulkan_client = xrd_client.gulkan().unwrap();
+                let extent = ash::vk::Extent2D {
+                    width: win_geometry.width.into(),
+                    height: win_geometry.height.into(),
+                };
+                let layout = xrd_client.upload_layout();
+
+                let mut size = 0;
+                let mut fd = 0;
+                let remote_texture = unsafe {
+                    glib::translate::from_glib_full(gulkan::sys::gulkan_texture_new_export_fd(
+                        gulkan_client.as_ptr(),
+                        std::mem::transmute(extent),
+                        ash::vk::Format::R8G8B8A8_SRGB.as_raw() as _,
+                        layout,
+                        &mut size,
+                        &mut fd,
+                    ))
+                };
+                (remote_texture, fd, size)
             };
             let imported_texture = self
                 .gl
@@ -267,7 +274,8 @@ impl App {
         Ok(())
     }
 
-    async fn map_win(&mut self, wid: &str) -> Result<()> {
+    async fn map_win(&self, wid: &str) -> Result<()> {
+        info!("Beginning of map_win {}", wid);
         let picom_service = format!("com.github.chjj.compton.{}", self.display);
         let proxy = picom::WindowProxy::builder(&self.dbus)
             .destination(picom_service)?
@@ -275,12 +283,15 @@ impl App {
             .map(|pb| pb.cache_properties(zbus::CacheProperties::No))?
             .build()
             .await?;
+        info!("dbus connected {}", wid);
         if !proxy.mapped().await? {
             return Ok(());
         }
         if proxy.type_().await? != "normal" {
             return Ok(());
         }
+        let window_name = proxy.name().await?;
+        info!("property read {}", wid);
         let wid: u32 = parse_int::parse(wid)?;
         // TODO: cache root geometry
         let root_win = self.x11.setup().roots[self.screen as usize].root;
@@ -301,31 +312,36 @@ impl App {
             // Firefox does this and has a 1x1 window outside the screen
             return Ok(());
         }
-        println!("{}", wid);
+        info!("{}", wid);
 
-        let xrd_window = xrd::Window::new_from_pixels(
-            &self.xrd_client,
-            &proxy.name().await?,
-            win_geometry.width.into(),
-            win_geometry.height.into(),
-            PIXELS_PER_METER,
-        )
-        .with_context(|| anyhow::anyhow!("failed to create xrdWindow"))?;
-        unsafe {
-            let pspec = glib::ObjectExt::find_property(&xrd_window, "native").unwrap();
-            gobject_sys::g_object_set(
-                xrd_window.as_object_ref().to_glib_none().0,
-                pspec.name().as_ptr() as *const _,
-                wid as *const std::ffi::c_void,
-                0,
-            );
-            xrd::sys::xrd_client_add_window(
-                self.xrd_client.as_ptr(),
-                xrd_window.as_ptr(),
-                true as _,
-                std::mem::transmute(wid as usize),
+        let xrd_window = {
+            let xrd_client = self.xrd_client.lock().await;
+            let xrd_window = xrd::Window::new_from_pixels(
+                &*xrd_client,
+                &window_name,
+                win_geometry.width.into(),
+                win_geometry.height.into(),
+                PIXELS_PER_METER,
             )
+            .with_context(|| anyhow::anyhow!("failed to create xrdWindow"))?;
+            unsafe {
+                let pspec = glib::ObjectExt::find_property(&xrd_window, "native").unwrap();
+                gobject_sys::g_object_set(
+                    xrd_window.as_object_ref().to_glib_none().0,
+                    pspec.name().as_ptr() as *const _,
+                    wid as *const std::ffi::c_void,
+                    0,
+                );
+                xrd::sys::xrd_client_add_window(
+                    xrd_client.as_ptr(),
+                    xrd_window.as_ptr(),
+                    true as _,
+                    std::mem::transmute(wid as usize),
+                )
+            };
+            xrd_window
         };
+        info!("xrd window created {}", wid);
 
         let point = graphene::Point3D::new(
             (win_geometry.x + win_geometry.width as i16 / 2 - root_geometry.width as i16 / 2)
@@ -334,7 +350,7 @@ impl App {
             (win_geometry.y + win_geometry.height as i16 / 2 - root_geometry.height as i16 * 3 / 4)
                 as f32
                 / PIXELS_PER_METER,
-            self.windows.borrow().len() as f32 / 3.0 - 8.0,
+            self.windows.lock().await.len() as f32 / 3.0 - 8.0,
         );
         let mut transform = graphene::Matrix::new_translate(&point);
         xrd_window.set_transformation(&mut transform);
@@ -358,13 +374,15 @@ impl App {
             damage,
             textures: None,
         };
-        let mut windows = self.windows.borrow_mut();
+        let mut windows = self.windows.lock().await;
         let window = windows.try_insert(wid, window).unwrap();
+        info!("before render_win {}", wid);
         self.render_win(window).await?;
+        info!("after render_win {}", wid);
         Ok(())
     }
 
-    async fn setup_initial_windows(&mut self) -> Result<()> {
+    async fn setup_initial_windows(self: Arc<Self>) -> Result<()> {
         let picom_service = format!("com.github.chjj.compton.{}", self.display);
         let proxy: zbus::Proxy<'_> = zbus::ProxyBuilder::new_bare(&self.dbus)
             .destination(picom_service)?
@@ -375,7 +393,10 @@ impl App {
 
         let windows = zbus::xml::Node::from_reader(proxy.introspect().await?.as_bytes())?;
         for w in windows.nodes().into_iter() {
-            self.map_win(w.name().unwrap()).await?;
+            let wid = w.name().unwrap();
+            if let Err(e) = self.map_win(&wid).await {
+                error!("Failed to map window {}, {}", wid, e);
+            }
         }
         Ok(())
     }
@@ -405,6 +426,6 @@ async fn main() -> Result<()> {
         let l = glib::MainLoop::new(None, false);
         l.run();
     });
-    let mut ctx = App::new().await?;
+    let ctx = Arc::new(App::new().await?);
     ctx.run().await?;
 }
