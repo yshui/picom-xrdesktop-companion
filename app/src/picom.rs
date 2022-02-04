@@ -8,28 +8,23 @@ trait Picom {
 
     /// reset method
     fn reset(&self) -> zbus::Result<()>;
+}
 
-    /// win_added signal
+#[dbus_proxy(interface = "picom.Compositor", default_path = "/com/github/chjj/compton")]
+trait Compositor {
+    /// WinAdded signal
     #[dbus_proxy(signal)]
     fn win_added(&self, wid: u32) -> zbus::Result<()>;
 
-    /// win_destroyed signal
+    /// WinDestroyed signal
     #[dbus_proxy(signal)]
     fn win_destroyed(&self, wid: u32) -> zbus::Result<()>;
 
-    /// win_focusin signal
-    #[dbus_proxy(signal)]
-    fn win_focusin(&self, wid: u32) -> zbus::Result<()>;
-
-    /// win_focusout signal
-    #[dbus_proxy(signal)]
-    fn win_focusout(&self, wid: u32) -> zbus::Result<()>;
-
-    /// win_mapped signal
+    /// WinMapped signal
     #[dbus_proxy(signal)]
     fn win_mapped(&self, wid: u32) -> zbus::Result<()>;
 
-    /// win_unmapped signal
+    /// WinUnmapped signal
     #[dbus_proxy(signal)]
     fn win_unmapped(&self, wid: u32) -> zbus::Result<()>;
 }

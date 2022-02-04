@@ -64,14 +64,14 @@ struct TextureSet {
 }
 
 impl TextureSet {
-    async fn free(this: Option<Self>, gl: &gl::Gl, x11: &RustConnection) -> Result<()> {
+    fn free(this: Option<Self>, gl: &gl::Gl, x11: &RustConnection) -> Result<()> {
         if let Some(Self {
             x11_texture,
             x11_pixmap,
             ..
         }) = this
         {
-            gl.release_texture(x11_texture).await?;
+            gl.release_texture_sync(x11_texture)?;
             x11.free_pixmap(x11_pixmap)?.check()?;
         }
         Ok(())
@@ -93,7 +93,10 @@ impl Drop for Window {
         let textures = self.textures.take();
         let gl = self.gl.clone();
         let x11 = self.x11.clone();
-        tokio::spawn(async move { TextureSet::free(textures, &gl, &x11).await.unwrap() });
+        // damage will have already been freed is window is closed
+        // so don't check for error
+        x11.damage_destroy(self.damage).unwrap();
+        TextureSet::free(textures, &gl, &x11).unwrap();
     }
 }
 
@@ -142,37 +145,75 @@ impl App {
             input_synth,
             screen: screen as u32,
             x11,
-            display: "_0".to_owned(), //std::env::var("DISPLAY").unwrap().replace(':', "_"),
+            display: std::env::var("DISPLAY").unwrap().replace(':', "_"),
         })
+    }
+
+    async fn handle_x_events(&self, event: x11rb::protocol::Event) -> Result<()> {
+        use x11rb::protocol::Event;
+        match event {
+            Event::DamageNotify(damage::NotifyEvent { drawable, .. }) => {
+                let mut windows = self.windows.lock().await;
+                let w = windows.get_mut(&drawable).unwrap();
+                let damage = w.damage;
+                let x11_clone = self.x11.clone();
+                spawn_blocking(move || {
+                    Result::Ok(
+                        x11_clone
+                            .damage_subtract(damage, x11rb::NONE, x11rb::NONE)?
+                            .check()?,
+                    )
+                })
+                .await??;
+                self.render_win(w).await?;
+            }
+            _ => (),
+        }
+        Ok(())
     }
 
     async fn run(self: Arc<Self>) -> Result<!> {
         Self::setup_initial_windows(self.clone()).await?;
+
+        let picom = picom::CompositorProxy::builder(&self.dbus)
+            .destination(format!("com.github.chjj.compton.{}", self.display))?
+            .build()
+            .await?;
+
+        let (tx, mut rx) = tokio::sync::mpsc::channel(4);
+        let x11_clone = self.x11.clone();
+
+        // tokio task for receiving X events
+        let _: tokio::task::JoinHandle<Result<!>> = spawn_blocking(move || {
+            loop {
+                let event = x11_clone.wait_for_event()?;
+                tx.blocking_send(event)?;
+                while let Some(event) = x11_clone.poll_for_event()? {
+                    tx.blocking_send(event)?;
+                }
+            }
+        });
+
+        let mut win_mapped = picom.receive_win_mapped().await?;
+        let mut win_unmapped = picom.receive_win_unmapped().await?;
+
         info!("Existing windows mapped, entering mainloop");
         loop {
-            let x11_clone = self.x11.clone();
-            let event = spawn_blocking(move || x11_clone.wait_for_event()).await??;
-            trace!("{:?}", event);
-            use x11rb::protocol::Event;
-            match event {
-                Event::DamageNotify(damage::NotifyEvent { drawable, .. }) => {
-                    let mut windows = self.windows.lock().await;
-                    let w = windows.get_mut(&drawable).unwrap();
-                    let damage = w.damage;
-                    let x11_clone = self.x11.clone();
-                    spawn_blocking(move || {
-                        Result::Ok(
-                            x11_clone
-                                .damage_subtract(damage, x11rb::NONE, x11rb::NONE)?
-                                .check()?,
-                        )
-                    })
-                    .await??;
-                    self.render_win(w).await?;
+            tokio::select! {
+                event = rx.recv() => {
+                    trace!("{:?}", event);
+                    self.handle_x_events(event.with_context(|| anyhow!("Xorg connection broke"))?).await?;
                 }
-                _ => (),
+                new_window = win_mapped.next() => {
+                    let new_window = new_window.with_context(|| anyhow!("dbus connection broke"))?;
+                    self.map_win(new_window.args()?.wid).await?;
+                }
+                closed_window = win_unmapped.next() => {
+                    let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
+                    let w = self.windows.lock().await.remove(&closed_window.args()?.wid);
+                    spawn_blocking(move || drop(w)).await?;
+                }
             }
-            //TODO: optimization: handle all queued events here using poll_for_event
         }
     }
 
@@ -189,7 +230,10 @@ impl App {
         {
             if width != win_geometry.width.into() || height != win_geometry.height.into() {
                 info!("Free old textures for {}", wid);
-                TextureSet::free(w.textures.take(), &self.gl, &self.x11).await?;
+                let gl = self.gl.clone();
+                let x11 = self.x11.clone();
+                let textures = w.textures.take();
+                spawn_blocking(move || TextureSet::free(textures, &gl, &x11)).await??;
             }
         }
 
@@ -276,7 +320,7 @@ impl App {
         Ok(())
     }
 
-    async fn map_win(&self, wid: &str) -> Result<()> {
+    async fn map_win(&self, wid: u32) -> Result<()> {
         let picom_service = format!("com.github.chjj.compton.{}", self.display);
         let proxy = picom::WindowProxy::builder(&self.dbus)
             .destination(picom_service)?
@@ -291,7 +335,6 @@ impl App {
             return Ok(());
         }
         let window_name = proxy.name().await?;
-        let wid: u32 = parse_int::parse(wid)?;
         // TODO: cache root geometry
         let root_win = self.x11.setup().roots[self.screen as usize].root;
         let x11_clone = self.x11.clone();
@@ -397,9 +440,13 @@ impl App {
                 let self_clone = self.clone();
                 async move {
                     let wid = w.name().unwrap().to_owned();
-                    if let Err(e) = self_clone.map_win(&wid).await {
-                        error!("Failed to map window {}, {}", wid, e);
-                    };
+                    if let Ok(wid) = parse_int::parse(&wid) {
+                        if let Err(e) = self_clone.map_win(wid).await {
+                            error!("Failed to map window {}, {}", wid, e);
+                        }
+                    } else {
+                        error!("Invalid window id from picom: {}", wid);
+                    }
                 }
             })
             .collect();
