@@ -310,15 +310,15 @@ impl GlInner {
                     &mut fb_bufsize,
                 );
             }
-            if fb_red_bits != red_bits as _
-                || fb_green_bits != green_bits as _
-                || fb_blue_bits != blue_bits as _
-                || fb_bufsize != depth as _
+            if fb_red_bits != red_bits as i32
+                || fb_green_bits != green_bits as i32
+                || fb_blue_bits != blue_bits as i32
+                || fb_bufsize != depth as i32
             {
                 continue;
             }
             let (fb_depth, _) = self.find_visual(fb_visual as _).unwrap();
-            if fb_depth != depth as _ {
+            if fb_depth != depth as u8 {
                 continue;
             }
             return Ok(config);
@@ -477,7 +477,7 @@ impl GlInner {
         let indices = glium::IndexBuffer::new(
             &self.glium,
             glium::index::PrimitiveType::TriangleStrip,
-            &[1 as u16, 2, 0, 3],
+            &[1u16, 2, 0, 3],
         )
         .unwrap();
         //let time = std::time::SystemTime::now()

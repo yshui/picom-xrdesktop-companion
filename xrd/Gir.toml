@@ -19,6 +19,7 @@ generate = [
 
 manual = [
 	"Gio.Settings",
+	"Graphene.Point",
 	"Graphene.Point3D",
 	"Graphene.Matrix",
 	"Gxr.Context",

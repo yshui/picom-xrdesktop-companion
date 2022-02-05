@@ -26,7 +26,7 @@ impl<T> RemoteInner<T> {
     ) -> Result<Self, E> {
         Ok(Self(f()?, rx))
     }
-    fn run(&mut self) -> () {
+    fn run(&mut self) {
         while let Some(req) = self.1.blocking_recv() {
             let _: Result<_, _> = req.1.send((req.0)(&mut self.0));
         }

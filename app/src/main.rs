@@ -5,7 +5,7 @@
     box_into_inner,
     downcast_unchecked
 )]
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::{anyhow, Context};
 use futures::{StreamExt, TryStreamExt};
@@ -37,6 +37,12 @@ type Result<T> = anyhow::Result<T>;
 #[allow(non_camel_case_types, dead_code)]
 mod inputsynth {
     include!(concat!(env!("OUT_DIR"), "/inputsynth.rs"));
+}
+
+x11rb::atom_manager! {
+    pub AtomCollection: AtomCollectionCookie {
+        WM_TRANSIENT_FOR,
+    }
 }
 
 struct InputSynth(Option<&'static mut inputsynth::InputSynth>);
@@ -127,6 +133,25 @@ struct Window {
 
 impl Drop for Window {
     fn drop(&mut self) {
+        use glib::translate::from_glib_none;
+        // Remove from window group
+        // FIXME: questionable thread safety here.
+        let data = unsafe { xrd::sys::xrd_window_get_data(self.xrd_window.as_ptr()) };
+        if unsafe { !(*data).parent_window.is_null() && !(*data).child_window.is_null() } {
+            // If either parent or child is null, xrd_window_close handles it fine
+            // Otherwise we connect our child to our parent.
+            let offset: graphene::Point =
+                unsafe { from_glib_none(&(*data).child_offset_center as *const _) };
+            let child_offset: graphene::Point =
+                unsafe { from_glib_none(&(*(*data).child_window).child_offset_center as *const _) };
+            let mut offset =
+                graphene::Point::new(offset.x() + child_offset.x(), offset.y() + child_offset.y());
+            let parent: xrd::Window =
+                unsafe { from_glib_none((*(*data).parent_window).xrd_window) };
+            let child: xrd::Window = unsafe { from_glib_none((*(*data).child_window).xrd_window) };
+            parent.add_child(&child, &mut offset);
+        }
+
         let textures = self.textures.take();
         let gl = self.gl.clone();
         let x11 = self.x11.clone();
@@ -159,6 +184,7 @@ struct App {
     screen: u32,
     display: String,
     cursors: Mutex<std::collections::HashMap<u32, Cursor>>,
+    atoms: AtomCollection,
 }
 
 #[derive(Debug)]
@@ -221,6 +247,7 @@ impl App {
             .check()?;
             Result::Ok(())
         })?;
+        let atoms = AtomCollection::new(&*x11)?.reply()?;
 
         Ok(Self {
             gl: gl::Gl::new(x11.clone(), screen as u32).await?,
@@ -232,6 +259,7 @@ impl App {
             x11,
             display: std::env::var("DISPLAY").unwrap().replace(':', "_"),
             cursors: Default::default(),
+            atoms,
         })
     }
 
@@ -368,24 +396,41 @@ impl App {
         }
     }
 
-    async fn run(self: Self) -> Result<()> {
-        let this = Arc::new(self);
-        Self::setup_initial_windows(&this).await?;
-        this.refresh_cursor(0).await?;
-        this.xrd_client
+    // A window group in xrdesktop is a linked list held together by the window's parent/child
+    // pointers. this function finds the group for `wid`, and returns the last window in the list
+    fn find_window_group(windows: &HashMap<u32, Window>, wid: u32) -> Option<&Window> {
+        debug!("looking for group for {}", wid);
+        let window = windows.get(&wid)?;
+        let parent = unsafe {
+            let mut current = xrd::sys::xrd_window_get_data(window.xrd_window.as_ptr());
+            while !(*current).child_window.is_null() {
+                debug!("{}", (*current).native as u64);
+                current = (*current).child_window;
+            }
+            current
+        };
+
+        let native: u64 = unsafe { (*parent).native } as _;
+        Some(windows.get(&(native as _)).unwrap())
+    }
+
+    async fn run_impl(self: Arc<Self>) -> Result<()> {
+        Self::setup_initial_windows(&self).await?;
+        self.refresh_cursor(0).await?;
+        self.xrd_client
             .lock()
             .await
             .desktop_cursor()
             .unwrap()
             .show();
 
-        let picom = picom::CompositorProxy::builder(&this.dbus)
-            .destination(format!("com.github.chjj.compton.{}", this.display))?
+        let picom = picom::CompositorProxy::builder(&self.dbus)
+            .destination(format!("com.github.chjj.compton.{}", self.display))?
             .build()
             .await?;
 
         let (tx, mut x11_rx) = tokio::sync::mpsc::channel(4);
-        let x11_clone = this.x11.clone();
+        let x11_clone = self.x11.clone();
 
         // tokio task for receiving X events
         let _: tokio::task::JoinHandle<Result<!>> = spawn_blocking(move || loop {
@@ -396,7 +441,7 @@ impl App {
             }
         });
         let (mut exit_rx, mut input_rx) = {
-            let xrd_client = this.xrd_client.lock().await;
+            let xrd_client = self.xrd_client.lock().await;
             let (input_tx, input_rx) = tokio::sync::mpsc::channel(2);
             let tx = input_tx.clone();
             xrd_client.connect_move_cursor_event(move |_, event| {
@@ -432,7 +477,7 @@ impl App {
                     gobject_sys::g_object_get(
                         window.as_ptr() as *mut _,
                         "native\0".as_bytes().as_ptr() as *const _,
-                        &mut native,
+                        &mut native as *mut _,
                         0,
                     );
                 };
@@ -446,7 +491,7 @@ impl App {
                 })
                 .unwrap();
             });
-            let tx = input_tx.clone();
+            let tx = input_tx;
             xrd_client.connect_keyboard_press_event(move |_, event| {
                 let event: &gdk::EventKey = event.downcast_ref().unwrap();
                 let string = unsafe {
@@ -472,30 +517,36 @@ impl App {
             tokio::select! {
                 event = x11_rx.recv() => {
                     trace!("{:?}", event);
-                    this.handle_x_events(event.with_context(|| anyhow!("Xorg connection broke"))?).await?;
+                    self.handle_x_events(event.with_context(|| anyhow!("Xorg connection broke"))?).await?;
                 }
                 new_window = win_mapped.next() => {
                     let new_window = new_window.with_context(|| anyhow!("dbus connection broke"))?;
-                    this.map_win(new_window.args()?.wid).await?;
+                    self.map_win(new_window.args()?.wid).await?;
                 }
                 closed_window = win_unmapped.next() => {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
-                    let w = this.windows.lock().await.remove(&closed_window.args()?.wid);
+                    let w = self.windows.lock().await.remove(&closed_window.args()?.wid);
                     block_in_place(|| drop(w));
                 }
                 input_event = input_rx.recv() => {
                     let input_event = input_event.unwrap();
-                    this.handle_input_events(input_event).await;
+                    self.handle_input_events(input_event).await;
                 }
                 _ = exit_rx.recv() => {
                     break;
                 }
             }
         }
+        Ok(())
+    }
+    pub async fn run(self) -> Result<()> {
+        let this = Arc::new(self);
+        let result = Self::run_impl(this.clone()).await;
+
         // Ensure `App` in dropped in a sync context
         let this = Arc::try_unwrap(this).unwrap();
         block_in_place(|| drop(this));
-        Ok(())
+        result
     }
 
     async fn refresh_texture(&self, w: &mut Window) -> Result<bool> {
@@ -508,7 +559,7 @@ impl App {
             .as_ref()
             .map(|ts| (ts.x11_texture.width(), ts.x11_texture.height()))
         {
-            if width != win_geometry.width.into() || height != win_geometry.height.into() {
+            if width != win_geometry.width as u32 || height != win_geometry.height as u32 {
                 info!("Free old textures for {}", wid);
                 block_in_place(|| TextureSet::free(w.textures.take(), &self.gl, &self.x11))?;
             }
@@ -603,14 +654,38 @@ impl App {
             .map(|pb| pb.cache_properties(zbus::CacheProperties::No))?
             .build()
             .await?;
+        debug!("Dbus connected {}", wid);
         if !proxy.mapped().await? {
             return Ok(());
         }
         let ty = proxy.type_().await?;
-        if ty != "normal" && ty != "dock" {
+        debug!("window {} is {}", wid, ty);
+        if ty != "normal"
+            && ty != "menu"
+            && ty != "popup_menu"
+            && ty != "dropdown_menu"
+            && ty != "utility"
+        {
             return Ok(());
         }
         let window_name = proxy.name().await?;
+        let transient_for = block_in_place(|| {
+            Result::Ok(
+                self.x11
+                    .get_property(
+                        false,
+                        wid,
+                        self.atoms.WM_TRANSIENT_FOR,
+                        xproto::AtomEnum::WINDOW,
+                        0,
+                        1,
+                    )?
+                    .reply()?,
+            )
+        })?
+        .value32()
+        .and_then(|mut w| w.next());
+        debug!("transient for of {} is {:?}", wid, transient_for);
         // TODO: cache root geometry
         let root_win = self.x11.setup().roots[self.screen as usize].root;
         let (root_geometry, win_geometry) = block_in_place(|| {
@@ -628,7 +703,6 @@ impl App {
             // Firefox does this and has a 1x1 window outside the screen
             return Ok(());
         }
-        println!("{}", wid);
 
         let xrd_window = {
             let xrd_client = self.xrd_client.lock().await;
@@ -641,10 +715,9 @@ impl App {
             )
             .with_context(|| anyhow::anyhow!("failed to create xrdWindow"))?;
             unsafe {
-                let pspec = glib::ObjectExt::find_property(&xrd_window, "native").unwrap();
                 gobject_sys::g_object_set(
                     xrd_window.as_object_ref().to_glib_none().0,
-                    pspec.name().as_ptr() as *const _,
+                    "native\0".as_bytes().as_ptr() as *const _,
                     wid as *const std::ffi::c_void,
                     0,
                 );
@@ -657,19 +730,67 @@ impl App {
             };
             xrd_window
         };
+        debug!("window created {}", wid);
 
-        let point = graphene::Point3D::new(
-            (win_geometry.x + win_geometry.width as i16 / 2 - root_geometry.width as i16 / 2)
-                as f32
-                / PIXELS_PER_METER,
-            (win_geometry.y + win_geometry.height as i16 / 2 - root_geometry.height as i16 * 3 / 4)
-                as f32
-                / PIXELS_PER_METER,
-            self.windows.lock().await.len() as f32 / 3.0 - 8.0,
+        let (window_center_x, window_center_y) = (
+            win_geometry.x + win_geometry.width as i16 / 2,
+            win_geometry.y + win_geometry.height as i16 / 2,
         );
-        let mut transform = graphene::Matrix::new_translate(&point);
-        xrd_window.set_transformation(&mut transform);
-        xrd_window.set_reset_transformation(&mut transform);
+
+        {
+            // Lock windows before xrd_client, because that's the order we used in render_win ->
+            // refresh_texture.
+            let windows = self.windows.lock().await;
+            let xrd_client = self.xrd_client.lock().await;
+            let parent = if ty.contains("menu") || ty == "utility" {
+                if let Some(leader) = transient_for {
+                    Self::find_window_group(&windows, leader)
+                } else {
+                    let hovered = xrd_client.synth_hovered();
+                    info!("no leader, hovered is {:?}", hovered);
+                    hovered.map(|hovered| {
+                        let mut native = 0u64;
+                        unsafe {
+                            gobject_sys::g_object_get(
+                                hovered.as_ptr() as *mut _,
+                                "native\0".as_bytes().as_ptr() as *const _,
+                                &mut native as *mut _,
+                                0,
+                            );
+                        }
+                        info!("hovered is native {}", native);
+                        windows.get(&(native as _)).unwrap()
+                    })
+                }
+            } else {
+                None
+            };
+            drop(xrd_client);
+            if let Some(parent) = parent {
+                let parent_geometry =
+                    block_in_place(|| Result::Ok(self.x11.get_geometry(parent.id)?.reply()?))?;
+                let (parent_center_x, parent_center_y) = (
+                    parent_geometry.x + parent_geometry.width as i16 / 2,
+                    parent_geometry.y + parent_geometry.height as i16 / 2,
+                );
+                let mut offset = graphene::Point::new(
+                    (window_center_x - parent_center_x) as _,
+                    -(window_center_y - parent_center_y) as _,
+                );
+                parent.xrd_window.add_child(&xrd_window, &mut offset);
+            } else {
+                let point = graphene::Point3D::new(
+                    (window_center_x - root_geometry.width as i16 / 2) as f32 / PIXELS_PER_METER,
+                    -(window_center_y - root_geometry.height as i16 * 3 / 4) as f32
+                        / PIXELS_PER_METER,
+                    windows.len() as f32 / 3.0 - 8.0,
+                );
+                let mut transform = graphene::Matrix::new_translate(&point);
+                xrd_window.set_transformation(&mut transform);
+                xrd_window.set_reset_transformation(&mut transform);
+            }
+        }
+        debug!("position set");
 
         let damage = self.x11.generate_id()?;
         let x11_clone = self.x11.clone();
@@ -694,6 +815,7 @@ impl App {
             let window = windows.try_insert(wid, window).unwrap();
             self.render_win(window).await?;
         }
+        info!("Added new window {:#010x}", wid);
         Ok(())
     }
 
@@ -746,9 +868,22 @@ lazy_static::lazy_static! {
     pub static ref RENDERDOC: std::sync::Mutex<Option<RenderDoc>> =
         std::sync::Mutex::new(maybe_load_renderdoc());
 }
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 async fn main() -> Result<()> {
-    env_logger::builder().format_timestamp_millis().init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or(
+        if cfg!(debug_assertions) {
+            "app=debug"
+        } else {
+            "app=info "
+        },
+    ))
+    .format_timestamp_millis()
+    .init();
+    if cfg!(debug_assertions) {
+        std::env::set_var("G_DEBUG", "fatal-warnings");
+        std::env::set_var("RUST_BACKTRACE", "1");
+        std::env::set_var("VK_INSTANCE_LAYERS", "VK_LAYER_KHRONOS_validation");
+    }
     std::thread::spawn(|| {
         let l = glib::MainLoop::new(None, false);
         l.run();
