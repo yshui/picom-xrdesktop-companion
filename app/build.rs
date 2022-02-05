@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use gl_generator::{Api, Fallbacks, StructGenerator, Profile, Registry};
+use gl_generator::{Api, Fallbacks, Profile, Registry, StructGenerator};
 fn main() {
     let dest = std::env::var("OUT_DIR").unwrap();
     let lib = pkg_config::Config::new()

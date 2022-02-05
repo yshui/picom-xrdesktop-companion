@@ -1395,7 +1395,7 @@ NULL for other attachments.</doc>
                  line="40">The #XrdDesktopCursor</doc>
             <type name="DesktopCursor" c:type="XrdDesktopCursor*"/>
           </instance-parameter>
-          <parameter name="texture" transfer-ownership="none">
+          <parameter name="texture" transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="../src/xrd-desktop-cursor.c"
                  line="41">A #GulkanTexture that this #XrdDesktopCursor will own.</doc>
@@ -1547,7 +1547,7 @@ NULL for other attachments.</doc>
                  line="40">The #XrdDesktopCursor</doc>
             <type name="DesktopCursor" c:type="XrdDesktopCursor*"/>
           </instance-parameter>
-          <parameter name="texture" transfer-ownership="none">
+          <parameter name="texture" transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="../src/xrd-desktop-cursor.c"
                  line="41">A #GulkanTexture that this #XrdDesktopCursor will own.</doc>
@@ -1731,7 +1731,7 @@ down from the top left corner of the texture.</doc>
                    line="40">The #XrdDesktopCursor</doc>
               <type name="DesktopCursor" c:type="XrdDesktopCursor*"/>
             </parameter>
-            <parameter name="texture" transfer-ownership="none">
+            <parameter name="texture" transfer-ownership="full">
               <doc xml:space="preserve"
                    filename="../src/xrd-desktop-cursor.c"
                    line="41">A #GulkanTexture that this #XrdDesktopCursor will own.</doc>

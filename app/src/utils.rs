@@ -84,20 +84,21 @@ impl<T: 'static> Remote<T> {
         &self,
         f: impl FnOnce(&mut T) -> R + Send + 'static,
     ) -> Result<R> {
-        Ok(Box::into_inner(
-            self.call_inner(f)?.await?.downcast::<R>().unwrap(),
-        ))
+        // We know that `f` will return type `R`
+        Ok(Box::into_inner(unsafe {
+            self.call_inner(f)?.await?.downcast_unchecked::<R>()
+        }))
     }
     pub fn call_sync<R: 'static + Send>(
         &self,
         f: impl FnOnce(&mut T) -> R + Send + 'static,
     ) -> Result<R> {
-        Ok(Box::into_inner(
+        // We know that `f` will return type `R`
+        Ok(Box::into_inner(unsafe {
             self.call_inner(f)?
                 .blocking_recv()?
-                .downcast::<R>()
-                .unwrap(),
-        ))
+                .downcast_unchecked::<R>()
+        }))
     }
 }
 

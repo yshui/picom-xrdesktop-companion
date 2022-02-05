@@ -1,7 +1,10 @@
 use zbus::dbus_proxy;
 
 /// # DBus interface proxy for: `com.github.chjj.compton`
-#[dbus_proxy(interface = "com.github.chjj.compton", default_path = "/com/github/chjj/compton")]
+#[dbus_proxy(
+    interface = "com.github.chjj.compton",
+    default_path = "/com/github/chjj/compton"
+)]
 trait Picom {
     /// repaint method
     fn repaint(&self) -> zbus::Result<()>;
@@ -10,7 +13,10 @@ trait Picom {
     fn reset(&self) -> zbus::Result<()>;
 }
 
-#[dbus_proxy(interface = "picom.Compositor", default_path = "/com/github/chjj/compton")]
+#[dbus_proxy(
+    interface = "picom.Compositor",
+    default_path = "/com/github/chjj/compton"
+)]
 trait Compositor {
     /// WinAdded signal
     #[dbus_proxy(signal)]

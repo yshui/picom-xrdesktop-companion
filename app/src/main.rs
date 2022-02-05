@@ -1,13 +1,21 @@
-#![feature(never_type, backtrace, map_try_insert, box_into_inner)]
+#![feature(
+    never_type,
+    backtrace,
+    map_try_insert,
+    box_into_inner,
+    downcast_unchecked
+)]
 use std::sync::Arc;
 
 use anyhow::{anyhow, Context};
-use futures::StreamExt;
+use futures::{StreamExt, TryStreamExt};
 use gio::prelude::*;
 use glib::translate::ToGlibPtr;
-use libc::c_void;
 use log::*;
-use tokio::{sync::Mutex, task::spawn_blocking};
+use tokio::{
+    sync::Mutex,
+    task::{block_in_place, spawn_blocking},
+};
 use x11rb::{
     connection::Connection,
     protocol::{
@@ -17,7 +25,7 @@ use x11rb::{
     },
     rust_connection::RustConnection,
 };
-use xrd::{ClientExt, WindowExt};
+use xrd::{ClientExt, WindowExt, DesktopCursorExt, ClientExtExt};
 
 mod gl;
 mod picom;
@@ -84,6 +92,7 @@ struct Window {
     gl: gl::Gl,
     damage: damage::Damage,
     x11: Arc<RustConnection>,
+    xrd: Arc<Mutex<xrd::Client>>,
     textures: Option<TextureSet>,
     xrd_window: xrd::Window,
 }
@@ -95,9 +104,19 @@ impl Drop for Window {
         let x11 = self.x11.clone();
         // damage will have already been freed is window is closed
         // so don't check for error
+        let xrd = self.xrd.blocking_lock();
+        xrd.remove_window(&self.xrd_window);
+        self.xrd_window.close();
         x11.damage_destroy(self.damage).unwrap();
         TextureSet::free(textures, &gl, &x11).unwrap();
     }
+}
+
+#[derive(Debug)]
+struct Cursor {
+    texture: gulkan::Texture,
+    hotspot_x: u32,
+    hotspot_y: u32,
 }
 
 type WindowMap = Mutex<std::collections::HashMap<u32, Window>>;
@@ -106,13 +125,19 @@ struct App {
     gl: gl::Gl,
     dbus: zbus::Connection,
     windows: WindowMap,
-    xrd_client: Mutex<xrd::Client>,
+    xrd_client: Arc<Mutex<xrd::Client>>,
     input_synth: InputSynth,
     x11: Arc<RustConnection>,
     screen: u32,
     display: String,
+    cursors: Mutex<std::collections::HashMap<u32, Cursor>>,
 }
 
+impl std::fmt::Debug for App {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "App")
+    }
+}
 impl App {
     async fn new() -> Result<Self> {
         if !xrd::settings_is_schema_installed() {
@@ -134,65 +159,137 @@ impl App {
         let input_synth = InputSynth::new().expect("Failed to initialize inputsynth");
         let (x11, screen) = RustConnection::connect(None)?;
         let x11 = Arc::new(x11);
-        let (damage_major, damage_minor) = x11rb::protocol::damage::X11_XML_VERSION;
-        x11.damage_query_version(damage_major, damage_minor)?
-            .reply()?;
+        block_in_place(|| {
+            use x11rb::protocol::xfixes::{ConnectionExt, CursorNotifyMask};
+            let (damage_major, damage_minor) = x11rb::protocol::damage::X11_XML_VERSION;
+            x11.damage_query_version(damage_major, damage_minor)?
+                .reply()?;
+            let (xfixes_major, xfixes_minor) = x11rb::protocol::xfixes::X11_XML_VERSION;
+            x11.xfixes_query_version(xfixes_major, xfixes_minor)?
+                .reply()?;
+            x11.xfixes_select_cursor_input(
+                x11.setup().roots[screen].root,
+                CursorNotifyMask::DISPLAY_CURSOR,
+            )?
+            .check()?;
+            Result::Ok(())
+        })?;
+
         Ok(Self {
             gl: gl::Gl::new(x11.clone(), screen as u32).await?,
             dbus,
             windows: Default::default(),
-            xrd_client: Mutex::new(client),
+            xrd_client: Arc::new(Mutex::new(client)),
             input_synth,
             screen: screen as u32,
             x11,
             display: std::env::var("DISPLAY").unwrap().replace(':', "_"),
+            cursors: Default::default(),
         })
     }
 
+    async fn refresh_cursor(&self, cursor_serial: u32) -> Result<()> {
+        use x11rb::protocol::xfixes;
+        let mut cursors = self.cursors.lock().await;
+        let xrd_client = self.xrd_client.lock().await;
+        let cursor = if let Some(cursor) = cursors.get(&cursor_serial) {
+            cursor
+        } else {
+            let cursor_image = block_in_place(|| {
+                use xfixes::ConnectionExt;
+                Result::Ok(self.x11.xfixes_get_cursor_image()?.reply()?)
+            })?;
+            let image_data = unsafe {
+                std::slice::from_raw_parts(
+                    cursor_image.cursor_image.as_ptr() as *const _,
+                    cursor_image.cursor_image.len() * std::mem::size_of::<u32>(),
+                )
+            };
+            use gdk_pixbuf::Colorspace;
+            let pixbuf = gdk_pixbuf::Pixbuf::from_bytes(
+                &glib::Bytes::from(image_data),
+                Colorspace::Rgb,
+                true,
+                8,
+                cursor_image.width.into(),
+                cursor_image.height.into(),
+                4i32 * cursor_image.width as i32,
+            );
+            let texture = {
+                let gulkan_client = xrd_client.gulkan().unwrap();
+                let layout = xrd_client.upload_layout();
+                let texture: gulkan::Texture = unsafe {
+                    glib::translate::from_glib_full(gulkan::sys::gulkan_texture_new_from_pixbuf(
+                        gulkan_client.as_ptr(),
+                        pixbuf.as_ptr(),
+                        ash::vk::Format::R8G8B8A8_SRGB.as_raw() as _,
+                        layout,
+                        false as _,
+                    ))
+                };
+                texture
+            };
+            cursors.entry(cursor_image.cursor_serial).or_insert(Cursor {
+                hotspot_x: cursor_image.xhot.into(),
+                hotspot_y: cursor_image.yhot.into(),
+                texture,
+            })
+        };
+        let xrd_cursor = xrd_client.desktop_cursor().unwrap();
+        xrd_cursor.set_and_submit_texture(&cursor.texture);
+        xrd_cursor.set_hotspot(cursor.hotspot_x as _, cursor.hotspot_y as _);
+        Ok(())
+    }
+
     async fn handle_x_events(&self, event: x11rb::protocol::Event) -> Result<()> {
+        use x11rb::protocol::xfixes;
         use x11rb::protocol::Event;
         match event {
             Event::DamageNotify(damage::NotifyEvent { drawable, .. }) => {
                 let mut windows = self.windows.lock().await;
                 let w = windows.get_mut(&drawable).unwrap();
-                let damage = w.damage;
-                let x11_clone = self.x11.clone();
-                spawn_blocking(move || {
+                block_in_place(|| {
                     Result::Ok(
-                        x11_clone
-                            .damage_subtract(damage, x11rb::NONE, x11rb::NONE)?
+                        self.x11
+                            .damage_subtract(w.damage, x11rb::NONE, x11rb::NONE)?
                             .check()?,
                     )
-                })
-                .await??;
+                })?;
                 self.render_win(w).await?;
+            }
+            Event::XfixesCursorNotify(xfixes::CursorNotifyEvent { cursor_serial, .. }) => {
+                self.refresh_cursor(cursor_serial).await?;
             }
             _ => (),
         }
         Ok(())
     }
 
-    async fn run(self: Arc<Self>) -> Result<!> {
-        Self::setup_initial_windows(self.clone()).await?;
+    async fn run(self: Self) -> Result<()> {
+        let this = Arc::new(self);
+        Self::setup_initial_windows(&this).await?;
+        this.refresh_cursor(0).await?;
+        this.xrd_client.lock().await.desktop_cursor().unwrap().show();
 
-        let picom = picom::CompositorProxy::builder(&self.dbus)
-            .destination(format!("com.github.chjj.compton.{}", self.display))?
+        let picom = picom::CompositorProxy::builder(&this.dbus)
+            .destination(format!("com.github.chjj.compton.{}", this.display))?
             .build()
             .await?;
 
-        let (tx, mut rx) = tokio::sync::mpsc::channel(4);
-        let x11_clone = self.x11.clone();
+        let (tx, mut x11_rx) = tokio::sync::mpsc::channel(4);
+        let x11_clone = this.x11.clone();
 
         // tokio task for receiving X events
-        let _: tokio::task::JoinHandle<Result<!>> = spawn_blocking(move || {
-            loop {
-                let event = x11_clone.wait_for_event()?;
+        let _: tokio::task::JoinHandle<Result<!>> = spawn_blocking(move || loop {
+            let event = x11_clone.wait_for_event()?;
+            tx.blocking_send(event)?;
+            while let Some(event) = x11_clone.poll_for_event()? {
                 tx.blocking_send(event)?;
-                while let Some(event) = x11_clone.poll_for_event()? {
-                    tx.blocking_send(event)?;
-                }
             }
         });
+
+        let (tx, mut exit_rx) = tokio::sync::mpsc::channel(1);
+        this.xrd_client.lock().await.connect_request_quit_event(move |_, _| { tx.blocking_send(()).unwrap(); });
 
         let mut win_mapped = picom.receive_win_mapped().await?;
         let mut win_unmapped = picom.receive_win_unmapped().await?;
@@ -200,29 +297,35 @@ impl App {
         info!("Existing windows mapped, entering mainloop");
         loop {
             tokio::select! {
-                event = rx.recv() => {
+                event = x11_rx.recv() => {
                     trace!("{:?}", event);
-                    self.handle_x_events(event.with_context(|| anyhow!("Xorg connection broke"))?).await?;
+                    this.handle_x_events(event.with_context(|| anyhow!("Xorg connection broke"))?).await?;
                 }
                 new_window = win_mapped.next() => {
                     let new_window = new_window.with_context(|| anyhow!("dbus connection broke"))?;
-                    self.map_win(new_window.args()?.wid).await?;
+                    this.map_win(new_window.args()?.wid).await?;
                 }
                 closed_window = win_unmapped.next() => {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
-                    let w = self.windows.lock().await.remove(&closed_window.args()?.wid);
-                    spawn_blocking(move || drop(w)).await?;
+                    let w = this.windows.lock().await.remove(&closed_window.args()?.wid);
+                    block_in_place(|| drop(w));
+                }
+                _ = exit_rx.recv() => {
+                    break;
                 }
             }
         }
+        // Ensure `App` in dropped in a sync context
+        let this = Arc::try_unwrap(this).unwrap();
+        block_in_place(|| drop(this));
+        Ok(())
     }
 
     async fn refresh_texture(&self, w: &mut Window) -> Result<bool> {
         let x11_clone = self.x11.clone();
         let wid = w.id;
         let win_geometry =
-            spawn_blocking(move || Result::Ok(x11_clone.as_ref().get_geometry(wid)?.reply()?))
-                .await??;
+            block_in_place(|| Result::Ok(x11_clone.as_ref().get_geometry(wid)?.reply()?))?;
         if let Some((width, height)) = w
             .textures
             .as_ref()
@@ -230,24 +333,19 @@ impl App {
         {
             if width != win_geometry.width.into() || height != win_geometry.height.into() {
                 info!("Free old textures for {}", wid);
-                let gl = self.gl.clone();
-                let x11 = self.x11.clone();
-                let textures = w.textures.take();
-                spawn_blocking(move || TextureSet::free(textures, &gl, &x11)).await??;
+                block_in_place(|| TextureSet::free(w.textures.take(), &self.gl, &self.x11))?;
             }
         }
 
         if w.textures.is_none() {
-            let x11_clone = self.x11.clone();
-            let (attrs, x11_pixmap) = spawn_blocking(move || {
-                let attrs = x11_clone.get_window_attributes(wid)?.reply()?;
-                let x11_pixmap = x11_clone.generate_id()?;
-                x11_clone
+            let (attrs, x11_pixmap) = block_in_place(|| {
+                let attrs = self.x11.get_window_attributes(wid)?.reply()?;
+                let x11_pixmap = self.x11.generate_id()?;
+                self.x11
                     .composite_name_window_pixmap(wid, x11_pixmap)?
                     .check()?;
                 Result::Ok((attrs, x11_pixmap))
-            })
-            .await??;
+            })?;
             let x11_texture = self.gl.bind_texture(x11_pixmap, attrs.visual).await?;
 
             let (remote_texture, fd, size) = {
@@ -337,14 +435,12 @@ impl App {
         let window_name = proxy.name().await?;
         // TODO: cache root geometry
         let root_win = self.x11.setup().roots[self.screen as usize].root;
-        let x11_clone = self.x11.clone();
-        let (root_geometry, win_geometry) = spawn_blocking(move || {
+        let (root_geometry, win_geometry) = block_in_place(|| {
             Result::Ok((
-                x11_clone.get_geometry(root_win)?.reply()?,
-                x11_clone.get_geometry(wid)?.reply()?,
+                self.x11.get_geometry(root_win)?.reply()?,
+                self.x11.get_geometry(wid)?.reply()?,
             ))
-        })
-        .await??;
+        })?;
         if win_geometry.x <= -(win_geometry.width as i16)
             || win_geometry.y <= -(win_geometry.height as i16)
             || win_geometry.x >= root_geometry.width as _
@@ -401,19 +497,19 @@ impl App {
         let x11_clone = self.x11.clone();
         {
             let mut windows = self.windows.lock().await;
-            spawn_blocking(move || {
+            block_in_place(move || {
                 x11_clone
                     .damage_create(damage, wid, x11rb::protocol::damage::ReportLevel::NON_EMPTY)?
                     .check()?;
                 Result::Ok(())
-            })
-            .await??;
+            })?;
 
             let window = Window {
                 id: wid,
                 gl: self.gl.clone(),
                 x11: self.x11.clone(),
                 xrd_window,
+                xrd: self.xrd_client.clone(),
                 damage,
                 textures: None,
             };
@@ -423,7 +519,7 @@ impl App {
         Ok(())
     }
 
-    async fn setup_initial_windows(self: Arc<Self>) -> Result<()> {
+    async fn setup_initial_windows(self: &Arc<Self>) -> Result<()> {
         let picom_service = format!("com.github.chjj.compton.{}", self.display);
         let proxy: zbus::Proxy<'_> = zbus::ProxyBuilder::new_bare(&self.dbus)
             .destination(picom_service)?
@@ -438,8 +534,8 @@ impl App {
             .into_iter()
             .map(|w| {
                 let self_clone = self.clone();
-                async move {
-                    let wid = w.name().unwrap().to_owned();
+                let wid = w.name().unwrap().to_owned();
+                tokio::spawn(async move {
                     if let Ok(wid) = parse_int::parse(&wid) {
                         if let Err(e) = self_clone.map_win(wid).await {
                             error!("Failed to map window {}, {}", wid, e);
@@ -447,10 +543,10 @@ impl App {
                     } else {
                         error!("Invalid window id from picom: {}", wid);
                     }
-                }
+                })
             })
             .collect();
-        let () = futs.collect().await;
+        let () = futs.try_collect().await?;
         Ok(())
     }
 }
@@ -479,6 +575,7 @@ async fn main() -> Result<()> {
         let l = glib::MainLoop::new(None, false);
         l.run();
     });
-    let ctx = Arc::new(App::new().await?);
+    let ctx = App::new().await?;
     ctx.run().await?;
+    Ok(())
 }
