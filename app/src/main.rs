@@ -71,6 +71,14 @@ impl InputSynth {
             )
         }
     }
+    fn character(&mut self, key: i8) {
+        unsafe {
+            inputsynth::input_synth_character(
+                self.0.as_mut().map(|ptr| (*ptr) as *mut _).unwrap(),
+                key,
+            )
+        }
+    }
 }
 impl Drop for InputSynth {
     fn drop(&mut self) {
@@ -166,6 +174,9 @@ enum InputEvent {
         y: f32,
         button: xrd::sys::XrdInputSynthButton,
         pressed: bool,
+    },
+    KeyPresses {
+        string: Vec<i8>,
     },
 }
 
@@ -346,6 +357,14 @@ impl App {
                     self.input_synth.lock().await.click(x, y, button, pressed);
                 }
             }
+            InputEvent::KeyPresses { string } => {
+                let mut input_synth = self.input_synth.lock().await;
+                block_in_place(|| {
+                    for ch in string {
+                        input_synth.character(ch);
+                    }
+                });
+            }
         }
     }
 
@@ -426,6 +445,15 @@ impl App {
                     pressed: event.state != 0,
                 })
                 .unwrap();
+            });
+            let tx = input_tx.clone();
+            xrd_client.connect_keyboard_press_event(move |_, event| {
+                let event: &gdk::EventKey = event.downcast_ref().unwrap();
+                let string = unsafe {
+                    std::slice::from_raw_parts(event.as_ref().string, event.length() as _)
+                };
+                let string = string.to_owned();
+                tx.blocking_send(InputEvent::KeyPresses { string }).unwrap();
             });
 
             let (tx, exit_rx) = tokio::sync::mpsc::channel(1);
@@ -727,5 +755,6 @@ async fn main() -> Result<()> {
     });
     let ctx = App::new().await?;
     ctx.run().await?;
+    info!("App exited");
     Ok(())
 }
