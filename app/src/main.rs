@@ -25,13 +25,13 @@ use x11rb::{
     },
     rust_connection::RustConnection,
 };
-use xrd::{ClientExt, WindowExt, DesktopCursorExt, ClientExtExt};
+use xrd::{ClientExt, ClientExtExt, DesktopCursorExt, WindowExt};
 
 mod gl;
 mod picom;
 mod utils;
 
-const PIXELS_PER_METER: f32 = 900.0;
+const PIXELS_PER_METER: f32 = 600.0;
 type Result<T> = anyhow::Result<T>;
 
 #[allow(non_camel_case_types, dead_code)]
@@ -50,6 +50,26 @@ impl InputSynth {
         }
         .map(Some)
         .map(Self)
+    }
+    fn move_cursor(&mut self, x: i32, y: i32) {
+        unsafe {
+            inputsynth::input_synth_move_cursor(
+                self.0.as_mut().map(|ptr| (*ptr) as *mut _).unwrap(),
+                x,
+                y,
+            );
+        }
+    }
+    fn click(&mut self, x: i32, y: i32, button: i32, pressed: bool) {
+        unsafe {
+            inputsynth::input_synth_click(
+                self.0.as_mut().map(|ptr| (*ptr) as *mut _).unwrap(),
+                x,
+                y,
+                button,
+                pressed as _,
+            )
+        }
     }
 }
 impl Drop for InputSynth {
@@ -126,11 +146,27 @@ struct App {
     dbus: zbus::Connection,
     windows: WindowMap,
     xrd_client: Arc<Mutex<xrd::Client>>,
-    input_synth: InputSynth,
+    input_synth: Mutex<InputSynth>,
     x11: Arc<RustConnection>,
     screen: u32,
     display: String,
     cursors: Mutex<std::collections::HashMap<u32, Cursor>>,
+}
+
+#[derive(Debug)]
+enum InputEvent {
+    Move {
+        wid: u32,
+        x: f32,
+        y: f32,
+    },
+    Click {
+        wid: u32,
+        x: f32,
+        y: f32,
+        button: xrd::sys::XrdInputSynthButton,
+        pressed: bool,
+    },
 }
 
 impl std::fmt::Debug for App {
@@ -156,7 +192,7 @@ impl App {
         }
 
         let client = xrd::Client::with_mode(mode);
-        let input_synth = InputSynth::new().expect("Failed to initialize inputsynth");
+        let input_synth = Mutex::new(InputSynth::new().expect("Failed to initialize inputsynth"));
         let (x11, screen) = RustConnection::connect(None)?;
         let x11 = Arc::new(x11);
         block_in_place(|| {
@@ -188,10 +224,12 @@ impl App {
         })
     }
 
+    // Change cursor to the one identified by cursor_serial, if it was cached; otherwise, fetch the
+    // current cursor (might or might not be cursor_serial) and set the cursor to that.
     async fn refresh_cursor(&self, cursor_serial: u32) -> Result<()> {
         use x11rb::protocol::xfixes;
-        let mut cursors = self.cursors.lock().await;
         let xrd_client = self.xrd_client.lock().await;
+        let mut cursors = self.cursors.lock().await;
         let cursor = if let Some(cursor) = cursors.get(&cursor_serial) {
             cursor
         } else {
@@ -265,11 +303,62 @@ impl App {
         Ok(())
     }
 
+    async fn handle_input_events(&self, input_event: InputEvent) {
+        trace!("{:?}", input_event);
+        let raise_window_and_resolve_position = |wid, x, y| {
+            let geometry = block_in_place(|| {
+                let cookie1 = self
+                    .x11
+                    .configure_window(
+                        wid,
+                        &xproto::ConfigureWindowAux {
+                            stack_mode: Some(xproto::StackMode::ABOVE),
+                            ..Default::default()
+                        },
+                    )
+                    .unwrap();
+                let cookie2 = self.x11.get_geometry(wid).unwrap();
+                cookie1.check()?;
+                Result::Ok(cookie2.reply()?)
+            })?;
+            let x = (geometry.x as f32 + x) as _;
+            let y = (geometry.y as f32 + y) as _;
+            Result::Ok((x, y))
+        };
+
+        match input_event {
+            InputEvent::Move { x, y, wid } => {
+                if let Ok((x, y)) = raise_window_and_resolve_position(wid, x, y) {
+                    // The window could have been closed, in that case we stop
+                    self.input_synth.lock().await.move_cursor(x, y);
+                }
+            }
+
+            InputEvent::Click {
+                x,
+                y,
+                wid,
+                button,
+                pressed,
+            } => {
+                if let Ok((x, y)) = raise_window_and_resolve_position(wid, x, y) {
+                    // The window could have been closed, in that case we stop
+                    self.input_synth.lock().await.click(x, y, button, pressed);
+                }
+            }
+        }
+    }
+
     async fn run(self: Self) -> Result<()> {
         let this = Arc::new(self);
         Self::setup_initial_windows(&this).await?;
         this.refresh_cursor(0).await?;
-        this.xrd_client.lock().await.desktop_cursor().unwrap().show();
+        this.xrd_client
+            .lock()
+            .await
+            .desktop_cursor()
+            .unwrap()
+            .show();
 
         let picom = picom::CompositorProxy::builder(&this.dbus)
             .destination(format!("com.github.chjj.compton.{}", this.display))?
@@ -287,9 +376,65 @@ impl App {
                 tx.blocking_send(event)?;
             }
         });
+        let (mut exit_rx, mut input_rx) = {
+            let xrd_client = this.xrd_client.lock().await;
+            let (input_tx, input_rx) = tokio::sync::mpsc::channel(2);
+            let tx = input_tx.clone();
+            xrd_client.connect_move_cursor_event(move |_, event| {
+                if event.ignore != 0 {
+                    return;
+                }
+                let window: xrd::Window = unsafe { glib::translate::from_glib_none(event.window) };
+                let point: graphene::Point =
+                    unsafe { glib::translate::from_glib_none(event.position) };
+                let mut native = 0u64;
+                unsafe {
+                    gobject_sys::g_object_get(
+                        window.as_ptr() as *mut _,
+                        "native\0".as_bytes().as_ptr() as *const _,
+                        &mut native,
+                        0,
+                    );
+                };
+                // If the queue is full, we drop the event
+                let _: std::result::Result<_, _> = tx.try_send(InputEvent::Move {
+                    wid: native as u32,
+                    x: point.x(),
+                    y: point.y(),
+                });
+            });
+            let tx = input_tx.clone();
+            xrd_client.connect_click_event(move |_, event| {
+                let window: xrd::Window = unsafe { glib::translate::from_glib_none(event.window) };
+                let point: graphene::Point =
+                    unsafe { glib::translate::from_glib_none(event.position) };
+                let mut native = 0u64;
+                unsafe {
+                    gobject_sys::g_object_get(
+                        window.as_ptr() as *mut _,
+                        "native\0".as_bytes().as_ptr() as *const _,
+                        &mut native,
+                        0,
+                    );
+                };
+                // We don't want to lose click events
+                tx.blocking_send(InputEvent::Click {
+                    wid: native as u32,
+                    x: point.x(),
+                    y: point.y(),
+                    button: event.button,
+                    pressed: event.state != 0,
+                })
+                .unwrap();
+            });
 
-        let (tx, mut exit_rx) = tokio::sync::mpsc::channel(1);
-        this.xrd_client.lock().await.connect_request_quit_event(move |_, _| { tx.blocking_send(()).unwrap(); });
+            let (tx, exit_rx) = tokio::sync::mpsc::channel(1);
+            xrd_client.connect_request_quit_event(move |_, _| {
+                tx.blocking_send(()).unwrap();
+            });
+
+            (exit_rx, input_rx)
+        };
 
         let mut win_mapped = picom.receive_win_mapped().await?;
         let mut win_unmapped = picom.receive_win_unmapped().await?;
@@ -309,6 +454,10 @@ impl App {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
                     let w = this.windows.lock().await.remove(&closed_window.args()?.wid);
                     block_in_place(|| drop(w));
+                }
+                input_event = input_rx.recv() => {
+                    let input_event = input_event.unwrap();
+                    this.handle_input_events(input_event).await;
                 }
                 _ = exit_rx.recv() => {
                     break;
@@ -429,7 +578,8 @@ impl App {
         if !proxy.mapped().await? {
             return Ok(());
         }
-        if proxy.type_().await? != "normal" {
+        let ty = proxy.type_().await?;
+        if ty != "normal" && ty != "dock" {
             return Ok(());
         }
         let window_name = proxy.name().await?;

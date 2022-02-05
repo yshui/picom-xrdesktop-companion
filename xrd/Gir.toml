@@ -9,7 +9,6 @@ concurrency = "send"
 external_libraries = [ "Gio", "Gdk", "GLib", "GObject", "Gxr", "Graphene", "Gulkan" ]
 
 generate = [
-	"Xrd.Client",
 	"Xrd.WindowManager",
 	"Xrd.Window",
 	"Xrd.Container",
@@ -34,4 +33,15 @@ name = "Xrd.*"
 status = "generate"
     [[object.function]]
     name = "button_set_text"
+    ignore = true
+
+[[object]]
+name = "Xrd.Client"
+status = "generate"
+    [[object.signal]]
+    name = "move-cursor-event"
+    ignore = true
+
+    [[object.signal]]
+    name = "click-event"
     ignore = true
