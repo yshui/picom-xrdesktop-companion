@@ -33,6 +33,7 @@ renderdoc = "0.10.1"
 lazy_static = "1.4.0"
 gdk-pixbuf = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 gdk = { git = "https://github.com/gtk-rs/gtk3-rs" }
+drop_bomb = "0.1.5"
 
 [build-dependencies]
 bindgen = "0.59.2"
