@@ -11,3 +11,10 @@ members = [
 
 [patch.crates-io]
 glium = { path = "./glium" }
+
+[profile.release]
+panic = "abort"
+lto = "thin"
+
+[profile.dev]
+panic = "abort"

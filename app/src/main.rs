@@ -5,7 +5,10 @@
     box_into_inner,
     downcast_unchecked
 )]
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{hash_map::OccupiedError, HashMap},
+    sync::Arc,
+};
 
 use anyhow::{anyhow, Context};
 use drop_bomb::DropBomb;
@@ -157,29 +160,32 @@ impl Window {
         parent.add_child(&child, &mut offset);
     }
     // Must either be dropped with exclusive access to WindowState
-    async unsafe fn drop(self) -> Result<()> {
+    unsafe fn drop(self) -> impl std::future::Future<Output = Result<()>> {
         let Self {
             xrd,
             damage,
-            drop_bomb,
+            mut drop_bomb,
             x11,
             gl,
             xrd_window,
             textures,
             ..
         } = self;
-        std::mem::forget(drop_bomb);
+        drop_bomb.defuse();
 
         let mut xrd_window = xrd_window.into_inner();
         Self::unlink_window(&mut xrd_window);
-        // damage will have already been freed is window is closed
-        // so don't check for error
-        let xrd = xrd.lock().await;
-        xrd.remove_window(&xrd_window);
-        xrd_window.close();
-        x11.damage_destroy(damage).unwrap();
-        TextureSet::free(textures, &gl, &x11).await?;
-        Ok(())
+        // We do this so the future doesn't capture Window, which can lead to <Window as
+        // Drop>::drop being called
+        async move {
+            let xrd = xrd.lock().await;
+            xrd.remove_window(&xrd_window);
+            xrd_window.close();
+            // damage will have already been freed is window is closed
+            // so don't call check() for error
+            x11.damage_destroy(damage).unwrap();
+            TextureSet::free(textures, &gl, &x11).await
+        }
     }
 }
 
@@ -451,7 +457,7 @@ impl App {
         Some(window_state.windows.get(&(native as _)).unwrap())
     }
 
-    async fn run_impl(self: Arc<Self>) -> Result<()> {
+    pub async fn run(self: Arc<Self>) -> Result<()> {
         Self::setup_initial_windows(&self).await?;
         self.refresh_cursor(0).await?;
         self.xrd_client
@@ -567,11 +573,14 @@ impl App {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
                     let mut window_state = self.window_state.write().await;
                     let w = window_state.windows.remove(&closed_window.args()?.wid);
-                    if let Some(w) = w {
-                        let w = w.into_inner();
-                        window_state.client_window_to_window.remove(&w.client_wid);
-                        // window_state is locked exclusively at this point.
-                        unsafe { w.drop().await.unwrap() };
+                    match w {
+                        Some(w) =>  {
+                            let w = w.into_inner();
+                            window_state.client_window_to_window.remove(&w.client_wid);
+                            // window_state is locked exclusively at this point.
+                            unsafe { w.drop().await.unwrap() };
+                        }
+                        None => {},
                     }
                 }
                 input_event = input_rx.recv() => {
@@ -585,19 +594,20 @@ impl App {
         }
         Ok(())
     }
-    pub async fn run(self) -> Result<()> {
-        let this = Arc::new(self);
-        let result = Self::run_impl(this.clone()).await;
 
-        // Drop the Windows to defuse the drop bombs
-        let App { window_state, .. } = Arc::try_unwrap(this).unwrap();
-        let mut window_state = window_state.into_inner();
-        for (_, w) in window_state.windows.drain() {
-            let w = w.into_inner();
-            // We own window_state at this point
-            unsafe { w.drop().await.unwrap() };
+    pub fn drop(self) -> impl std::future::Future<Output = ()> {
+        // Deconstruct self first, so the return future doesn't capture an App that might be
+        // dropped
+        let App { window_state, .. } = self;
+        let window_state = window_state.into_inner();
+        async {
+            // Drop the Windows to defuse the drop bombs
+            for (_, w) in window_state.windows.into_iter() {
+                let w = w.into_inner();
+                // We own window_state at this point
+                unsafe { w.drop().await.unwrap() };
+            }
         }
-        result
     }
 
     async fn refresh_texture(&self, w: &mut Window) -> Result<bool> {
@@ -879,10 +889,13 @@ impl App {
                     client_wid, parent_wid, wid
                 );
             }
-            let window = window_state
-                .windows
-                .try_insert(wid, RwLock::new(window))
-                .unwrap();
+            let window = match window_state.windows.try_insert(wid, RwLock::new(window)) {
+                Ok(window) => window,
+                Err(OccupiedError { value, .. }) => {
+                    unsafe { value.into_inner().drop().await.unwrap() };
+                    panic!("Duplicated window {}", wid);
+                }
+            };
             let mut window = window.write().await;
             self.render_win(&mut window).await?;
         }
@@ -959,8 +972,12 @@ async fn main() -> Result<()> {
         let l = glib::MainLoop::new(None, false);
         l.run();
     });
-    let ctx = App::new().await?;
-    ctx.run().await?;
+    let ctx = Arc::new(App::new().await?);
+    let result = ctx.clone().run().await;
     info!("App exited");
-    Ok(())
+
+    // Must explicitly drop App
+    let ctx = Arc::try_unwrap(ctx).unwrap();
+    ctx.drop().await;
+    result
 }
