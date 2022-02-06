@@ -8,6 +8,7 @@ pub use auto::*;
 pub use ffi as sys;
 
 use glib::object::Cast;
+use glib::signal::connect_raw;
 use glib::signal::SignalHandlerId;
 use glib::translate::FromGlibPtrBorrow;
 use glib::IsA;
@@ -28,6 +29,12 @@ pub trait ClientExtExt: ClientExt {
 
     #[doc(alias = "move-cursor-event")]
     fn connect_move_cursor_event<F: Fn(&Self, &sys::XrdMoveCursorEvent) + Send + 'static>(
+        &self,
+        f: F,
+    ) -> SignalHandlerId;
+
+    #[doc(alias = "keyboard-press-event")]
+    fn connect_keyboard_press_event<F: Fn(&Self, &gdk::Event) + Send + 'static>(
         &self,
         f: F,
     ) -> SignalHandlerId;
@@ -57,7 +64,7 @@ where
         }
         unsafe {
             let f: Box<F> = Box::new(f);
-            glib::signal::connect_raw(
+            connect_raw(
                 self.as_ptr() as *mut _,
                 b"click-event\0".as_ptr() as *const _,
                 Some(transmute::<_, unsafe extern "C" fn()>(
@@ -87,7 +94,7 @@ where
         }
         unsafe {
             let f: Box<F> = Box::new(f);
-            glib::signal::connect_raw(
+            connect_raw(
                 self.as_ptr() as *mut _,
                 b"move-cursor-event\0".as_ptr() as *const _,
                 Some(transmute::<_, unsafe extern "C" fn()>(
@@ -117,11 +124,42 @@ where
         }
         unsafe {
             let f: Box<F> = Box::new(f);
-            glib::signal::connect_raw(
+            connect_raw(
                 self.as_ptr() as *mut _,
                 b"request-quit-event\0".as_ptr() as *const _,
                 Some(transmute::<_, unsafe extern "C" fn()>(
                     request_quit_event_trampoline::<Self, F> as *const (),
+                )),
+                Box::into_raw(f),
+            )
+        }
+    }
+
+    fn connect_keyboard_press_event<F: Fn(&Self, &gdk::Event) + Send + 'static>(
+        &self,
+        f: F,
+    ) -> SignalHandlerId {
+        unsafe extern "C" fn keyboard_press_event_trampoline<
+            P: IsA<Client>,
+            F: Fn(&P, &gdk::Event) + Send + 'static,
+        >(
+            this: *mut ffi::XrdClient,
+            object: *mut gdk::ffi::GdkEvent,
+            f: glib::ffi::gpointer,
+        ) {
+            let f: &F = &*(f as *const F);
+            f(
+                Client::from_glib_borrow(this).unsafe_cast_ref(),
+                &gdk::Event::from_glib_borrow(object),
+            )
+        }
+        unsafe {
+            let f: Box<F> = Box::new(f);
+            connect_raw(
+                self.as_ptr() as *mut _,
+                b"keyboard-press-event\0".as_ptr() as *const _,
+                Some(transmute::<_, unsafe extern "C" fn()>(
+                    keyboard_press_event_trampoline::<Self, F> as *const (),
                 )),
                 Box::into_raw(f),
             )

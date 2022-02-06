@@ -46,3 +46,7 @@ status = "generate"
     [[object.signal]]
     name = "click-event"
     ignore = true
+
+    [[object.signal]]
+    name = "keyboard-press-event"
+    ignore = true
