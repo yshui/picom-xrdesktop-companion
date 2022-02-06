@@ -14,7 +14,7 @@ use gio::prelude::*;
 use glib::translate::ToGlibPtr;
 use log::*;
 use tokio::{
-    sync::Mutex,
+    sync::{Mutex, RwLock},
     task::{block_in_place, spawn_blocking},
 };
 use x11rb::{
@@ -129,7 +129,7 @@ struct Window {
     x11: Arc<RustConnection>,
     xrd: Arc<Mutex<xrd::Client>>,
     textures: Option<TextureSet>,
-    xrd_window: xrd::Window,
+    xrd_window: Mutex<xrd::Window>,
     client_wid: u32,
 
     // Dropping Window is unsafe, so we don't allow implicit dropping
@@ -138,10 +138,10 @@ struct Window {
 
 impl Window {
     // Unsafe, must be called with the exclusive access to WindowState
-    unsafe fn unlink_window(&mut self) {
+    unsafe fn unlink_window(win: &mut xrd::Window) {
         use glib::translate::from_glib_none;
         // Remove from window group
-        let data = xrd::sys::xrd_window_get_data(self.xrd_window.as_ptr());
+        let data = xrd::sys::xrd_window_get_data(win.as_ptr());
         if (*data).parent_window.is_null() || (*data).child_window.is_null() {
             return;
         }
@@ -157,20 +157,18 @@ impl Window {
         parent.add_child(&child, &mut offset);
     }
     // Must either be dropped with exclusive access to WindowState
-    async unsafe fn drop(mut self) -> Result<()> {
-        // Defuse first, as the TextureSet::free could fail
-        // We don't want the bomb to explode during unwind.
-        self.drop_bomb.defuse();
-        self.unlink_window();
-        let textures = self.textures.take();
-        let gl = self.gl.clone();
-        let x11 = self.x11.clone();
+    async unsafe fn drop(self) -> Result<()> {
+        let Self { xrd, damage, drop_bomb, x11, gl, xrd_window, textures, .. } = self;
+        std::mem::forget(drop_bomb);
+
+        let mut xrd_window = xrd_window.into_inner();
+        Self::unlink_window(&mut xrd_window);
         // damage will have already been freed is window is closed
         // so don't check for error
-        let xrd = self.xrd.lock().await;
-        xrd.remove_window(&self.xrd_window);
-        self.xrd_window.close();
-        x11.damage_destroy(self.damage).unwrap();
+        let xrd = xrd.lock().await;
+        xrd.remove_window(&xrd_window);
+        xrd_window.close();
+        x11.damage_destroy(damage).unwrap();
         TextureSet::free(textures, &gl, &x11).await?;
         Ok(())
     }
@@ -185,7 +183,7 @@ struct Cursor {
 
 #[derive(Default, Debug)]
 struct WindowState {
-    windows: HashMap<u32, Window>,
+    windows: HashMap<u32, RwLock<Window>>,
     client_window_to_window: HashMap<u32, u32>,
 }
 
@@ -199,7 +197,7 @@ struct App {
     display: String,
     cursors: Mutex<std::collections::HashMap<u32, Cursor>>,
     atoms: AtomCollection,
-    window_state: Mutex<WindowState>,
+    window_state: RwLock<WindowState>,
 }
 
 #[derive(Debug)]
@@ -338,8 +336,8 @@ impl App {
         use x11rb::protocol::Event;
         match event {
             Event::DamageNotify(damage::NotifyEvent { drawable, .. }) => {
-                let mut window_state = self.window_state.lock().await;
-                let w = window_state.windows.get_mut(&drawable).unwrap();
+                let window_state = self.window_state.read().await;
+                let mut w = window_state.windows.get(&drawable).unwrap().write().await;
                 block_in_place(|| {
                     Result::Ok(
                         self.x11
@@ -347,7 +345,7 @@ impl App {
                             .check()?,
                     )
                 })?;
-                self.render_win(w).await?;
+                self.render_win(&mut w).await?;
             }
             Event::XfixesCursorNotify(xfixes::CursorNotifyEvent { cursor_serial, .. }) => {
                 self.refresh_cursor(cursor_serial).await?;
@@ -413,7 +411,7 @@ impl App {
 
     // A window group in xrdesktop is a linked list held together by the window's parent/child
     // pointers. this function finds the group for `wid`, and returns the last window in the list
-    fn find_window_group(window_state: &WindowState, wid: u32) -> Option<&Window> {
+    async fn find_window_group(window_state: &WindowState, wid: u32) -> Option<&RwLock<Window>> {
         debug!("looking for group for {}", wid);
         let window = window_state.windows.get(&wid).or_else(|| {
             window_state
@@ -425,7 +423,8 @@ impl App {
                 })
         })?;
         let parent = unsafe {
-            let mut current = xrd::sys::xrd_window_get_data(window.xrd_window.as_ptr());
+            let mut current =
+                xrd::sys::xrd_window_get_data(window.read().await.xrd_window.lock().await.as_ptr());
             while !(*current).child_window.is_null() {
                 debug!("{}", (*current).native as u64);
                 current = (*current).child_window;
@@ -548,11 +547,12 @@ impl App {
                 }
                 closed_window = win_unmapped.next() => {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
-                    let mut window_state = self.window_state.lock().await;
+                    let mut window_state = self.window_state.write().await;
                     let w = window_state.windows.remove(&closed_window.args()?.wid);
                     if let Some(w) = w {
+                        let w = w.into_inner();
                         window_state.client_window_to_window.remove(&w.client_wid);
-                        // window_state is locked at this point.
+                        // window_state is locked exclusively at this point.
                         unsafe { w.drop().await.unwrap() };
                     }
                 }
@@ -575,6 +575,7 @@ impl App {
         let App { window_state, .. } = Arc::try_unwrap(this).unwrap();
         let mut window_state = window_state.into_inner();
         for (_, w) in window_state.windows.drain() {
+            let w = w.into_inner();
             // We own window_state at this point
             unsafe { w.drop().await.unwrap() };
         }
@@ -653,7 +654,7 @@ impl App {
     }
 
     async fn render_win(&self, w: &mut Window) -> Result<()> {
-        if !w.xrd_window.is_visible() {
+        if !w.xrd_window.get_mut().is_visible() {
             //return Ok(());
         }
 
@@ -669,11 +670,11 @@ impl App {
         #[cfg(debug_assertions)]
         self.gl.capture(false).await?;
 
+        let xrd_window = w.xrd_window.get_mut();
         if refreshed {
-            w.xrd_window
-                .set_and_submit_texture(&textures.remote_texture);
+            xrd_window.set_and_submit_texture(&textures.remote_texture);
         } else {
-            w.xrd_window.submit_texture();
+            xrd_window.submit_texture();
         }
         Ok(())
     }
@@ -773,11 +774,11 @@ impl App {
         {
             // Lock windows before xrd_client, because that's the order we used in render_win ->
             // refresh_texture.
-            let window_state = self.window_state.lock().await;
+            let window_state = self.window_state.read().await;
             let xrd_client = self.xrd_client.lock().await;
             let parent = if ty.contains("menu") || ty == "utility" {
                 if let Some(leader) = transient_for {
-                    Self::find_window_group(&window_state, leader)
+                    Self::find_window_group(&window_state, leader).await
                 } else {
                     let hovered = xrd_client.synth_hovered();
                     info!("no leader, hovered is {:?}", hovered);
@@ -800,6 +801,7 @@ impl App {
             };
             drop(xrd_client);
             if let Some(parent) = parent {
+                let parent = parent.read().await;
                 let parent_geometry =
                     block_in_place(|| Result::Ok(self.x11.get_geometry(parent.id)?.reply()?))?;
                 let (parent_center_x, parent_center_y) = (
@@ -810,7 +812,7 @@ impl App {
                     (window_center_x - parent_center_x) as _,
                     -(window_center_y - parent_center_y) as _,
                 );
-                parent.xrd_window.add_child(&xrd_window, &mut offset);
+                parent.xrd_window.lock().await.add_child(&xrd_window, &mut offset);
             } else {
                 let point = graphene::Point3D::new(
                     (window_center_x - root_geometry.width as i16 / 2) as f32 / PIXELS_PER_METER,
@@ -828,7 +830,7 @@ impl App {
         let damage = self.x11.generate_id()?;
         let x11_clone = self.x11.clone();
         {
-            let mut window_state = self.window_state.lock().await;
+            let mut window_state = self.window_state.write().await;
             block_in_place(move || {
                 x11_clone
                     .damage_create(damage, wid, x11rb::protocol::damage::ReportLevel::NON_EMPTY)?
@@ -836,6 +838,7 @@ impl App {
                 Result::Ok(())
             })?;
 
+            let xrd_window = Mutex::new(xrd_window);
             let window = Window {
                 id: wid,
                 gl: self.gl.clone(),
@@ -854,8 +857,12 @@ impl App {
                     client_wid, parent_wid, wid
                 );
             }
-            let window = window_state.windows.try_insert(wid, window).unwrap();
-            self.render_win(window).await?;
+            let window = window_state
+                .windows
+                .try_insert(wid, RwLock::new(window))
+                .unwrap();
+            let mut window = window.write().await;
+            self.render_win(&mut window).await?;
         }
         info!("Added new window {:#010x}", wid);
         Ok(())
