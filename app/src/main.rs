@@ -182,8 +182,8 @@ impl Window {
             xrd.remove_window(&xrd_window);
             xrd_window.close();
             // damage will have already been freed is window is closed
-            // so don't call check() for error
-            x11.damage_destroy(damage).unwrap();
+            // so ignore error
+            x11.damage_destroy(damage).unwrap().ignore_error();
             TextureSet::free(textures, &gl, &x11).await
         }
     }
@@ -353,15 +353,28 @@ impl App {
         match event {
             Event::DamageNotify(damage::NotifyEvent { drawable, .. }) => {
                 let window_state = self.window_state.read().await;
-                let mut w = window_state.windows.get(&drawable).unwrap().write().await;
-                block_in_place(|| {
-                    Result::Ok(
-                        self.x11
-                            .damage_subtract(w.damage, x11rb::NONE, x11rb::NONE)?
-                            .check()?,
-                    )
-                })?;
-                self.render_win(&mut w).await?;
+                if let Some(w) = window_state.windows.get(&drawable) {
+                    // we might not be able to find the window if:
+                    // we receive a damage notify from X, but have processed it;
+                    // then we receive a WinUnmapped signal from picom, and we processed it;
+                    // then we dequeue the damage notify from x11rb.
+                    // this is not an error.
+                    let mut w = w.write().await;
+
+                    // Window could've closed between damage_notify and here, handle that case.
+                    if block_in_place(|| {
+                        Result::Ok(
+                            self.x11
+                                .damage_subtract(w.damage, x11rb::NONE, x11rb::NONE)?
+                                .check()?,
+                        )
+                    })
+                    .is_ok()
+                    {
+                        // render_win will fail if window is closed, this is fine.
+                        let _: Result<_> = self.render_win(&mut w).await;
+                    }
+                }
             }
             Event::XfixesCursorNotify(xfixes::CursorNotifyEvent { cursor_serial, .. }) => {
                 self.refresh_cursor(cursor_serial).await?;
@@ -510,6 +523,7 @@ impl App {
                     y: point.y(),
                 });
             });
+            // if send() errors, that means run() has returned. so ignore those errors
             let tx = input_tx.clone();
             xrd_client.connect_click_event(move |_, event| {
                 let window: xrd::Window = unsafe { glib::translate::from_glib_none(event.window) };
@@ -525,14 +539,13 @@ impl App {
                     );
                 };
                 // We don't want to lose click events
-                tx.blocking_send(InputEvent::Click {
+                let _ = tx.blocking_send(InputEvent::Click {
                     wid: native as u32,
                     x: point.x(),
                     y: point.y(),
                     button: event.button,
                     pressed: event.state != 0,
-                })
-                .unwrap();
+                });
             });
             let tx = input_tx;
             xrd_client.connect_keyboard_press_event(move |_, event| {
@@ -541,12 +554,12 @@ impl App {
                     std::slice::from_raw_parts(event.as_ref().string, event.length() as _)
                 };
                 let string = string.to_owned();
-                tx.blocking_send(InputEvent::KeyPresses { string }).unwrap();
+                let _ = tx.blocking_send(InputEvent::KeyPresses { string });
             });
 
             let (tx, exit_rx) = tokio::sync::mpsc::channel(1);
             xrd_client.connect_request_quit_event(move |_, _| {
-                tx.blocking_send(()).unwrap();
+                let _ = tx.blocking_send(());
             });
 
             (exit_rx, input_rx)
@@ -889,6 +902,7 @@ impl App {
                     client_wid, parent_wid, wid
                 );
             }
+            debug!("inserting {}", wid);
             let window = match window_state.windows.try_insert(wid, RwLock::new(window)) {
                 Ok(window) => window,
                 Err(OccupiedError { value, .. }) => {
