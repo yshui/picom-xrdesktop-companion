@@ -982,13 +982,18 @@ async fn main() -> Result<()> {
         std::env::set_var("RUST_BACKTRACE", "1");
         std::env::set_var("VK_INSTANCE_LAYERS", "VK_LAYER_KHRONOS_validation");
     }
-    std::thread::spawn(|| {
-        let l = glib::MainLoop::new(None, false);
-        l.run();
+    let glib_mainloop = glib::MainLoop::new(None, false);
+    let glib_mainloop2 = glib_mainloop.clone();
+    let glib_thread = std::thread::spawn(move || {
+        glib_mainloop2.run();
     });
     let ctx = Arc::new(App::new().await?);
     let result = ctx.clone().run().await;
-    info!("App exited");
+    info!("App exited {:?}", result);
+
+    // Stop glib mainloop
+    glib_mainloop.quit();
+    glib_thread.join().unwrap();
 
     // Must explicitly drop App
     let ctx = Arc::try_unwrap(ctx).unwrap();
