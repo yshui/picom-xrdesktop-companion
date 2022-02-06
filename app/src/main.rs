@@ -611,7 +611,7 @@ impl App {
     pub fn drop(self) -> impl std::future::Future<Output = ()> {
         // Deconstruct self first, so the return future doesn't capture an App that might be
         // dropped
-        let App { window_state, .. } = self;
+        let App { window_state, xrd_client, .. } = self;
         let window_state = window_state.into_inner();
         async {
             // Drop the Windows to defuse the drop bombs
@@ -620,6 +620,7 @@ impl App {
                 // We own window_state at this point
                 unsafe { w.drop().await.unwrap() };
             }
+            drop(xrd_client);
         }
     }
 
