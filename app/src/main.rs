@@ -158,7 +158,16 @@ impl Window {
     }
     // Must either be dropped with exclusive access to WindowState
     async unsafe fn drop(self) -> Result<()> {
-        let Self { xrd, damage, drop_bomb, x11, gl, xrd_window, textures, .. } = self;
+        let Self {
+            xrd,
+            damage,
+            drop_bomb,
+            x11,
+            gl,
+            xrd_window,
+            textures,
+            ..
+        } = self;
         std::mem::forget(drop_bomb);
 
         let mut xrd_window = xrd_window.into_inner();
@@ -319,6 +328,7 @@ impl App {
                 };
                 texture
             };
+            debug!("new cursor {}", cursor_image.cursor_serial);
             cursors.entry(cursor_image.cursor_serial).or_insert(Cursor {
                 hotspot_x: cursor_image.xhot.into(),
                 hotspot_y: cursor_image.yhot.into(),
@@ -399,10 +409,15 @@ impl App {
                 }
             }
             InputEvent::KeyPresses { string } => {
+                debug!("key press {:?}", string);
                 let mut input_synth = self.input_synth.lock().await;
                 block_in_place(|| {
                     for ch in string {
-                        input_synth.character(ch);
+                        if ch == b'\n' as _ {
+                            input_synth.character(b'\r' as _);
+                        } else {
+                            input_synth.character(ch);
+                        }
                     }
                 });
             }
@@ -658,7 +673,7 @@ impl App {
 
     async fn render_win(&self, w: &mut Window) -> Result<()> {
         if !w.xrd_window.get_mut().is_visible() {
-            //return Ok(());
+            return Ok(());
         }
 
         #[cfg(debug_assertions)]
@@ -815,7 +830,11 @@ impl App {
                     (window_center_x - parent_center_x) as _,
                     -(window_center_y - parent_center_y) as _,
                 );
-                parent.xrd_window.lock().await.add_child(&xrd_window, &mut offset);
+                parent
+                    .xrd_window
+                    .lock()
+                    .await
+                    .add_child(&xrd_window, &mut offset);
             } else {
                 let point = graphene::Point3D::new(
                     (window_center_x - root_geometry.width as i16 / 2) as f32 / PIXELS_PER_METER,
@@ -890,7 +909,7 @@ impl App {
                 tokio::spawn(async move {
                     if let Ok(wid) = parse_int::parse(&wid) {
                         if let Err(e) = self_clone.map_win(wid).await {
-                            error!("Failed to map window {}, {}", wid, e);
+                            info!("Failed to map window {}, {}", wid, e);
                         }
                     } else {
                         error!("Invalid window id from picom: {}", wid);
