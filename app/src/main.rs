@@ -543,7 +543,10 @@ impl App {
                 }
                 new_window = win_mapped.next() => {
                     let new_window = new_window.with_context(|| anyhow!("dbus connection broke"))?;
-                    self.map_win(new_window.args()?.wid).await?;
+                    let wid = new_window.args()?.wid;
+                    if let Err(e) = self.map_win(wid).await {
+                        info!("Failed to map window {}, {}", wid, e);
+                    }
                 }
                 closed_window = win_unmapped.next() => {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
