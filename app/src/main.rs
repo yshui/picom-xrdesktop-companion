@@ -573,32 +573,53 @@ impl App {
             tokio::select! {
                 event = x11_rx.recv() => {
                     trace!("{:?}", event);
-                    self.handle_x_events(event.with_context(|| anyhow!("Xorg connection broke"))?).await?;
+                    let this = self.clone();
+                    let event = event.with_context(|| anyhow!("Xorg connection broke"))?;
+                    tokio::spawn(async move {
+                        if let Err(e) = this.handle_x_events(event).await {
+                            error!("Failed to handle X events {}", e);
+                        }
+                    });
                 }
                 new_window = win_mapped.next() => {
                     let new_window = new_window.with_context(|| anyhow!("dbus connection broke"))?;
                     let wid = new_window.args()?.wid;
-                    if let Err(e) = self.map_win(wid).await {
-                        info!("Failed to map window {}, {}", wid, e);
-                    }
+                    let this = self.clone();
+                    tokio::spawn(async move {
+                        if let Err(e) = this.map_win(wid).await {
+                            info!("Failed to map window {}, {}", wid, e);
+                        }
+                    });
                 }
                 closed_window = win_unmapped.next() => {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
-                    let mut window_state = self.window_state.write().await;
-                    let w = window_state.windows.remove(&closed_window.args()?.wid);
+                    let this = self.clone();
+                    let wid = closed_window.args()?.wid;
+                    let mut window_state = this.window_state.write().await;
+                    let w = window_state.windows.remove(&wid);
                     match w {
                         Some(w) =>  {
                             let w = w.into_inner();
                             window_state.client_window_to_window.remove(&w.client_wid);
-                            // window_state is locked exclusively at this point.
-                            unsafe { w.drop().await.unwrap() };
+                            drop(window_state);
+
+                            // We have to remove window from window_state before handling any
+                            // further events, so we don't get duplicated window error. That's why
+                            // it is not part of this tokio::spawn
+                            tokio::spawn(async move {
+                                let window_state = this.window_state.write().await;
+                                // window_state here is locked exclusively at this point.
+                                unsafe { w.drop().await.unwrap() };
+                                drop(window_state);
+                            });
                         }
                         None => {},
                     }
                 }
                 input_event = input_rx.recv() => {
                     let input_event = input_event.unwrap();
-                    self.handle_input_events(input_event).await;
+                    let this = self.clone();
+                    tokio::spawn(async move { this.handle_input_events(input_event).await });
                 }
                 _ = exit_rx.recv() => {
                     break;
@@ -611,7 +632,11 @@ impl App {
     pub fn drop(self) -> impl std::future::Future<Output = ()> {
         // Deconstruct self first, so the return future doesn't capture an App that might be
         // dropped
-        let App { window_state, xrd_client, .. } = self;
+        let App {
+            window_state,
+            xrd_client,
+            ..
+        } = self;
         let window_state = window_state.into_inner();
         async {
             // Drop the Windows to defuse the drop bombs
@@ -986,6 +1011,10 @@ async fn main() -> Result<()> {
     let glib_mainloop = glib::MainLoop::new(None, false);
     let glib_mainloop2 = glib_mainloop.clone();
     let glib_thread = std::thread::spawn(move || {
+        // Potential thread safety issue: the mainloop has references to xrdesktop objects, which
+        // they might use concurrently with us, without locking.
+        // An example is that it could call xrd_window_manager_poll_window_events on a window while
+        // we are freeing it. There is no way to prevent this it seems.
         glib_mainloop2.run();
     });
     let ctx = Arc::new(App::new().await?);
