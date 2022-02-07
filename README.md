@@ -41,6 +41,7 @@ Then, make sure SteamVR is running. And after that, start this program. You shou
 
 ### Dependencies
 
+* Rust (Nightly channel) [installation options](https://www.rust-lang.org/tools/install)
 * [xrdesktop](https://gitlab.freedesktop.org/xrdesktop/xrdesktop)([AUR](https://aur.archlinux.org/packages/xrdesktop)) and its dependencies:
   * [gxr](https://gitlab.freedesktop.org/xrdesktop/gxr)([AUR](https://aur.archlinux.org/packages/gxr))
   * [gulkan](https://gitlab.freedesktop.org/xrdesktop/gulkan)([AUR](https://aur.archlinux.org/packages/gulkan))
