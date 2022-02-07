@@ -1043,8 +1043,7 @@ fn locker(mut ctx: Weak<App>) {
         yield_!(()); // Yield when unlocked
     }
 }
-#[tokio::main(flavor = "multi_thread", worker_threads = 4)]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or(
         if cfg!(debug_assertions) {
             "app=debug"
@@ -1054,12 +1053,21 @@ async fn main() -> Result<()> {
     ))
     .format_timestamp_millis()
     .init();
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(4)
+        .enable_all()
+        .build()
+        .unwrap();
+    let local_runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
     if cfg!(debug_assertions) {
         std::env::set_var("G_DEBUG", "fatal-warnings");
         std::env::set_var("RUST_BACKTRACE", "1");
         std::env::set_var("VK_INSTANCE_LAYERS", "VK_LAYER_KHRONOS_validation");
     }
-    let ctx = Arc::new(App::new().await?);
+    let ctx = Arc::new(runtime.block_on(App::new())?);
     let ctx_weak = ctx.downgrade();
 
     let glib_mainloop = glib::MainLoop::new(None, false);
@@ -1094,6 +1102,7 @@ async fn main() -> Result<()> {
                 let ret = OLD_POLL_FN.with(|opf| (opf.borrow().as_ref().unwrap())(fd, a, b));
                 // Lock before return
                 lw.borrow_mut().as_mut().unwrap().as_mut().resume(());
+                trace!("lock wheel turned");
                 ret
             })
         }
@@ -1111,15 +1120,18 @@ async fn main() -> Result<()> {
             lw.borrow_mut().take();
         });
     });
-    let result = ctx.clone().run().await;
+    let result = runtime.block_on(ctx.clone().run());
     info!("App exited {:?}", result);
 
     // Stop glib mainloop
     glib_mainloop.quit();
     glib_thread.join().unwrap();
 
+    // Wait for all tasks to finish
+    drop(runtime);
+
     // Must explicitly drop App
     let ctx = Arc::try_unwrap(ctx).unwrap();
-    ctx.drop().await;
+    local_runtime.block_on(ctx.drop());
     result
 }
