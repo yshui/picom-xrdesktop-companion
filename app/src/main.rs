@@ -1,20 +1,16 @@
-#![feature(
-    never_type,
-    backtrace,
-    map_try_insert,
-    box_into_inner,
-    downcast_unchecked
-)]
+#![feature(never_type, backtrace, box_into_inner, downcast_unchecked)]
+use ::next_gen::prelude::*;
 use std::{
-    collections::{hash_map::OccupiedError, HashMap},
-    sync::Arc,
+    cell::RefCell,
+    collections::{hash_map::Entry, HashMap},
+    sync::{Arc, Weak},
 };
 
 use anyhow::{anyhow, Context};
 use drop_bomb::DropBomb;
 use futures::{StreamExt, TryStreamExt};
 use gio::prelude::*;
-use glib::translate::ToGlibPtr;
+use glib::{clone::Downgrade, translate::ToGlibPtr};
 use log::*;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -584,6 +580,7 @@ impl App {
                 new_window = win_mapped.next() => {
                     let new_window = new_window.with_context(|| anyhow!("dbus connection broke"))?;
                     let wid = new_window.args()?.wid;
+                    debug!("{wid:#010x}, new window");
                     let this = self.clone();
                     tokio::spawn(async move {
                         if let Err(e) = this.map_win(wid).await {
@@ -593,8 +590,9 @@ impl App {
                 }
                 closed_window = win_unmapped.next() => {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
-                    let this = self.clone();
                     let wid = closed_window.args()?.wid;
+                    debug!("{wid:#010x} closed");
+                    let this = self.clone();
                     let mut window_state = this.window_state.write().await;
                     let w = window_state.windows.remove(&wid);
                     match w {
@@ -604,13 +602,19 @@ impl App {
                             drop(window_state);
 
                             // We have to remove window from window_state before handling any
-                            // further events, so we don't get duplicated window error. That's why
-                            // it is not part of this tokio::spawn
+                            // further events, so we wouldn't close a window with the same wid that
+                            // is created _after_ we receive this event. That's why it is not part of
+                            // tokio::spawn.
+                            //
+                            // Note it's possible we failed to close an existing window, because
+                            // its map_win -> try_insert is scheduled after this unmapped event.
+                            // that case will be handled in map_win.
                             tokio::spawn(async move {
                                 let window_state = this.window_state.write().await;
                                 // window_state here is locked exclusively at this point.
                                 unsafe { w.drop().await.unwrap() };
                                 drop(window_state);
+                                debug!("{wid:#010x} dropped");
                             });
                         }
                         None => {},
@@ -902,12 +906,29 @@ impl App {
         let x11_clone = self.x11.clone();
         {
             let mut window_state = self.window_state.write().await;
-            block_in_place(move || {
+            let win_attrs = block_in_place(move || {
                 x11_clone
                     .damage_create(damage, wid, x11rb::protocol::damage::ReportLevel::NON_EMPTY)?
                     .check()?;
-                Result::Ok(())
+                Result::Ok(x11_clone.get_window_attributes(wid)?.reply()?)
             })?;
+
+            // If we receive map -> unmap -> map event of the same window in quick
+            // succession, the unmap event could be processed before the first map event (the
+            // second map would never be processed before unmap OTOH). In that case that unmap
+            // event will fail to remove any window and we have duplicated window. so:
+            //
+            // if we are unmapped currently, we give up adding this window. this is to prevent an
+            // unmapped window from staying visible.
+            //
+            // if we are mapped, then we either didn't receive a unmap event, which is fine.
+            // Otherwise, if we are the first map event, the window we are going to add here will
+            // be replaced later by the second map event; if we are the second map event, we will
+            // replace the existing window.
+            if win_attrs.map_state != xproto::MapState::VIEWABLE {
+                info!("Window {wid:#010x} not viewable, giving up");
+                return Ok(());
+            }
 
             let xrd_window = Mutex::new(xrd_window);
             let window = Window {
@@ -923,17 +944,22 @@ impl App {
             };
             let parent_wid = window_state.client_window_to_window.insert(client_wid, wid);
             if let Some(parent_wid) = parent_wid {
-                error!(
-                    "Inconsistent window state, parent of {} was {}, updated to {}",
-                    client_wid, parent_wid, wid
-                );
+                if parent_wid != wid {
+                    info!(
+                        "Replaced parent of {client_wid:#010x}: was {parent_wid:#010x}, now to {wid:#010x}"
+                    );
+                }
             }
             debug!("inserting {}", wid);
-            let window = match window_state.windows.try_insert(wid, RwLock::new(window)) {
-                Ok(window) => window,
-                Err(OccupiedError { value, .. }) => {
-                    unsafe { value.into_inner().drop().await.unwrap() };
-                    panic!("Duplicated window {}", wid);
+            let mut entry = window_state.windows.entry(wid);
+            let window = match entry {
+                Entry::Vacant(entry) => entry.insert(RwLock::new(window)),
+                Entry::Occupied(ref mut entry) => {
+                    let old = entry.insert(RwLock::new(window));
+                    // window_state is exclusively locked at this point
+                    unsafe { old.into_inner().drop().await.unwrap() };
+                    info!("Replaced old window entry for {wid:#010x}");
+                    entry.get_mut()
                 }
             };
             let mut window = window.write().await;
@@ -992,6 +1018,31 @@ lazy_static::lazy_static! {
     pub static ref RENDERDOC: std::sync::Mutex<Option<RenderDoc>> =
         std::sync::Mutex::new(maybe_load_renderdoc());
 }
+thread_local! {
+    static LOCKWHEEL: RefCell<Option<Pin<Box<dyn Generator<(), Return=(), Yield=()>>>>> = RefCell::new(None);
+    static OLD_POLL_FN: RefCell<glib_sys::GPollFunc> = RefCell::new(None);
+}
+
+// Returns a generator that alternatively locks/unlocks xrd_client and window_state.
+// We use a generator because:
+// 1. We need to store the lock guards in global variable, because glib's poll_func doesn't have
+//    user data pointer.
+// 2. Arc<App> must be store alongside because of lifetime requirements.
+// 3. Because of 1 and 2, what we need to store is self-referential.
+#[next_gen::generator(yield(()))]
+fn locker(mut ctx: Weak<App>) {
+    loop {
+        ctx = if let Some(ctx) = ctx.upgrade() {
+            let mut _window_state = ctx.window_state.blocking_write();
+            let mut _xrd_client = ctx.xrd_client.blocking_lock();
+            yield_!(()); // Yield when locked
+            ctx.downgrade()
+        } else {
+            break;
+        };
+        yield_!(()); // Yield when unlocked
+    }
+}
 #[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 async fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or(
@@ -1008,16 +1059,58 @@ async fn main() -> Result<()> {
         std::env::set_var("RUST_BACKTRACE", "1");
         std::env::set_var("VK_INSTANCE_LAYERS", "VK_LAYER_KHRONOS_validation");
     }
+    let ctx = Arc::new(App::new().await?);
+    let ctx_weak = ctx.downgrade();
+
     let glib_mainloop = glib::MainLoop::new(None, false);
     let glib_mainloop2 = glib_mainloop.clone();
     let glib_thread = std::thread::spawn(move || {
         // Potential thread safety issue: the mainloop has references to xrdesktop objects, which
         // they might use concurrently with us, without locking.
         // An example is that it could call xrd_window_manager_poll_window_events on a window while
-        // we are freeing it. There is no way to prevent this it seems.
+        // we are freeing it.
+
+        // To prevent this, we hijack their poll() function. We unlock xrd_client and window_state
+        // before blocking on poll() to not block the progress of App::run(), and lock them before
+        // returning and giving control back to glib/xrdesktop.
+        OLD_POLL_FN.with(|opf| {
+            *opf.borrow_mut() = unsafe {
+                glib_sys::g_main_context_get_poll_func(glib_mainloop2.context().to_glib_none().0)
+            }
+        });
+        mk_gen!(let mut lock_wheel = box locker(ctx_weak););
+        // Turn it once to lock it
+        lock_wheel.as_mut().resume(());
+        LOCKWHEEL.with(|lw| *lw.borrow_mut() = Some(lock_wheel as _));
+
+        unsafe extern "C" fn glib_poll_func_trampoline(
+            fd: *mut glib_sys::GPollFD,
+            a: libc::c_uint,
+            b: libc::c_int,
+        ) -> libc::c_int {
+            LOCKWHEEL.with(|lw| {
+                // Unlock
+                lw.borrow_mut().as_mut().unwrap().as_mut().resume(());
+                let ret = OLD_POLL_FN.with(|opf| (opf.borrow().as_ref().unwrap())(fd, a, b));
+                // Lock before return
+                lw.borrow_mut().as_mut().unwrap().as_mut().resume(());
+                ret
+            })
+        }
+        unsafe {
+            glib_sys::g_main_context_set_poll_func(
+                glib_mainloop2.context().to_glib_none().0,
+                Some(glib_poll_func_trampoline),
+            )
+        };
+
         glib_mainloop2.run();
+
+        // Drop LOCKWHEEL
+        LOCKWHEEL.with(|lw| {
+            lw.borrow_mut().take();
+        });
     });
-    let ctx = Arc::new(App::new().await?);
     let result = ctx.clone().run().await;
     info!("App exited {:?}", result);
 

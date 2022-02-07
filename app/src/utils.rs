@@ -119,3 +119,18 @@ macro_rules! gen_remote_fn {
         }
     }
 }
+
+#[allow(dead_code)]
+extern "C" {
+    fn a_type_that_should_not_be_dropped_is_dropped_Y7soaRCSQz();
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct CompileDropBomb;
+
+impl Drop for CompileDropBomb {
+    #[inline(always)]
+    fn drop(&mut self) {
+        unsafe { a_type_that_should_not_be_dropped_is_dropped_Y7soaRCSQz(); };
+    }
+}
