@@ -10,6 +10,7 @@ picom-xrdesktop-companion
    * [Limitations](#limitations)
       * [Bugs](#bugs)
       * [Window stacking](#window-stacking)
+      * [Scene mode](#scene-mode)
    * [Questions](#questions)
    * [Acknowledgements](#acknowledgements)
 
@@ -71,6 +72,10 @@ Both this program and xrdesktop are in their early stages, so bugs and crashes c
 When you move your pointer over a window in VR, the corresponding window must to raised to the top of the window stack to make sure it is not obscured and is able to receive input. This program makes best effort attempt to do that, but it might not work well with all window managers or programs.
 
 It also changes how your windows are stacked and doesn't attempt to restore it after you stop window mirroring.
+
+### Scene mode
+
+Scene mode isn't supported currently. Please change default mode to "overlay" in xrdesktop settings.
 
 ## Questions
 
