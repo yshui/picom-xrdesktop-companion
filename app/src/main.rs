@@ -686,7 +686,9 @@ impl App {
                     let this = self.clone();
                     tokio::spawn(async move { this.handle_input_events(input_event).await });
                 }
-                _ = exit_rx.recv() => {
+                exit = exit_rx.recv() => {
+                    exit.with_context(|| anyhow!("exit channel broke"))?;
+                    info!("Received exit request");
                     break;
                 }
             }
