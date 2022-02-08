@@ -1,4 +1,10 @@
-#![feature(never_type, backtrace, box_into_inner, downcast_unchecked)]
+#![feature(
+    never_type,
+    backtrace,
+    box_into_inner,
+    downcast_unchecked,
+    map_try_insert
+)]
 use ::next_gen::prelude::*;
 use std::{
     cell::RefCell,
@@ -14,7 +20,7 @@ use glib::{clone::Downgrade, translate::ToGlibPtr};
 use log::*;
 use tokio::{
     sync::{Mutex, RwLock},
-    task::{block_in_place, spawn_blocking},
+    task::{block_in_place, spawn_blocking, JoinHandle},
 };
 use x11rb::{
     connection::Connection,
@@ -113,8 +119,20 @@ impl TextureSet {
             ..
         }) = this
         {
-            x11.free_pixmap(x11_pixmap)?.check()?;
+            block_in_place(|| Result::Ok(x11.free_pixmap(x11_pixmap)?.check()?))?;
             gl.release_texture(x11_texture).await?;
+        }
+        Ok(())
+    }
+    fn free_sync(this: Option<Self>, gl: &gl::Gl, x11: &RustConnection) -> Result<()> {
+        if let Some(Self {
+            x11_texture,
+            x11_pixmap,
+            ..
+        }) = this
+        {
+            x11.free_pixmap(x11_pixmap)?.check()?;
+            gl.release_texture_sync(x11_texture)?;
         }
         Ok(())
     }
@@ -155,7 +173,7 @@ impl Window {
         let child: xrd::Window = from_glib_none((*(*data).child_window).xrd_window);
         parent.add_child(&child, &mut offset);
     }
-    // Must either be dropped with exclusive access to WindowState
+    // Must be dropped with exclusive access to WindowState
     unsafe fn drop(self) -> impl std::future::Future<Output = Result<()>> {
         let Self {
             xrd,
@@ -183,6 +201,32 @@ impl Window {
             TextureSet::free(textures, &gl, &x11).await
         }
     }
+    // Must either be dropped with exclusive access to WindowState
+    unsafe fn drop_sync(self) -> Result<()> {
+        let Self {
+            xrd,
+            damage,
+            mut drop_bomb,
+            x11,
+            gl,
+            xrd_window,
+            textures,
+            ..
+        } = self;
+        drop_bomb.defuse();
+
+        let mut xrd_window = xrd_window.into_inner();
+        Self::unlink_window(&mut xrd_window);
+        // We do this so the future doesn't capture Window, which can lead to <Window as
+        // Drop>::drop being called
+        let xrd = xrd.blocking_lock();
+        xrd.remove_window(&xrd_window);
+        xrd_window.close();
+        // damage will have already been freed is window is closed
+        // so ignore error
+        x11.damage_destroy(damage).unwrap().ignore_error();
+        TextureSet::free_sync(textures, &gl, &x11)
+    }
 }
 
 #[derive(Debug)]
@@ -209,6 +253,7 @@ struct App {
     cursors: Mutex<std::collections::HashMap<u32, Cursor>>,
     atoms: AtomCollection,
     window_state: RwLock<WindowState>,
+    pending_windows: Mutex<HashMap<u32, JoinHandle<()>>>,
 }
 
 #[derive(Debug)]
@@ -233,6 +278,18 @@ enum InputEvent {
 impl std::fmt::Debug for App {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "App")
+    }
+}
+
+impl Drop for App {
+    fn drop(&mut self) {
+        let mut window_state = self.window_state.blocking_write();
+        // Drop the Windows to defuse the drop bombs
+        for (_, w) in window_state.windows.drain() {
+            let w = w.into_inner();
+            // We own window_state at this point
+            unsafe { w.drop_sync().unwrap() };
+        }
     }
 }
 impl App {
@@ -284,6 +341,7 @@ impl App {
             display: std::env::var("DISPLAY").unwrap().replace(':', "_"),
             cursors: Default::default(),
             atoms,
+            pending_windows: Default::default(),
         })
     }
 
@@ -582,16 +640,23 @@ impl App {
                     let wid = new_window.args()?.wid;
                     debug!("{wid:#010x}, new window");
                     let this = self.clone();
-                    tokio::spawn(async move {
+                    let handle = tokio::spawn(async move {
                         if let Err(e) = this.map_win(wid).await {
                             info!("Failed to map window {}, {}", wid, e);
                         }
                     });
+                    self.pending_windows.lock().await.try_insert(wid, handle).unwrap();
                 }
                 closed_window = win_unmapped.next() => {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
                     let wid = closed_window.args()?.wid;
                     debug!("{wid:#010x} closed");
+                    if let Some(handle) = self.pending_windows.lock().await.remove(&wid) {
+                        debug!("stopped map_win task for {wid:#010x}");
+                        handle.abort();
+                        // we still need to continue, depending on the timing, map_win might have
+                        // already inserted the window into window_state.
+                    }
                     let this = self.clone();
                     let mut window_state = this.window_state.write().await;
                     let w = window_state.windows.remove(&wid);
@@ -605,10 +670,6 @@ impl App {
                             // further events, so we wouldn't close a window with the same wid that
                             // is created _after_ we receive this event. That's why it is not part of
                             // tokio::spawn.
-                            //
-                            // Note it's possible we failed to close an existing window, because
-                            // its map_win -> try_insert is scheduled after this unmapped event.
-                            // that case will be handled in map_win.
                             tokio::spawn(async move {
                                 let window_state = this.window_state.write().await;
                                 // window_state here is locked exclusively at this point.
@@ -632,27 +693,6 @@ impl App {
         }
         Ok(())
     }
-
-    pub fn drop(self) -> impl std::future::Future<Output = ()> {
-        // Deconstruct self first, so the return future doesn't capture an App that might be
-        // dropped
-        let App {
-            window_state,
-            xrd_client,
-            ..
-        } = self;
-        let window_state = window_state.into_inner();
-        async {
-            // Drop the Windows to defuse the drop bombs
-            for (_, w) in window_state.windows.into_iter() {
-                let w = w.into_inner();
-                // We own window_state at this point
-                unsafe { w.drop().await.unwrap() };
-            }
-            drop(xrd_client);
-        }
-    }
-
     async fn refresh_texture(&self, w: &mut Window) -> Result<bool> {
         let x11_clone = self.x11.clone();
         let wid = w.id;
@@ -945,9 +985,10 @@ impl App {
             let parent_wid = window_state.client_window_to_window.insert(client_wid, wid);
             if let Some(parent_wid) = parent_wid {
                 if parent_wid != wid {
-                    info!(
+                    error!(
                         "Replaced parent of {client_wid:#010x}: was {parent_wid:#010x}, now to {wid:#010x}"
                     );
+                    debug_assert!(false);
                 }
             }
             debug!("inserting {}", wid);
@@ -956,9 +997,11 @@ impl App {
                 Entry::Vacant(entry) => entry.insert(RwLock::new(window)),
                 Entry::Occupied(ref mut entry) => {
                     let old = entry.insert(RwLock::new(window));
-                    // window_state is exclusively locked at this point
-                    unsafe { old.into_inner().drop().await.unwrap() };
-                    info!("Replaced old window entry for {wid:#010x}");
+                    // window_state is exclusively locked at this point, using the sync version
+                    // so it couldn't be cancelled.
+                    unsafe { block_in_place(|| old.into_inner().drop_sync().unwrap()) };
+                    error!("Replaced old window entry for {wid:#010x}");
+                    debug_assert!(false);
                     entry.get_mut()
                 }
             };
@@ -966,6 +1009,8 @@ impl App {
             self.render_win(&mut window).await?;
         }
         info!("Added new window {:#010x}", wid);
+        //remove ourself from pending_windows
+        self.pending_windows.lock().await.remove(&wid);
         Ok(())
     }
 
@@ -1058,10 +1103,6 @@ fn main() -> Result<()> {
         .enable_all()
         .build()
         .unwrap();
-    let local_runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .unwrap();
     if cfg!(debug_assertions) {
         std::env::set_var("G_DEBUG", "fatal-warnings");
         std::env::set_var("RUST_BACKTRACE", "1");
@@ -1113,6 +1154,9 @@ fn main() -> Result<()> {
             )
         };
 
+        // Running the glib mainloop is unsafe: we have to make sure App is locked and has a strong
+        // reference before returning control to glib.
+        // (OTOH dropping App is safe on its own)
         glib_mainloop2.run();
 
         // Drop LOCKWHEEL
@@ -1129,9 +1173,5 @@ fn main() -> Result<()> {
 
     // Wait for all tasks to finish
     drop(runtime);
-
-    // Must explicitly drop App
-    let ctx = Arc::try_unwrap(ctx).unwrap();
-    local_runtime.block_on(ctx.drop());
     result
 }
