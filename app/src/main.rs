@@ -712,7 +712,7 @@ impl App {
             .map(|ts| (ts.x11_texture.width(), ts.x11_texture.height()))
         {
             if width != win_geometry.width as u32 || height != win_geometry.height as u32 {
-                info!("Free old textures for {}", wid);
+                debug!("Free old textures for {}", wid);
                 TextureSet::free(w.textures.take(), &self.gl, &self.x11).await?;
             }
         }
@@ -900,7 +900,7 @@ impl App {
                     Self::find_window_group(&window_state, leader).await
                 } else {
                     let hovered = xrd_client.synth_hovered();
-                    info!("no leader, hovered is {:?}", hovered);
+                    debug!("no leader, hovered is {:?}", hovered);
                     hovered.map(|hovered| {
                         let mut native = 0u64;
                         unsafe {
@@ -911,7 +911,7 @@ impl App {
                                 0,
                             );
                         }
-                        info!("hovered is native {}", native);
+                        debug!("hovered is native {}", native);
                         window_state.windows.get(&(native as _)).unwrap()
                     })
                 }
@@ -974,7 +974,7 @@ impl App {
             // be replaced later by the second map event; if we are the second map event, we will
             // replace the existing window.
             if win_attrs.map_state != xproto::MapState::VIEWABLE {
-                info!("Window {wid:#010x} not viewable, giving up");
+                debug!("Window {wid:#010x} not viewable, giving up");
                 return Ok(());
             }
 
