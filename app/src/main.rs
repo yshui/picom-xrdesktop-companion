@@ -57,7 +57,7 @@ unsafe impl Sync for InputSynth {}
 impl InputSynth {
     fn new() -> Option<Self> {
         unsafe {
-            inputsynth::input_synth_new(inputsynth::InputsynthBackend::INPUTSYNTH_BACKEND_XDO)
+            inputsynth::input_synth_new(inputsynth::InputsynthBackend::INPUTSYNTH_BACKEND_XI2)
                 .as_mut()
         }
         .map(Some)
