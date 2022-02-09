@@ -798,7 +798,7 @@ impl App {
         Ok(())
     }
 
-    async fn map_win(&self, wid: u32) -> Result<()> {
+    async fn map_win_impl(&self, wid: u32) -> Result<()> {
         let picom_service = format!("com.github.chjj.compton.{}", self.display);
         let proxy = picom::WindowProxy::builder(&self.dbus)
             .destination(picom_service)?
@@ -1018,8 +1018,13 @@ impl App {
         }
         info!("Added new window {:#010x}", wid);
         //remove ourself from pending_windows
-        self.pending_windows.lock().await.remove(&wid);
         Ok(())
+    }
+
+    async fn map_win(&self, wid: u32) -> Result<()> {
+        let result = self.map_win_impl(wid).await;
+        self.pending_windows.lock().await.remove(&wid);
+        result
     }
 
     async fn setup_initial_windows(self: &Arc<Self>) -> Result<()> {
