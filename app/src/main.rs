@@ -32,6 +32,7 @@ use x11rb::{
     rust_connection::RustConnection,
 };
 use xrd::{ClientExt, ClientExtExt, DesktopCursorExt, WindowExt};
+use gxr::ContextExt;
 
 mod gl;
 mod picom;
@@ -612,8 +613,10 @@ impl App {
             });
 
             let (tx, exit_rx) = tokio::sync::mpsc::channel(1);
-            xrd_client.connect_request_quit_event(move |_, _| {
-                let _ = tx.blocking_send(());
+            xrd_client.connect_request_quit_event(move |_, reason| {
+                if reason.reason == gxr::sys::GXR_QUIT_SHUTDOWN {
+                    let _ = tx.blocking_send(reason.clone());
+                }
             });
 
             (exit_rx, input_rx)
@@ -687,8 +690,11 @@ impl App {
                     tokio::spawn(async move { this.handle_input_events(input_event).await });
                 }
                 exit = exit_rx.recv() => {
-                    exit.with_context(|| anyhow!("exit channel broke"))?;
-                    info!("Received exit request");
+                    let exit = exit.with_context(|| anyhow!("exit channel broke"))?;
+                    let xrd_client = self.xrd_client.lock().await;
+                    let gxr = xrd_client.gxr_context().unwrap();
+                    gxr.acknowledge_quit();
+                    info!("Received exit request {:?}", exit);
                     break;
                 }
             }

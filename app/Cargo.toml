@@ -13,6 +13,7 @@ glib = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 glib-sys = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 gobject-sys = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 xrd = { path = "../xrd" }
+gxr = { path = "../gxr" }
 zbus = { version = "2.0.1", features = ["xml"] }
 async-io = "1.6.0"
 futures = "0.3.19"
