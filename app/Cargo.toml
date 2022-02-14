@@ -37,6 +37,7 @@ gdk-pixbuf = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 gdk = { git = "https://github.com/gtk-rs/gtk3-rs" }
 drop_bomb = "0.1.5"
 next-gen = "0.1.1"
+inputsynth = "0.1.1"
 
 [build-dependencies]
 bindgen = "0.59.2"

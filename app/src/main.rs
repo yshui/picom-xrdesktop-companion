@@ -17,6 +17,7 @@ use drop_bomb::DropBomb;
 use futures::{StreamExt, TryStreamExt};
 use gio::prelude::*;
 use glib::{clone::Downgrade, translate::ToGlibPtr};
+use gxr::ContextExt;
 use log::*;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -32,7 +33,6 @@ use x11rb::{
     rust_connection::RustConnection,
 };
 use xrd::{ClientExt, ClientExtExt, DesktopCursorExt, WindowExt};
-use gxr::ContextExt;
 
 mod gl;
 mod picom;
@@ -41,66 +41,9 @@ mod utils;
 const PIXELS_PER_METER: f32 = 600.0;
 type Result<T> = anyhow::Result<T>;
 
-#[allow(non_camel_case_types, dead_code)]
-mod inputsynth {
-    include!(concat!(env!("OUT_DIR"), "/inputsynth.rs"));
-}
-
 x11rb::atom_manager! {
     pub AtomCollection: AtomCollectionCookie {
         WM_TRANSIENT_FOR,
-    }
-}
-
-struct InputSynth(Option<&'static mut inputsynth::InputSynth>);
-unsafe impl Send for InputSynth {}
-unsafe impl Sync for InputSynth {}
-impl InputSynth {
-    fn new() -> Option<Self> {
-        unsafe {
-            inputsynth::input_synth_new(inputsynth::InputsynthBackend::INPUTSYNTH_BACKEND_XI2)
-                .as_mut()
-        }
-        .map(Some)
-        .map(Self)
-    }
-    fn move_cursor(&mut self, x: i32, y: i32) {
-        unsafe {
-            inputsynth::input_synth_move_cursor(
-                self.0.as_mut().map(|ptr| (*ptr) as *mut _).unwrap(),
-                x,
-                y,
-            );
-        }
-    }
-    fn click(&mut self, x: i32, y: i32, button: i32, pressed: bool) {
-        unsafe {
-            inputsynth::input_synth_click(
-                self.0.as_mut().map(|ptr| (*ptr) as *mut _).unwrap(),
-                x,
-                y,
-                button,
-                pressed as _,
-            )
-        }
-    }
-    fn character(&mut self, key: i8) {
-        unsafe {
-            inputsynth::input_synth_character(
-                self.0.as_mut().map(|ptr| (*ptr) as *mut _).unwrap(),
-                key,
-            )
-        }
-    }
-}
-impl Drop for InputSynth {
-    fn drop(&mut self) {
-        if let Some(ptr) = self.0.as_mut().map(|x| (*x) as *mut inputsynth::InputSynth) {
-            unsafe {
-                gobject_sys::g_object_unref(ptr as *mut _);
-            }
-        }
-        self.0 = None;
     }
 }
 
@@ -247,7 +190,7 @@ struct App {
     gl: gl::Gl,
     dbus: zbus::Connection,
     xrd_client: Arc<Mutex<xrd::Client>>,
-    input_synth: Mutex<InputSynth>,
+    input_synth: Mutex<inputsynth::InputSynth>,
     x11: Arc<RustConnection>,
     screen: u32,
     display: String,
@@ -311,7 +254,8 @@ impl App {
         }
 
         let client = xrd::Client::with_mode(mode);
-        let input_synth = Mutex::new(InputSynth::new().expect("Failed to initialize inputsynth"));
+        let input_synth =
+            Mutex::new(inputsynth::InputSynth::new().expect("Failed to initialize inputsynth"));
         let (x11, screen) = RustConnection::connect(None)?;
         let x11 = Arc::new(x11);
         block_in_place(|| {
@@ -462,12 +406,13 @@ impl App {
             Result::Ok((x, y))
         };
 
-        match input_event {
+        let input_synth = self.input_synth.lock().await;
+        let result = match input_event {
             InputEvent::Move { x, y, wid } => {
-                if let Ok((x, y)) = raise_window_and_resolve_position(wid, x, y) {
+                raise_window_and_resolve_position(wid, x, y).and_then(|(x, y)| {
                     // The window could have been closed, in that case we stop
-                    self.input_synth.lock().await.move_cursor(x, y);
-                }
+                    input_synth.move_cursor(x, y).map_err(Into::into)
+                })
             }
 
             InputEvent::Click {
@@ -477,24 +422,32 @@ impl App {
                 button,
                 pressed,
             } => {
-                if let Ok((x, y)) = raise_window_and_resolve_position(wid, x, y) {
+                raise_window_and_resolve_position(wid, x, y).and_then(|(x, y)| {
                     // The window could have been closed, in that case we stop
-                    self.input_synth.lock().await.click(x, y, button, pressed);
-                }
+                    input_synth
+                        .click(x, y, button as _, pressed)
+                        .map_err(Into::into)
+                })
             }
             InputEvent::KeyPresses { string } => {
                 debug!("key press {:?}", string);
-                let mut input_synth = self.input_synth.lock().await;
                 block_in_place(|| {
-                    for ch in string {
-                        if ch == b'\n' as _ {
-                            input_synth.character(b'\r' as _);
-                        } else {
-                            input_synth.character(ch);
-                        }
-                    }
-                });
+                    string
+                        .into_iter()
+                        .map(|ch| {
+                            (if ch == b'\n' as _ {
+                                input_synth.ascii_char(b'\r' as _)
+                            } else {
+                                input_synth.ascii_char(ch as _)
+                            })
+                            .map_err(Into::into)
+                        })
+                        .collect()
+                })
             }
+        };
+        if let Err(e) = result {
+            error!("Failed to synthesis input {}", e);
         }
     }
 
