@@ -1,5 +1,5 @@
 [package]
-name = "app"
+name = "picom-xrdesktop-companion"
 version = "0.1.0"
 edition = "2021"
 build = "build.rs"
@@ -17,10 +17,10 @@ gxr = { path = "../gxr" }
 zbus = { version = "2.0.1", features = ["xml"] }
 async-io = "1.6.0"
 futures = "0.3.19"
-glium = "0.31.0"
+glium = { git = "https://github.com/glium/glium" }
 glutin = "0.28.0"
 gulkan = { path = "../gulkan" }
-x11rb = { version = "0.9.0", features = [ "composite", "randr", "damage" ] }
+x11rb = { version = "0.10.1", features = [ "composite", "randr", "damage" ] }
 thiserror = "1.0.30"
 anyhow = "1.0.53"
 parse_int = "0.6.0"
@@ -30,7 +30,7 @@ libloading = "0.7.3"
 libc = "0.2.116"
 graphene = { package = "graphene-rs", git = "https://github.com/gtk-rs/gtk-rs-core" }
 paste = "1.0.6"
-ash = "0.35.1"
+ash = "0.37.0"
 renderdoc = "0.10.1"
 lazy_static = "1.4.0"
 gdk-pixbuf = { git = "https://github.com/gtk-rs/gtk-rs-core" }
@@ -40,7 +40,7 @@ next-gen = "0.1.1"
 inputsynth = "0.1.1"
 
 [build-dependencies]
-bindgen = "0.59.2"
+bindgen = "0.60.1"
 pkg-config = "0.3.24"
 gl_generator = "0.14.0"
 
