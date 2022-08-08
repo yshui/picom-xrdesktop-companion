@@ -18,6 +18,17 @@ struct Request<T>(
     Sender<Box<dyn Any + Send>>,
 );
 
+// feature: downcast_unchecked
+trait UnsafeAny<T> {
+    unsafe fn downcast_unchecked(self) -> Box<T>;
+}
+
+impl<T: Any> UnsafeAny<T> for Box<dyn Any> {
+    unsafe fn downcast_unchecked(self) -> Box<T> {
+        Box::from_raw(Box::into_raw(self) as *mut T)
+    }
+}
+
 struct RemoteInner<T>(T, UnboundedReceiver<Request<T>>);
 impl<T> RemoteInner<T> {
     fn new<E>(
@@ -85,19 +96,15 @@ impl<T: 'static> Remote<T> {
         f: impl FnOnce(&mut T) -> R + Send + 'static,
     ) -> Result<R> {
         // We know that `f` will return type `R`
-        Ok(Box::into_inner(unsafe {
-            self.call_inner(f)?.await?.downcast_unchecked::<R>()
-        }))
+        Ok(*(unsafe { UnsafeAny::downcast_unchecked(self.call_inner(f)?.await? as Box<dyn Any>) }))
     }
     pub fn call_sync<R: 'static + Send>(
         &self,
         f: impl FnOnce(&mut T) -> R + Send + 'static,
     ) -> Result<R> {
         // We know that `f` will return type `R`
-        Ok(Box::into_inner(unsafe {
-            self.call_inner(f)?
-                .blocking_recv()?
-                .downcast_unchecked::<R>()
+        Ok(*(unsafe {
+            UnsafeAny::downcast_unchecked(self.call_inner(f)?.blocking_recv()? as Box<dyn Any>)
         }))
     }
 }
@@ -131,6 +138,8 @@ pub struct CompileDropBomb;
 impl Drop for CompileDropBomb {
     #[inline(always)]
     fn drop(&mut self) {
-        unsafe { a_type_that_should_not_be_dropped_is_dropped_Y7soaRCSQz(); };
+        unsafe {
+            a_type_that_should_not_be_dropped_is_dropped_Y7soaRCSQz();
+        };
     }
 }

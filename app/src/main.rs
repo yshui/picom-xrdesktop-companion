@@ -1,9 +1,3 @@
-#![feature(
-    never_type,
-    box_into_inner,
-    downcast_unchecked,
-    map_try_insert
-)]
 use ::next_gen::prelude::*;
 use std::{
     cell::RefCell,
@@ -495,8 +489,9 @@ impl App {
         let (tx, mut x11_rx) = tokio::sync::mpsc::channel(4);
         let x11_clone = self.x11.clone();
 
+        // feature: never_type
         // tokio task for receiving X events
-        let _: tokio::task::JoinHandle<Result<!>> = spawn_blocking(move || loop {
+        let _: tokio::task::JoinHandle<Result<() /* ! */>> = spawn_blocking(move || loop {
             let event = x11_clone.wait_for_event()?;
             tx.blocking_send(event)?;
             while let Some(event) = x11_clone.poll_for_event()? {
@@ -600,7 +595,15 @@ impl App {
                             info!("Failed to map window {}, {}", wid, e);
                         }
                     });
-                    self.pending_windows.lock().await.try_insert(wid, handle).unwrap();
+                    // feature: map_or_insert
+                    match self.pending_windows.lock().await.entry(wid) {
+                        Entry::Occupied(_) => {
+                            panic!("Window {} already mapped", wid);
+                        }
+                        Entry::Vacant(entry) => {
+                            entry.insert(handle);
+                        }
+                    }
                 }
                 closed_window = win_unmapped.next() => {
                     let closed_window = closed_window.with_context(|| anyhow!("dbus connection broke"))?;
