@@ -1,6 +1,5 @@
 #![feature(
     never_type,
-    backtrace,
     box_into_inner,
     downcast_unchecked,
     map_try_insert

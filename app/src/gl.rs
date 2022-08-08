@@ -57,7 +57,7 @@ pub enum Error {
     #[error("visual {0} is invalid")]
     InvalidVisual(xproto::Visualid),
     #[error("no FBConfig found for visual {0}")]
-    NoFbConfig(xproto::Visualid, #[backtrace] std::backtrace::Backtrace),
+    NoFbConfig(xproto::Visualid),
     #[error("failed to create GLXPixmap")]
     PixmapCreation,
 }
@@ -250,7 +250,6 @@ impl GlInner {
         if num_config == 0 {
             return Err(Error::NoFbConfig(
                 visual.visual_id,
-                std::backtrace::Backtrace::capture(),
             ));
         }
         let configs = unsafe { std::slice::from_raw_parts(config, num_config as _) };
@@ -325,7 +324,6 @@ impl GlInner {
         }
         Err(Error::NoFbConfig(
             visual.visual_id,
-            std::backtrace::Backtrace::capture(),
         ))
     }
     fn bind_texture(
