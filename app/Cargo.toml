@@ -17,8 +17,8 @@ gxr = { path = "../gxr" }
 zbus = { version = "2.0.1", features = ["xml"] }
 async-io = "1.6.0"
 futures = "0.3.19"
-glium = { git = "https://github.com/glium/glium" }
-glutin = "0.28.0"
+glium = "0.32"
+glutin = "0.29"
 gulkan = { path = "../gulkan" }
 x11rb = { version = "0.10.1", features = [ "composite", "randr", "damage" ] }
 thiserror = "1.0.30"

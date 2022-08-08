@@ -126,8 +126,8 @@ implement_vertex!(Vertex, position);
 
 impl GlInner {
     fn new(x11: Arc<RustConnection>, screen: u32) -> Result<GlInner> {
-        use glutin::platform::unix::EventLoopExtUnix;
-        let el = glutin::event_loop::EventLoop::<()>::new_any_thread();
+        use glutin::platform::unix::EventLoopBuilderExtUnix;
+        let el = glutin::event_loop::EventLoopBuilder::<()>::new().with_any_thread(true).build();
         let wb = glutin::window::WindowBuilder::new().with_visible(false);
         let cb = glutin::ContextBuilder::new()
             .with_vsync(false)
