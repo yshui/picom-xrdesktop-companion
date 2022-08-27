@@ -276,7 +276,7 @@ impl App {
             input_synth,
             screen: screen as u32,
             x11,
-            display: std::env::var("DISPLAY").unwrap().replace(':', "_"),
+            display: std::env::var("DISPLAY").unwrap().replace(':', "_").replace('.', "_"),
             cursors: Default::default(),
             atoms,
             pending_windows: Default::default(),
