@@ -2,8 +2,8 @@
 [options]
 girs_directories = ["../../gir-files", "../../xrd-gir-files"]
 library = "Xrd"
-version = "0.15"
-min_cfg_version = "0.15"
+version = "0.16"
+min_cfg_version = "0.16"
 work_mode = "sys"
 
-external_libraries = [ "Gio", "GLib", "GObject", "Gxr", "Graphene", "Gulkan" ]
+external_libraries = [ "Gio", "GLib", "GObject", "Gxr", "Graphene", "Gulkan", "G3k" ]

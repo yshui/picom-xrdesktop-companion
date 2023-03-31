@@ -1,0 +1,4301 @@
+<?xml version="1.0"?>
+<!-- This file was automatically generated from C sources - DO NOT EDIT!
+To affect the contents of this file, edit the original C definitions,
+and/or use gtk-doc annotations.  -->
+<repository version="1.2"
+            xmlns="http://www.gtk.org/introspection/core/1.0"
+            xmlns:c="http://www.gtk.org/introspection/c/1.0"
+            xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <include name="Gdk" version="3.0"/>
+  <include name="GdkPixbuf" version="2.0"/>
+  <include name="Graphene" version="1.0"/>
+  <include name="Gulkan" version="0.16"/>
+  <include name="Gxr" version="0.16"/>
+  <include name="Json" version="1.0"/>
+  <include name="cairo" version="1.0"/>
+  <package name="g3k-0.16"/>
+  <c:include name="g3k.h"/>
+  <namespace name="G3k"
+             version="0.16"
+             shared-library="libg3k-0.16.so.0"
+             c:identifier-prefixes="G3k"
+             c:symbol-prefixes="g3k">
+    <record name="Accessor" c:type="G3kAccessor">
+      <source-position filename="src/g3k-attribute.h" line="44"/>
+      <field name="array" writable="1">
+        <type name="AttributeArray" c:type="G3kAttributeArray*"/>
+      </field>
+      <field name="normalized" writable="1">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="item_size" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <field name="item_offset" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <field name="count" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+    </record>
+    <record name="AttributeArray" c:type="G3kAttributeArray">
+      <source-position filename="src/g3k-attribute.h" line="35"/>
+      <field name="ref_count" writable="1">
+        <type name="gint" c:type="int"/>
+      </field>
+      <field name="type" writable="1">
+        <type name="AttributeType" c:type="G3kAttributeType"/>
+      </field>
+      <field name="stride" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <field name="count" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <field name="version" writable="1">
+        <type name="gint" c:type="int"/>
+      </field>
+      <field name="bytes" writable="1">
+        <type name="GLib.Bytes" c:type="GBytes*"/>
+      </field>
+      <method name="ref"
+              c:identifier="g3k_attribute_array_ref"
+              introspectable="0">
+        <source-position filename="src/g3k-attribute.h" line="53"/>
+        <return-value>
+          <type name="AttributeArray" c:type="G3kAttributeArray*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="array" transfer-ownership="none">
+            <type name="AttributeArray" c:type="G3kAttributeArray*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="g3k_attribute_array_unref">
+        <source-position filename="src/g3k-attribute.h" line="47"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="array" transfer-ownership="none">
+            <type name="AttributeArray" c:type="G3kAttributeArray*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="new"
+                c:identifier="g3k_attribute_array_new"
+                introspectable="0">
+        <source-position filename="src/g3k-attribute.h" line="50"/>
+        <return-value>
+          <type name="AttributeArray" c:type="G3kAttributeArray*"/>
+        </return-value>
+        <parameters>
+          <parameter name="type" transfer-ownership="none">
+            <type name="AttributeType" c:type="G3kAttributeType"/>
+          </parameter>
+          <parameter name="count" transfer-ownership="none">
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="stride" transfer-ownership="none">
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <enumeration name="AttributeType" c:type="G3kAttributeType">
+      <source-position filename="src/g3k-attribute.h" line="25"/>
+      <member name="double" value="0" c:identifier="G3K_ATTRIBUTE_TYPE_DOUBLE">
+      </member>
+      <member name="float" value="1" c:identifier="G3K_ATTRIBUTE_TYPE_FLOAT">
+      </member>
+      <member name="uint32" value="2" c:identifier="G3K_ATTRIBUTE_TYPE_UINT32">
+      </member>
+      <member name="int32" value="3" c:identifier="G3K_ATTRIBUTE_TYPE_INT32">
+      </member>
+      <member name="uint16" value="4" c:identifier="G3K_ATTRIBUTE_TYPE_UINT16">
+      </member>
+      <member name="int16" value="5" c:identifier="G3K_ATTRIBUTE_TYPE_INT16">
+      </member>
+      <member name="uint8" value="6" c:identifier="G3K_ATTRIBUTE_TYPE_UINT8">
+      </member>
+      <member name="int8" value="7" c:identifier="G3K_ATTRIBUTE_TYPE_INT8">
+      </member>
+    </enumeration>
+    <class name="Background"
+           c:symbol-prefix="background"
+           c:type="G3kBackground"
+           parent="Object"
+           glib:type-name="G3kBackground"
+           glib:get-type="g3k_background_get_type"
+           glib:type-struct="BackgroundClass">
+      <source-position filename="src/g3k-background.h" line="23"/>
+      <constructor name="new" c:identifier="g3k_background_new">
+        <source-position filename="src/g3k-background.h" line="26"/>
+        <return-value transfer-ownership="full">
+          <type name="Background" c:type="G3kBackground*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+    </class>
+    <record name="BackgroundClass"
+            c:type="G3kBackgroundClass"
+            glib:is-gtype-struct-for="Background">
+      <source-position filename="src/g3k-background.h" line="23"/>
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="G3kObjectClass"/>
+      </field>
+    </record>
+    <class name="Button"
+           c:symbol-prefix="button"
+           c:type="G3kButton"
+           parent="Plane"
+           glib:type-name="G3kButton"
+           glib:get-type="g3k_button_get_type"
+           glib:type-struct="ButtonClass">
+      <source-position filename="src/g3k-button.h" line="22"/>
+      <constructor name="new" c:identifier="g3k_button_new">
+        <doc xml:space="preserve"
+             filename="src/g3k-button.c"
+             line="186">Creates a button .</doc>
+        <source-position filename="src/g3k-button.h" line="28"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="src/g3k-button.c"
+               line="193">a new #G3kButton representing the button</doc>
+          <type name="Button" c:type="G3kButton*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-button.c"
+                 line="188">The #G3kContext</doc>
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+          <parameter name="size_meters" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-button.c"
+                 line="189">Size in meters.</doc>
+            <type name="Graphene.Size" c:type="graphene_size_t*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="reset_color" c:identifier="g3k_button_reset_color">
+        <source-position filename="src/g3k-button.h" line="42"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Button" c:type="G3kButton*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_color" c:identifier="g3k_button_set_color">
+        <source-position filename="src/g3k-button.h" line="37"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Button" c:type="G3kButton*"/>
+          </instance-parameter>
+          <parameter name="color" transfer-ownership="none">
+            <type name="Graphene.Vec4" c:type="const graphene_vec4_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_icon" c:identifier="g3k_button_set_icon">
+        <source-position filename="src/g3k-button.h" line="34"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Button" c:type="G3kButton*"/>
+          </instance-parameter>
+          <parameter name="url" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_selection_color"
+              c:identifier="g3k_button_set_selection_color">
+        <source-position filename="src/g3k-button.h" line="39"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Button" c:type="G3kButton*"/>
+          </instance-parameter>
+          <parameter name="is_selected" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_text" c:identifier="g3k_button_set_text">
+        <source-position filename="src/g3k-button.h" line="31"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Button" c:type="G3kButton*"/>
+          </instance-parameter>
+          <parameter name="label_count" transfer-ownership="none">
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="label" transfer-ownership="none">
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="Plane" c:type="G3kPlane"/>
+      </field>
+    </class>
+    <record name="ButtonClass"
+            c:type="G3kButtonClass"
+            glib:is-gtype-struct-for="Button">
+      <source-position filename="src/g3k-button.h" line="22"/>
+      <field name="parent">
+        <type name="PlaneClass" c:type="G3kPlaneClass"/>
+      </field>
+    </record>
+    <class name="Container"
+           c:symbol-prefix="container"
+           c:type="G3kContainer"
+           parent="Object"
+           glib:type-name="G3kContainer"
+           glib:get-type="g3k_container_get_type"
+           glib:type-struct="ContainerClass">
+      <source-position filename="src/g3k-container.h" line="22"/>
+      <constructor name="new" c:identifier="g3k_container_new">
+        <source-position filename="src/g3k-container.h" line="61"/>
+        <return-value transfer-ownership="full">
+          <type name="Container" c:type="G3kContainer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_child" c:identifier="g3k_container_add_child">
+        <source-position filename="src/g3k-container.h" line="64"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="relative_transform" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="center_view" c:identifier="g3k_container_center_view">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.c"
+             line="590">Places the container in the center of the FOV at the given distance.</doc>
+        <source-position filename="src/g3k-container.h" line="101"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-container.c"
+                 line="592">The container.</doc>
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+          <parameter name="distance" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-container.c"
+                 line="594">The distance from the HMD the container should have.</doc>
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_children"
+              c:identifier="g3k_container_get_children"
+              introspectable="0">
+        <source-position filename="src/g3k-container.h" line="98"/>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve"
+               filename="src/g3k-container.c"
+               line="114">A list of #XrdWindow
+contained in this container. The list must be destroyed by the caller.</doc>
+          <type name="GLib.SList" c:type="GSList*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-container.c"
+                 line="112">The #G3kContainer</doc>
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_distance" c:identifier="g3k_container_get_distance">
+        <source-position filename="src/g3k-container.h" line="75"/>
+        <return-value transfer-ownership="none">
+          <type name="gfloat" c:type="float"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="hide" c:identifier="g3k_container_hide">
+        <source-position filename="src/g3k-container.h" line="89"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_visible" c:identifier="g3k_container_is_visible">
+        <source-position filename="src/g3k-container.h" line="95"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_child" c:identifier="g3k_container_remove_child">
+        <source-position filename="src/g3k-container.h" line="69"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_attachment"
+              c:identifier="g3k_container_set_attachment">
+        <source-position filename="src/g3k-container.h" line="78"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-container.c"
+                 line="524">The container.</doc>
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+          <parameter name="attachment" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-container.c"
+                 line="525">The attachment to set.</doc>
+            <type name="ContainerAttachment" c:type="G3kContainerAttachment"/>
+          </parameter>
+          <parameter name="controller" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-container.c"
+                 line="526">A controller used for G3K_CONTAINER_ATTACHMENT_HAND. May be
+NULL for other attachments.</doc>
+            <type name="Gxr.Controller" c:type="GxrController*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_distance" c:identifier="g3k_container_set_distance">
+        <source-position filename="src/g3k-container.h" line="72"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+          <parameter name="distance" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_layout" c:identifier="g3k_container_set_layout">
+        <source-position filename="src/g3k-container.h" line="83"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+          <parameter name="layout" transfer-ownership="none">
+            <type name="ContainerLayout" c:type="G3kContainerLayout"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="show" c:identifier="g3k_container_show">
+        <source-position filename="src/g3k-container.h" line="92"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="step" c:identifier="g3k_container_step">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.c"
+             line="487">Updates the container's position based on its attachment.</doc>
+        <source-position filename="src/g3k-container.h" line="86"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-container.c"
+               line="493">A #gboolean if that is %TRUE the step was successful.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-container.c"
+                 line="489">The #G3kContainer</doc>
+            <type name="Container" c:type="G3kContainer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <enumeration name="ContainerAttachment" c:type="G3kContainerAttachment">
+      <doc xml:space="preserve"
+           filename="src/g3k-container.h"
+           line="24">Enum that defines if the container is moving with user input.</doc>
+      <source-position filename="src/g3k-container.h" line="38"/>
+      <member name="none"
+              value="0"
+              c:identifier="G3K_CONTAINER_ATTACHMENT_NONE">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.h"
+             line="26">The #G3kContainer is not attached.</doc>
+      </member>
+      <member name="head"
+              value="1"
+              c:identifier="G3K_CONTAINER_ATTACHMENT_HEAD">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.h"
+             line="27">The container is tracking the head.</doc>
+      </member>
+      <member name="hand"
+              value="2"
+              c:identifier="G3K_CONTAINER_ATTACHMENT_HAND">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.h"
+             line="28">The container is tracking a hand.</doc>
+      </member>
+    </enumeration>
+    <record name="ContainerClass"
+            c:type="G3kContainerClass"
+            glib:is-gtype-struct-for="Container">
+      <source-position filename="src/g3k-container.h" line="22"/>
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="G3kObjectClass"/>
+      </field>
+    </record>
+    <enumeration name="ContainerLayout" c:type="G3kContainerLayout">
+      <doc xml:space="preserve"
+           filename="src/g3k-container.h"
+           line="40">Defines how the children of a #G3kContainer are layed out.</doc>
+      <source-position filename="src/g3k-container.h" line="56"/>
+      <member name="no_layout"
+              value="0"
+              c:identifier="G3K_CONTAINER_NO_LAYOUT">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.h"
+             line="42">No layout is set.</doc>
+      </member>
+      <member name="horizontal"
+              value="1"
+              c:identifier="G3K_CONTAINER_HORIZONTAL">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.h"
+             line="43">A horizontal linear layout.</doc>
+      </member>
+      <member name="vertical" value="2" c:identifier="G3K_CONTAINER_VERTICAL">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.h"
+             line="44">A vertical linear layout.</doc>
+      </member>
+      <member name="relative" value="3" c:identifier="G3K_CONTAINER_RELATIVE">
+        <doc xml:space="preserve"
+             filename="src/g3k-container.h"
+             line="45">A relative layout.</doc>
+      </member>
+    </enumeration>
+    <class name="Context"
+           c:symbol-prefix="context"
+           c:type="G3kContext"
+           parent="GObject.Object"
+           glib:type-name="G3kContext"
+           glib:get-type="g3k_context_get_type"
+           glib:type-struct="ContextClass">
+      <source-position filename="src/g3k-context.h" line="21"/>
+      <constructor name="new" c:identifier="g3k_context_new">
+        <source-position filename="src/g3k-context.h" line="31"/>
+        <return-value transfer-ownership="full">
+          <type name="Context" c:type="G3kContext*"/>
+        </return-value>
+      </constructor>
+      <constructor name="new_from_gxr" c:identifier="g3k_context_new_from_gxr">
+        <source-position filename="src/g3k-context.h" line="34"/>
+        <return-value transfer-ownership="full">
+          <type name="Context" c:type="G3kContext*"/>
+        </return-value>
+        <parameters>
+          <parameter name="gxr" transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="src/g3k-context.c"
+                 line="231">a #GxrContext</doc>
+            <type name="Gxr.Context" c:type="GxrContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_vulkan_extensions"
+                   c:identifier="g3k_context_new_from_vulkan_extensions"
+                   introspectable="0">
+        <source-position filename="src/g3k-context.h" line="37"/>
+        <return-value transfer-ownership="full">
+          <type name="Context" c:type="G3kContext*"/>
+        </return-value>
+        <parameters>
+          <parameter name="instance_ext_list" transfer-ownership="none">
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="device_ext_list" transfer-ownership="none">
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_full"
+                   c:identifier="g3k_context_new_full"
+                   introspectable="0">
+        <source-position filename="src/g3k-context.h" line="41"/>
+        <return-value transfer-ownership="full">
+          <type name="Context" c:type="G3kContext*"/>
+        </return-value>
+        <parameters>
+          <parameter name="instance_ext_list" transfer-ownership="none">
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="device_ext_list" transfer-ownership="none">
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="app_name" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="app_version" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_controller"
+              c:identifier="g3k_context_get_controller"
+              introspectable="0">
+        <source-position filename="src/g3k-context.h" line="74"/>
+        <return-value>
+          <type name="Controller" c:type="G3kController*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+          <parameter name="gxr_controller" transfer-ownership="none">
+            <type name="Gxr.Controller" c:type="GxrController*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_controllers"
+              c:identifier="g3k_context_get_controllers"
+              introspectable="0">
+        <source-position filename="src/g3k-context.h" line="77"/>
+        <return-value>
+          <type name="GLib.List" c:type="GList*">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_gulkan"
+              c:identifier="g3k_context_get_gulkan"
+              introspectable="0">
+        <source-position filename="src/g3k-context.h" line="53"/>
+        <return-value>
+          <type name="Gulkan.Context" c:type="GulkanContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_gxr"
+              c:identifier="g3k_context_get_gxr"
+              introspectable="0">
+        <source-position filename="src/g3k-context.h" line="50"/>
+        <return-value>
+          <type name="Gxr.Context" c:type="GxrContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_manager"
+              c:identifier="g3k_context_get_manager"
+              introspectable="0">
+        <source-position filename="src/g3k-context.h" line="96"/>
+        <return-value>
+          <type name="ObjectManager" c:type="G3kObjectManager*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_ms_since_last_poll"
+              c:identifier="g3k_context_get_ms_since_last_poll">
+        <source-position filename="src/g3k-context.h" line="99"/>
+        <return-value transfer-ownership="none">
+          <type name="gfloat" c:type="float"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_primary_controller"
+              c:identifier="g3k_context_get_primary_controller">
+        <source-position filename="src/g3k-context.h" line="83"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-context.c"
+               line="681">The G3kController that is used for input synth.</doc>
+          <type name="Controller" c:type="G3kController*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-context.c"
+                 line="679">The #G3kContext</doc>
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_projections"
+              c:identifier="g3k_context_get_projections">
+        <source-position filename="src/g3k-context.h" line="62"/>
+        <return-value transfer-ownership="full">
+          <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_renderer"
+              c:identifier="g3k_context_get_renderer"
+              introspectable="0">
+        <source-position filename="src/g3k-context.h" line="56"/>
+        <return-value>
+          <type name="Renderer" c:type="G3kRenderer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_root"
+              c:identifier="g3k_context_get_root"
+              introspectable="0">
+        <source-position filename="src/g3k-context.h" line="93"/>
+        <return-value>
+          <type name="Object" c:type="G3kObject*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_upload_layout"
+              c:identifier="g3k_context_get_upload_layout">
+        <source-position filename="src/g3k-context.h" line="71"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-context.c"
+               line="573">an #VkImageLayout</doc>
+          <type name="Vulkan.ImageLayout" c:type="VkImageLayout"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-context.c"
+                 line="571">The #G3kContext</doc>
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_views" c:identifier="g3k_context_get_views">
+        <source-position filename="src/g3k-context.h" line="59"/>
+        <return-value transfer-ownership="full">
+          <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_vps" c:identifier="g3k_context_get_vps">
+        <source-position filename="src/g3k-context.h" line="65"/>
+        <return-value transfer-ownership="full">
+          <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="init_dummy_controller"
+              c:identifier="g3k_context_init_dummy_controller"
+              introspectable="0">
+        <source-position filename="src/g3k-context.h" line="80"/>
+        <return-value>
+          <type name="Controller" c:type="G3kController*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_controller_primary"
+              c:identifier="g3k_context_is_controller_primary">
+        <source-position filename="src/g3k-context.h" line="90"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+          <parameter name="controller" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="make_controller_primary"
+              c:identifier="g3k_context_make_controller_primary">
+        <source-position filename="src/g3k-context.h" line="86"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-context.c"
+                 line="691">The #G3kContext</doc>
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+          <parameter name="controller" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-context.c"
+                 line="692">The index of the controller that will be used for input synth.</doc>
+            <type name="Controller" c:type="G3kController*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="play_sound" c:identifier="g3k_context_play_sound">
+        <source-position filename="src/g3k-context.h" line="102"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+          <parameter name="event_id" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="play_sound_path"
+              c:identifier="g3k_context_play_sound_path">
+        <source-position filename="src/g3k-context.h" line="105"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+          <parameter name="path" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="render" c:identifier="g3k_context_render">
+        <source-position filename="src/g3k-context.h" line="68"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="start_renderer" c:identifier="g3k_context_start_renderer">
+        <source-position filename="src/g3k-context.h" line="47"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <glib:signal name="controller-activate" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="controller-deactivate" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="controller-primary-changed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="input-poll" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="render-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="shutdown" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="ContextClass"
+            c:type="G3kContextClass"
+            glib:is-gtype-struct-for="Context">
+      <source-position filename="src/g3k-context.h" line="21"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Controller"
+           c:symbol-prefix="controller"
+           c:type="G3kController"
+           parent="Object"
+           glib:type-name="G3kController"
+           glib:get-type="g3k_controller_get_type"
+           glib:type-struct="ControllerClass">
+      <source-position filename="src/g3k-controller.h" line="25"/>
+      <constructor name="new" c:identifier="g3k_controller_new">
+        <source-position filename="src/g3k-controller.h" line="64"/>
+        <return-value transfer-ownership="full">
+          <type name="Controller" c:type="G3kController*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+          <parameter name="controller" transfer-ownership="none">
+            <type name="Gxr.Controller" c:type="GxrController*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="check_grab" c:identifier="g3k_controller_check_grab">
+        <source-position filename="src/g3k-controller.h" line="120"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="check_release" c:identifier="g3k_controller_check_release">
+        <source-position filename="src/g3k-controller.h" line="123"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="drag_start" c:identifier="g3k_controller_drag_start">
+        <source-position filename="src/g3k-controller.h" line="99"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+          <parameter name="grabbed_object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_controller"
+              c:identifier="g3k_controller_get_controller"
+              introspectable="0">
+        <source-position filename="src/g3k-controller.h" line="105"/>
+        <return-value>
+          <type name="Gxr.Controller" c:type="GxrController*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_grab_state"
+              c:identifier="g3k_controller_get_grab_state"
+              introspectable="0">
+        <source-position filename="src/g3k-controller.h" line="76"/>
+        <return-value>
+          <type name="GrabState" c:type="G3kGrabState*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_hover_state"
+              c:identifier="g3k_controller_get_hover_state"
+              introspectable="0">
+        <source-position filename="src/g3k-controller.h" line="73"/>
+        <return-value>
+          <type name="HoverState" c:type="G3kHoverState*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_intersection"
+              c:identifier="g3k_controller_get_intersection">
+        <source-position filename="src/g3k-controller.h" line="108"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="distance" transfer-ownership="none">
+            <type name="gfloat" c:type="float*"/>
+          </parameter>
+          <parameter name="intersection_point" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_ray"
+              c:identifier="g3k_controller_get_ray"
+              introspectable="0">
+        <source-position filename="src/g3k-controller.h" line="67"/>
+        <return-value>
+          <type name="Ray" c:type="G3kRay*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_selection"
+              c:identifier="g3k_controller_get_selection"
+              introspectable="0">
+        <source-position filename="src/g3k-controller.h" line="102"/>
+        <return-value>
+          <type name="Selection" c:type="G3kSelection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tip"
+              c:identifier="g3k_controller_get_tip"
+              introspectable="0">
+        <source-position filename="src/g3k-controller.h" line="70"/>
+        <return-value>
+          <type name="Tip" c:type="G3kTip*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="hide_pointers" c:identifier="g3k_controller_hide_pointers">
+        <source-position filename="src/g3k-controller.h" line="85"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="init_children" c:identifier="g3k_controller_init_children">
+        <source-position filename="src/g3k-controller.h" line="114"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="reset_hover_state"
+              c:identifier="g3k_controller_reset_hover_state">
+        <source-position filename="src/g3k-controller.h" line="82"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_haptic_action"
+              c:identifier="g3k_controller_set_haptic_action">
+        <source-position filename="src/g3k-controller.h" line="132"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+          <parameter name="action" transfer-ownership="none">
+            <type name="Gxr.Action" c:type="GxrAction*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="show_pointers" c:identifier="g3k_controller_show_pointers">
+        <source-position filename="src/g3k-controller.h" line="88"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="trigger_haptic"
+              c:identifier="g3k_controller_trigger_haptic">
+        <source-position filename="src/g3k-controller.h" line="126"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+          <parameter name="duration_seconds" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+          <parameter name="frequency" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+          <parameter name="amplitude" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_grab" c:identifier="g3k_controller_update_grab">
+        <source-position filename="src/g3k-controller.h" line="79"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="update_hovered_object"
+              c:identifier="g3k_controller_update_hovered_object">
+        <source-position filename="src/g3k-controller.h" line="91"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </instance-parameter>
+          <parameter name="last_object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="global_intersection" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+          <parameter name="local_intersection" transfer-ownership="none">
+            <type name="Graphene.Point" c:type="graphene_point_t*"/>
+          </parameter>
+          <parameter name="intersection_distance" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="ControllerClass"
+            c:type="G3kControllerClass"
+            glib:is-gtype-struct-for="Controller">
+      <source-position filename="src/g3k-controller.h" line="25"/>
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="G3kObjectClass"/>
+      </field>
+    </record>
+    <class name="Cursor"
+           c:symbol-prefix="cursor"
+           c:type="G3kCursor"
+           parent="Plane"
+           glib:type-name="G3kCursor"
+           glib:get-type="g3k_cursor_get_type"
+           glib:type-struct="CursorClass">
+      <source-position filename="src/g3k-cursor.h" line="23"/>
+      <constructor name="new" c:identifier="g3k_cursor_new">
+        <source-position filename="src/g3k-cursor.h" line="26"/>
+        <return-value transfer-ownership="full">
+          <type name="Cursor" c:type="G3kCursor*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="set_hotspot" c:identifier="g3k_cursor_set_hotspot">
+        <doc xml:space="preserve"
+             filename="src/g3k-cursor.c"
+             line="180">A hotspot of (x, y) means that the hotspot is at x pixels right, y pixels
+down from the top left corner of the texture.</doc>
+        <source-position filename="src/g3k-cursor.h" line="29"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-cursor.c"
+                 line="182">The #G3kCursor</doc>
+            <type name="Cursor" c:type="G3kCursor*"/>
+          </instance-parameter>
+          <parameter name="hotspot_x" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-cursor.c"
+                 line="183">The x component of the hotspot.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="hotspot_y" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-cursor.c"
+                 line="184">The y component of the hotspot.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update" c:identifier="g3k_cursor_update">
+        <source-position filename="src/g3k-cursor.h" line="32"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Cursor" c:type="G3kCursor*"/>
+          </instance-parameter>
+          <parameter name="target" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="intersection" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="CursorClass"
+            c:type="G3kCursorClass"
+            glib:is-gtype-struct-for="Cursor">
+      <source-position filename="src/g3k-cursor.h" line="23"/>
+      <field name="parent_class">
+        <type name="PlaneClass" c:type="G3kPlaneClass"/>
+      </field>
+    </record>
+    <record name="GrabEvent" c:type="G3kGrabEvent">
+      <doc xml:space="preserve"
+           filename="src/g3k-types.h"
+           line="34">An event that gets emitted when a window get grabbed.</doc>
+      <source-position filename="src/g3k-types.h" line="44"/>
+      <field name="controller" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-types.h"
+             line="37">The controller the event was captured on.</doc>
+        <type name="Controller" c:type="G3kController*"/>
+      </field>
+    </record>
+    <record name="GrabState" c:type="G3kGrabState">
+      <source-position filename="src/g3k-controller.h" line="61"/>
+      <field name="object" writable="1">
+        <type name="Object" c:type="G3kObject*"/>
+      </field>
+      <field name="object_rotation" writable="1">
+        <type name="Graphene.Quaternion" c:type="graphene_quaternion_t"/>
+      </field>
+      <field name="inverse_controller_rotation" writable="1">
+        <type name="Graphene.Quaternion" c:type="graphene_quaternion_t"/>
+      </field>
+      <field name="offset" writable="1">
+        <type name="Graphene.Point" c:type="graphene_point_t"/>
+      </field>
+      <field name="transform_lock" writable="1">
+        <type name="TransformLock" c:type="G3kTransformLock"/>
+      </field>
+    </record>
+    <record name="HoverEvent" c:type="G3kHoverEvent">
+      <doc xml:space="preserve"
+           filename="src/g3k-types.h"
+           line="17">An event that gets emitted when a controller hovers a window.</doc>
+      <source-position filename="src/g3k-types.h" line="32"/>
+      <field name="point" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-types.h"
+             line="19">The point in 3D world space.</doc>
+        <type name="Graphene.Point3D" c:type="graphene_point3d_t"/>
+      </field>
+      <field name="pose" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-types.h"
+             line="20">A #graphene_matrix_t pose.</doc>
+        <type name="Graphene.Matrix" c:type="graphene_matrix_t"/>
+      </field>
+      <field name="distance" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-types.h"
+             line="21">Distance from the controller.</doc>
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="controller" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-types.h"
+             line="22">The controller the event was captured on.</doc>
+        <type name="Controller" c:type="G3kController*"/>
+      </field>
+    </record>
+    <enumeration name="HoverMode" c:type="G3kHoverMode">
+      <doc xml:space="preserve"
+           filename="src/g3k-object-manager.h"
+           line="84">A mode where input events can be ignored for certain widgets.</doc>
+      <source-position filename="src/g3k-object-manager.h" line="96"/>
+      <member name="everything"
+              value="0"
+              c:identifier="G3K_HOVER_MODE_EVERYTHING">
+        <doc xml:space="preserve"
+             filename="src/g3k-object-manager.h"
+             line="86">Buttons and windows should receive events.</doc>
+      </member>
+      <member name="buttons" value="1" c:identifier="G3K_HOVER_MODE_BUTTONS">
+        <doc xml:space="preserve"
+             filename="src/g3k-object-manager.h"
+             line="87">Only buttons should receive events.</doc>
+      </member>
+    </enumeration>
+    <record name="HoverState" c:type="G3kHoverState">
+      <source-position filename="src/g3k-controller.h" line="52"/>
+      <field name="object" writable="1">
+        <type name="Object" c:type="G3kObject*"/>
+      </field>
+      <field name="distance" writable="1">
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="intersection_2d" writable="1">
+        <type name="Graphene.Point" c:type="graphene_point_t"/>
+      </field>
+    </record>
+    <bitfield name="InteractionFlags" c:type="G3kInteractionFlags">
+      <doc xml:space="preserve"
+           filename="src/g3k-object-manager.h"
+           line="59">Flags for the window manager.</doc>
+      <source-position filename="src/g3k-object-manager.h" line="81"/>
+      <member name="hoverable"
+              value="1"
+              c:identifier="G3K_INTERACTION_HOVERABLE">
+      </member>
+      <member name="draggable"
+              value="2"
+              c:identifier="G3K_INTERACTION_DRAGGABLE">
+      </member>
+      <member name="managed" value="4" c:identifier="G3K_INTERACTION_MANAGED">
+      </member>
+      <member name="destroy_with_parent"
+              value="8"
+              c:identifier="G3K_INTERACTION_DESTROY_WITH_PARENT">
+      </member>
+      <member name="button" value="16" c:identifier="G3K_INTERACTION_BUTTON">
+      </member>
+    </bitfield>
+    <record name="KeyEvent" c:type="G3kKeyEvent">
+      <source-position filename="src/g3k-types.h" line="50"/>
+      <field name="string" writable="1">
+        <type name="utf8" c:type="const gchar*"/>
+      </field>
+      <field name="keyval" writable="1">
+        <type name="guint" c:type="const guint"/>
+      </field>
+    </record>
+    <class name="Keyboard"
+           c:symbol-prefix="keyboard"
+           c:type="G3kKeyboard"
+           parent="GObject.Object"
+           glib:type-name="G3kKeyboard"
+           glib:get-type="g3k_keyboard_get_type"
+           glib:type-struct="KeyboardClass">
+      <source-position filename="src/g3k-keyboard.h" line="21"/>
+      <constructor name="new" c:identifier="g3k_keyboard_new">
+        <source-position filename="src/g3k-keyboard.h" line="24"/>
+        <return-value transfer-ownership="full">
+          <type name="Keyboard" c:type="G3kKeyboard*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="click_cb" c:identifier="g3k_keyboard_click_cb">
+        <source-position filename="src/g3k-keyboard.h" line="30"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="button" transfer-ownership="none">
+            <type name="KeyboardButton" c:type="G3kKeyboardButton*"/>
+          </parameter>
+          <parameter name="controller" transfer-ownership="none">
+            <type name="Gxr.Controller" c:type="GxrController*"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_modes"
+              c:identifier="g3k_keyboard_get_modes"
+              introspectable="0">
+        <source-position filename="src/g3k-keyboard.h" line="27"/>
+        <return-value>
+          <type name="GLib.HashTable" c:type="GHashTable*">
+            <type name="gpointer" c:type="gpointer"/>
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Keyboard" c:type="G3kKeyboard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="hide" c:identifier="g3k_keyboard_hide">
+        <source-position filename="src/g3k-keyboard.h" line="38"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Keyboard" c:type="G3kKeyboard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_visible" c:identifier="g3k_keyboard_is_visible">
+        <source-position filename="src/g3k-keyboard.h" line="41"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Keyboard" c:type="G3kKeyboard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="show" c:identifier="g3k_keyboard_show">
+        <source-position filename="src/g3k-keyboard.h" line="35"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Keyboard" c:type="G3kKeyboard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <glib:signal name="key-press-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="post-hide-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="pre-show-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <class name="KeyboardButton"
+           c:symbol-prefix="keyboard_button"
+           c:type="G3kKeyboardButton"
+           parent="Button"
+           glib:type-name="G3kKeyboardButton"
+           glib:get-type="g3k_keyboard_button_get_type"
+           glib:type-struct="KeyboardButtonClass">
+      <source-position filename="src/g3k-keyboard-button.h" line="22"/>
+      <constructor name="new" c:identifier="g3k_keyboard_button_new">
+        <source-position filename="src/g3k-keyboard-button.h" line="29"/>
+        <return-value transfer-ownership="full">
+          <type name="KeyboardButton" c:type="G3kKeyboardButton*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+          <parameter name="size_meters" transfer-ownership="none">
+            <type name="Graphene.Size" c:type="graphene_size_t*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <property name="character"
+                writable="1"
+                transfer-ownership="none"
+                default-value="NULL">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="keyval"
+                writable="1"
+                transfer-ownership="none"
+                default-value="0">
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="target"
+                writable="1"
+                transfer-ownership="none"
+                default-value="NULL">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+    </class>
+    <record name="KeyboardButtonClass"
+            c:type="G3kKeyboardButtonClass"
+            glib:is-gtype-struct-for="KeyboardButton">
+      <source-position filename="src/g3k-keyboard-button.h" line="22"/>
+      <field name="parent_class">
+        <type name="ButtonClass" c:type="G3kButtonClass"/>
+      </field>
+    </record>
+    <record name="KeyboardClass"
+            c:type="G3kKeyboardClass"
+            glib:is-gtype-struct-for="Keyboard">
+      <source-position filename="src/g3k-keyboard.h" line="21"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Loader"
+           c:symbol-prefix="loader"
+           c:type="G3kLoader"
+           parent="GObject.Object"
+           glib:type-name="G3kLoader"
+           glib:get-type="g3k_loader_get_type"
+           glib:type-struct="LoaderClass">
+      <source-position filename="src/g3k-loader.h" line="25"/>
+      <constructor name="new_from_file"
+                   c:identifier="g3k_loader_new_from_file"
+                   throws="1">
+        <source-position filename="src/g3k-loader.h" line="43"/>
+        <return-value transfer-ownership="full">
+          <type name="Loader" c:type="G3kLoader*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+          <parameter name="file_path" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="error_quark" c:identifier="g3k_loader_error_quark">
+        <return-value transfer-ownership="none">
+          <type name="GLib.Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
+      <method name="get_root"
+              c:identifier="g3k_loader_get_root"
+              introspectable="0">
+        <source-position filename="src/g3k-loader.h" line="48"/>
+        <return-value>
+          <type name="Object" c:type="G3kObject*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Loader" c:type="G3kLoader*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="LoaderClass"
+            c:type="G3kLoaderClass"
+            glib:is-gtype-struct-for="Loader">
+      <source-position filename="src/g3k-loader.h" line="25"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <enumeration name="LoaderError" c:type="G3kLoaderError">
+      <source-position filename="src/g3k-loader.h" line="35"/>
+      <member name="loader_error_fail"
+              value="0"
+              c:identifier="G3K_LOADER_ERROR_FAIL">
+      </member>
+    </enumeration>
+    <class name="Material"
+           c:symbol-prefix="material"
+           c:type="G3kMaterial"
+           parent="GObject.Object"
+           glib:type-name="G3kMaterial"
+           glib:get-type="g3k_material_get_type"
+           glib:type-struct="MaterialClass">
+      <source-position filename="src/g3k-material.h" line="48"/>
+      <constructor name="new" c:identifier="g3k_material_new">
+        <source-position filename="src/g3k-material.h" line="51"/>
+        <return-value transfer-ownership="full">
+          <type name="Material" c:type="G3kMaterial*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_default" c:identifier="g3k_material_new_default">
+        <source-position filename="src/g3k-material.h" line="54"/>
+        <return-value transfer-ownership="full">
+          <type name="Material" c:type="G3kMaterial*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_texture" c:identifier="g3k_material_add_texture">
+        <source-position filename="src/g3k-material.h" line="73"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Material" c:type="G3kMaterial*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="texture" transfer-ownership="none">
+            <type name="Gulkan.Texture" c:type="GulkanTexture*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="create_descriptor_bindings"
+              c:identifier="g3k_material_create_descriptor_bindings"
+              introspectable="0">
+        <source-position filename="src/g3k-material.h" line="67"/>
+        <return-value>
+          <type name="Vulkan.DescriptorSetLayoutBinding"
+                c:type="VkDescriptorSetLayoutBinding*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Material" c:type="G3kMaterial*"/>
+          </instance-parameter>
+          <parameter name="size" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_config_key" c:identifier="g3k_material_get_config_key">
+        <source-position filename="src/g3k-material.h" line="70"/>
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Material" c:type="G3kMaterial*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_defines" c:identifier="g3k_material_get_defines">
+        <source-position filename="src/g3k-material.h" line="64"/>
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Material" c:type="G3kMaterial*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="update_descriptors"
+              c:identifier="g3k_material_update_descriptors">
+        <source-position filename="src/g3k-material.h" line="60"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Material" c:type="G3kMaterial*"/>
+          </instance-parameter>
+          <parameter name="descriptor_set" transfer-ownership="none">
+            <type name="Gulkan.DescriptorSet" c:type="GulkanDescriptorSet*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_ubo" c:identifier="g3k_material_update_ubo">
+        <source-position filename="src/g3k-material.h" line="57"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Material" c:type="G3kMaterial*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="context">
+        <type name="Context" c:type="G3kContext*"/>
+      </field>
+      <field name="name">
+        <type name="utf8" c:type="char*"/>
+      </field>
+      <field name="ao_map_intensity">
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="normal_scale">
+        <type name="Graphene.Vec2" c:type="graphene_vec2_t"/>
+      </field>
+      <field name="emissive">
+        <type name="Graphene.Vec3" c:type="graphene_vec3_t"/>
+      </field>
+      <field name="emissive_intensity">
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="color">
+        <type name="Graphene.Vec3" c:type="graphene_vec3_t"/>
+      </field>
+      <field name="color_alpha">
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="roughness">
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="metalness">
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="alpha_test">
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="double_sided">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="transparent">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="textures">
+        <type name="GLib.HashTable" c:type="GHashTable*">
+          <type name="gpointer" c:type="gpointer"/>
+          <type name="gpointer" c:type="gpointer"/>
+        </type>
+      </field>
+      <field name="buffer">
+        <type name="Gulkan.UniformBuffer" c:type="GulkanUniformBuffer*"/>
+      </field>
+    </class>
+    <record name="MaterialClass"
+            c:type="G3kMaterialClass"
+            glib:is-gtype-struct-for="Material">
+      <source-position filename="src/g3k-material.h" line="48"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Mesh"
+           c:symbol-prefix="mesh"
+           c:type="G3kMesh"
+           parent="GObject.Object"
+           glib:type-name="G3kMesh"
+           glib:get-type="g3k_mesh_get_type"
+           glib:type-struct="MeshClass">
+      <source-position filename="src/g3k-mesh.h" line="46"/>
+      <constructor name="new" c:identifier="g3k_mesh_new">
+        <source-position filename="src/g3k-mesh.h" line="49"/>
+        <return-value transfer-ownership="full">
+          <type name="Mesh" c:type="G3kMesh*"/>
+        </return-value>
+      </constructor>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="name">
+        <type name="utf8" c:type="char*"/>
+      </field>
+      <field name="primitives">
+        <array name="GLib.PtrArray" c:type="GPtrArray*">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </class>
+    <record name="MeshClass"
+            c:type="G3kMeshClass"
+            glib:is-gtype-struct-for="Mesh">
+      <source-position filename="src/g3k-mesh.h" line="46"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Model"
+           c:symbol-prefix="model"
+           c:type="G3kModel"
+           parent="Object"
+           glib:type-name="G3kModel"
+           glib:get-type="g3k_model_get_type"
+           glib:type-struct="ModelClass">
+      <source-position filename="src/g3k-model.h" line="17"/>
+      <constructor name="new" c:identifier="g3k_model_new">
+        <source-position filename="src/g3k-model.h" line="20"/>
+        <return-value transfer-ownership="full">
+          <type name="Model" c:type="G3kModel*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_name" c:identifier="g3k_model_get_name">
+        <source-position filename="src/g3k-model.h" line="29"/>
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Model" c:type="G3kModel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="initialize" c:identifier="g3k_model_initialize">
+        <source-position filename="src/g3k-model.h" line="32"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="_Bool"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Model" c:type="G3kModel*"/>
+          </instance-parameter>
+          <parameter name="pipelines" transfer-ownership="none">
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_mesh" c:identifier="g3k_model_set_mesh">
+        <source-position filename="src/g3k-model.h" line="23"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Model" c:type="G3kModel*"/>
+          </instance-parameter>
+          <parameter name="mesh" transfer-ownership="none">
+            <type name="Mesh" c:type="G3kMesh*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_name" c:identifier="g3k_model_set_name">
+        <source-position filename="src/g3k-model.h" line="26"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Model" c:type="G3kModel*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="ModelClass"
+            c:type="G3kModelClass"
+            glib:is-gtype-struct-for="Model">
+      <source-position filename="src/g3k-model.h" line="17"/>
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="G3kObjectClass"/>
+      </field>
+    </record>
+    <record name="NoHoverEvent" c:type="G3kNoHoverEvent">
+      <doc xml:space="preserve"
+           filename="src/g3k-object-manager.h"
+           line="27">An event that gets emitted when a window is not being hovered anymore.</doc>
+      <source-position filename="src/g3k-object-manager.h" line="36"/>
+      <field name="controller" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-object-manager.h"
+             line="29">A #GxrController.</doc>
+        <type name="Controller" c:type="G3kController*"/>
+      </field>
+    </record>
+    <class name="Object"
+           c:symbol-prefix="object"
+           c:type="G3kObject"
+           parent="GObject.Object"
+           glib:type-name="G3kObject"
+           glib:get-type="g3k_object_get_type"
+           glib:type-struct="ObjectClass">
+      <source-position filename="src/g3k-object.h" line="47"/>
+      <constructor name="new" c:identifier="g3k_object_new">
+        <source-position filename="src/g3k-object.h" line="50"/>
+        <return-value transfer-ownership="full">
+          <type name="Object" c:type="G3kObject*"/>
+        </return-value>
+      </constructor>
+      <virtual-method name="draw" invoker="draw">
+        <source-position filename="src/g3k-object.h" line="39"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_intersection" invoker="get_intersection">
+        <source-position filename="src/g3k-object.h" line="41"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="ray" transfer-ownership="none">
+            <type name="Graphene.Ray" c:type="graphene_ray_t*"/>
+          </parameter>
+          <parameter name="distance" transfer-ownership="none">
+            <type name="gfloat" c:type="float*"/>
+          </parameter>
+          <parameter name="res" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="update_selection" invoker="update_selection">
+        <source-position filename="src/g3k-object.h" line="46"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="selection" transfer-ownership="none">
+            <type name="Selection" c:type="G3kSelection*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="add_child" c:identifier="g3k_object_add_child">
+        <source-position filename="src/g3k-object.h" line="134"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="child" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="child_drawing_order" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="bind" c:identifier="g3k_object_bind">
+        <source-position filename="src/g3k-object.h" line="53"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="draw" c:identifier="g3k_object_draw">
+        <source-position filename="src/g3k-object.h" line="113"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="emit_grab_start" c:identifier="g3k_object_emit_grab_start">
+        <source-position filename="src/g3k-object.h" line="153"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="controller" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_children"
+              c:identifier="g3k_object_get_children"
+              introspectable="0">
+        <source-position filename="src/g3k-object.h" line="131"/>
+        <return-value>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_context"
+              c:identifier="g3k_object_get_context"
+              introspectable="0">
+        <source-position filename="src/g3k-object.h" line="110"/>
+        <return-value>
+          <type name="Context" c:type="G3kContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_descriptor_set"
+              c:identifier="g3k_object_get_descriptor_set"
+              introspectable="0">
+        <source-position filename="src/g3k-object.h" line="107"/>
+        <return-value>
+          <type name="Gulkan.DescriptorSet" c:type="GulkanDescriptorSet*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_intersection"
+              c:identifier="g3k_object_get_intersection">
+        <source-position filename="src/g3k-object.h" line="119"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="ray" transfer-ownership="none">
+            <type name="Graphene.Ray" c:type="graphene_ray_t*"/>
+          </parameter>
+          <parameter name="distance" transfer-ownership="none">
+            <type name="gfloat" c:type="float*"/>
+          </parameter>
+          <parameter name="res" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_local_matrix"
+              c:identifier="g3k_object_get_local_matrix">
+        <source-position filename="src/g3k-object.h" line="74"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="m" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_local_scale" c:identifier="g3k_object_get_local_scale">
+        <source-position filename="src/g3k-object.h" line="83"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="scale" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_matrix" c:identifier="g3k_object_get_matrix">
+        <source-position filename="src/g3k-object.h" line="71"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="m" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_object_space_intersection"
+              c:identifier="g3k_object_get_object_space_intersection">
+        <source-position filename="src/g3k-object.h" line="142"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="intersection_3d" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+          <parameter name="intersection_2d" transfer-ownership="none">
+            <type name="Graphene.Point" c:type="graphene_point_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_parent"
+              c:identifier="g3k_object_get_parent"
+              introspectable="0">
+        <source-position filename="src/g3k-object.h" line="128"/>
+        <return-value>
+          <type name="Object" c:type="G3kObject*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pipeline"
+              c:identifier="g3k_object_get_pipeline"
+              introspectable="0">
+        <source-position filename="src/g3k-object.h" line="116"/>
+        <return-value>
+          <type name="Pipeline" c:type="G3kPipeline*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pose"
+              c:identifier="g3k_object_get_pose"
+              introspectable="0">
+        <source-position filename="src/g3k-object.h" line="92"/>
+        <return-value>
+          <type name="Pose" c:type="G3kPose"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_position" c:identifier="g3k_object_get_position">
+        <source-position filename="src/g3k-object.h" line="68"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="position" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_scale" c:identifier="g3k_object_get_scale">
+        <source-position filename="src/g3k-object.h" line="65"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="out_scale" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_transformation_ubo"
+              c:identifier="g3k_object_get_transformation_ubo"
+              introspectable="0">
+        <source-position filename="src/g3k-object.h" line="101"/>
+        <return-value>
+          <type name="Gulkan.UniformBuffer" c:type="GulkanUniformBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="initialize" c:identifier="g3k_object_initialize">
+        <source-position filename="src/g3k-object.h" line="56"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+          <parameter name="pipeline" transfer-ownership="none">
+            <type name="Pipeline" c:type="G3kPipeline*"/>
+          </parameter>
+          <parameter name="uniform_buffer_size" transfer-ownership="none">
+            <type name="Vulkan.DeviceSize" c:type="VkDeviceSize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="is_visible" c:identifier="g3k_object_is_visible">
+        <source-position filename="src/g3k-object.h" line="95"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_child" c:identifier="g3k_object_remove_child">
+        <source-position filename="src/g3k-object.h" line="139"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="child" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reset_local_scale"
+              c:identifier="g3k_object_reset_local_scale">
+        <source-position filename="src/g3k-object.h" line="147"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_local_matrix"
+              c:identifier="g3k_object_set_local_matrix">
+        <source-position filename="src/g3k-object.h" line="77"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="m" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_local_pose" c:identifier="g3k_object_set_local_pose">
+        <source-position filename="src/g3k-object.h" line="89"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="pose" transfer-ownership="none">
+            <type name="Pose" c:type="G3kPose*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_local_scale" c:identifier="g3k_object_set_local_scale">
+        <source-position filename="src/g3k-object.h" line="80"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="scale" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_matrix" c:identifier="g3k_object_set_matrix">
+        <source-position filename="src/g3k-object.h" line="86"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="m" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_pose" c:identifier="g3k_object_set_pose">
+        <source-position filename="src/g3k-object.h" line="150"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="pose" transfer-ownership="none">
+            <type name="Pose" c:type="G3kPose*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_scale" c:identifier="g3k_object_set_scale">
+        <source-position filename="src/g3k-object.h" line="62"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="scale" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_visibility" c:identifier="g3k_object_set_visibility">
+        <source-position filename="src/g3k-object.h" line="98"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="is_visible" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_selection"
+              c:identifier="g3k_object_update_selection">
+        <source-position filename="src/g3k-object.h" line="125"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="selection" transfer-ownership="none">
+            <type name="Selection" c:type="G3kSelection*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_transformation_ubo"
+              c:identifier="g3k_object_update_transformation_ubo">
+        <source-position filename="src/g3k-object.h" line="104"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </instance-parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <glib:signal name="grab-event" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="grab-start-event" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="hover-end-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="hover-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="hover-start-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="release-event" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="ObjectClass"
+            c:type="G3kObjectClass"
+            glib:is-gtype-struct-for="Object">
+      <source-position filename="src/g3k-object.h" line="47"/>
+      <field name="parent">
+        <doc xml:space="preserve"
+             filename="src/g3k-object.h"
+             line="28">The object class structure needs to be the first
+  element in the widget class structure in order for the class mechanism
+  to work correctly. This allows a G3kObjectClass pointer to be cast to
+  a GObjectClass pointer.</doc>
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="draw">
+        <callback name="draw">
+          <source-position filename="src/g3k-object.h" line="39"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Object" c:type="G3kObject*"/>
+            </parameter>
+            <parameter name="cmd_buffer" transfer-ownership="none">
+              <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_intersection">
+        <callback name="get_intersection">
+          <source-position filename="src/g3k-object.h" line="41"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Object" c:type="G3kObject*"/>
+            </parameter>
+            <parameter name="ray" transfer-ownership="none">
+              <type name="Graphene.Ray" c:type="graphene_ray_t*"/>
+            </parameter>
+            <parameter name="distance" transfer-ownership="none">
+              <type name="gfloat" c:type="float*"/>
+            </parameter>
+            <parameter name="res" transfer-ownership="none">
+              <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="update_selection">
+        <callback name="update_selection">
+          <source-position filename="src/g3k-object.h" line="46"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Object" c:type="G3kObject*"/>
+            </parameter>
+            <parameter name="selection" transfer-ownership="none">
+              <type name="Selection" c:type="G3kSelection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <class name="ObjectManager"
+           c:symbol-prefix="object_manager"
+           c:type="G3kObjectManager"
+           parent="GObject.Object"
+           glib:type-name="G3kObjectManager"
+           glib:get-type="g3k_object_manager_get_type"
+           glib:type-struct="ObjectManagerClass">
+      <source-position filename="src/g3k-object-manager.h" line="21"/>
+      <constructor name="new" c:identifier="g3k_object_manager_new">
+        <source-position filename="src/g3k-object-manager.h" line="99"/>
+        <return-value transfer-ownership="full">
+          <type name="ObjectManager" c:type="G3kObjectManager*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_container"
+              c:identifier="g3k_object_manager_add_container">
+        <source-position filename="src/g3k-object-manager.h" line="108"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+          <parameter name="container" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_object" c:identifier="g3k_object_manager_add_object">
+        <source-position filename="src/g3k-object-manager.h" line="116"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <type name="InteractionFlags" c:type="G3kInteractionFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="arrange_reset"
+              c:identifier="g3k_object_manager_arrange_reset">
+        <source-position filename="src/g3k-object-manager.h" line="102"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="arrange_sphere"
+              c:identifier="g3k_object_manager_arrange_sphere">
+        <source-position filename="src/g3k-object-manager.h" line="105"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="drag_start" c:identifier="g3k_object_manager_drag_start">
+        <source-position filename="src/g3k-object-manager.h" line="124"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+          <parameter name="controller" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_buttons" c:identifier="g3k_object_manager_get_buttons">
+        <source-position filename="src/g3k-object-manager.h" line="138"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-object-manager.c"
+               line="571">A list of #G3kObject.</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="Object"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-object-manager.c"
+                 line="569">The #G3kObjectManager</doc>
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_hover_mode"
+              c:identifier="g3k_object_manager_get_hover_mode">
+        <source-position filename="src/g3k-object-manager.h" line="144"/>
+        <return-value transfer-ownership="none">
+          <type name="HoverMode" c:type="G3kHoverMode"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_objects" c:identifier="g3k_object_manager_get_objects">
+        <source-position filename="src/g3k-object-manager.h" line="135"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-object-manager.c"
+               line="559">A list of #G3kObject.</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="Object"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-object-manager.c"
+                 line="557">The #G3kObjectManager</doc>
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_container"
+              c:identifier="g3k_object_manager_remove_container">
+        <source-position filename="src/g3k-object-manager.h" line="112"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+          <parameter name="container" transfer-ownership="none">
+            <type name="Container" c:type="G3kContainer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_object"
+              c:identifier="g3k_object_manager_remove_object">
+        <source-position filename="src/g3k-object-manager.h" line="121"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_reset_transformation"
+              c:identifier="g3k_object_manager_save_reset_transformation">
+        <source-position filename="src/g3k-object-manager.h" line="147"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-object-manager.c"
+                 line="124">The #G3kObjectManager
+Saves the current transformation as the reset transformation.</doc>
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_hover_mode"
+              c:identifier="g3k_object_manager_set_hover_mode">
+        <source-position filename="src/g3k-object-manager.h" line="141"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <type name="HoverMode" c:type="G3kHoverMode"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="step_containers"
+              c:identifier="g3k_object_manager_step_containers">
+        <source-position filename="src/g3k-object-manager.h" line="132"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="update_controller"
+              c:identifier="g3k_object_manager_update_controller">
+        <source-position filename="src/g3k-object-manager.h" line="128"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ObjectManager" c:type="G3kObjectManager*"/>
+          </instance-parameter>
+          <parameter name="controller" transfer-ownership="none">
+            <type name="Controller" c:type="G3kController*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <glib:signal name="no-hover-event" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="ObjectManagerClass"
+            c:type="G3kObjectManagerClass"
+            glib:is-gtype-struct-for="ObjectManager">
+      <source-position filename="src/g3k-object-manager.h" line="21"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Pipeline"
+           c:symbol-prefix="pipeline"
+           c:type="G3kPipeline"
+           parent="GObject.Object"
+           glib:type-name="G3kPipeline"
+           glib:get-type="g3k_pipeline_get_type"
+           glib:type-struct="PipelineClass">
+      <source-position filename="src/g3k-pipeline.h" line="20"/>
+      <constructor name="new" c:identifier="g3k_pipeline_new">
+        <source-position filename="src/g3k-pipeline.h" line="23"/>
+        <return-value transfer-ownership="full">
+          <type name="Pipeline" c:type="G3kPipeline*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+          <parameter name="bindings" transfer-ownership="none">
+            <type name="Vulkan.DescriptorSetLayoutBinding"
+                  c:type="const VkDescriptorSetLayoutBinding*"/>
+          </parameter>
+          <parameter name="set_size" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+          <parameter name="max_sets" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+          <parameter name="config" transfer-ownership="none">
+            <type name="Gulkan.PipelineConfig" c:type="GulkanPipelineConfig*"/>
+          </parameter>
+          <parameter name="render_pass" transfer-ownership="none">
+            <type name="Gulkan.RenderPass" c:type="GulkanRenderPass*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="bind" c:identifier="g3k_pipeline_bind">
+        <source-position filename="src/g3k-pipeline.h" line="31"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Pipeline" c:type="G3kPipeline*"/>
+          </instance-parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="create_descriptor_set"
+              c:identifier="g3k_pipeline_create_descriptor_set"
+              introspectable="0">
+        <source-position filename="src/g3k-pipeline.h" line="37"/>
+        <return-value>
+          <type name="Gulkan.DescriptorSet" c:type="GulkanDescriptorSet*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Pipeline" c:type="G3kPipeline*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_layout"
+              c:identifier="g3k_pipeline_get_layout"
+              introspectable="0">
+        <source-position filename="src/g3k-pipeline.h" line="34"/>
+        <return-value>
+          <type name="Vulkan.PipelineLayout" c:type="VkPipelineLayout"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Pipeline" c:type="G3kPipeline*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="PipelineClass"
+            c:type="G3kPipelineClass"
+            glib:is-gtype-struct-for="Pipeline">
+      <source-position filename="src/g3k-pipeline.h" line="20"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Plane"
+           c:symbol-prefix="plane"
+           c:type="G3kPlane"
+           parent="Object"
+           glib:type-name="G3kPlane"
+           glib:get-type="g3k_plane_get_type"
+           glib:type-struct="PlaneClass">
+      <source-position filename="src/g3k-plane.h" line="36"/>
+      <constructor name="new" c:identifier="g3k_plane_new">
+        <source-position filename="src/g3k-plane.h" line="44"/>
+        <return-value transfer-ownership="full">
+          <type name="Plane" c:type="G3kPlane*"/>
+        </return-value>
+      </constructor>
+      <virtual-method name="get_content_extent"
+                      invoker="get_content_extent"
+                      introspectable="0">
+        <source-position filename="src/g3k-plane.h" line="35"/>
+        <return-value>
+          <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="init_mesh" introspectable="0">
+        <source-position filename="src/g3k-plane.h" line="31"/>
+        <return-value>
+          <type name="Gulkan.VertexBuffer" c:type="GulkanVertexBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="update_texture_size">
+        <source-position filename="src/g3k-plane.h" line="33"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <method name="get_content_extent"
+              c:identifier="g3k_plane_get_content_extent"
+              introspectable="0">
+        <source-position filename="src/g3k-plane.h" line="68"/>
+        <return-value>
+          <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_global_ppm" c:identifier="g3k_plane_get_global_ppm">
+        <source-position filename="src/g3k-plane.h" line="62"/>
+        <return-value transfer-ownership="none">
+          <type name="gfloat" c:type="float"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_global_size_meters"
+              c:identifier="g3k_plane_get_global_size_meters">
+        <source-position filename="src/g3k-plane.h" line="65"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="src/g3k-plane.c"
+               line="366">The current world space width of the window in meters.</doc>
+          <type name="Graphene.Size" c:type="graphene_size_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-plane.c"
+                 line="364">The #G3kPlane</doc>
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mesh_size" c:identifier="g3k_plane_get_mesh_size">
+        <source-position filename="src/g3k-plane.h" line="50"/>
+        <return-value transfer-ownership="full">
+          <type name="Graphene.Size" c:type="graphene_size_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_texture"
+              c:identifier="g3k_plane_get_texture"
+              introspectable="0">
+        <source-position filename="src/g3k-plane.h" line="56"/>
+        <return-value>
+          <type name="Gulkan.Texture" c:type="GulkanTexture*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_vertex_buffer"
+              c:identifier="g3k_plane_get_vertex_buffer"
+              introspectable="0">
+        <source-position filename="src/g3k-plane.h" line="71"/>
+        <return-value>
+          <type name="Gulkan.VertexBuffer" c:type="GulkanVertexBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="has_texture" c:identifier="g3k_plane_has_texture">
+        <source-position filename="src/g3k-plane.h" line="59"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_mesh_size" c:identifier="g3k_plane_set_mesh_size">
+        <source-position filename="src/g3k-plane.h" line="47"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+          <parameter name="size_meters" transfer-ownership="none">
+            <type name="Graphene.Size" c:type="graphene_size_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_texture" c:identifier="g3k_plane_set_texture">
+        <source-position filename="src/g3k-plane.h" line="53"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Plane" c:type="G3kPlane*"/>
+          </instance-parameter>
+          <parameter name="texture" transfer-ownership="none">
+            <type name="Gulkan.Texture" c:type="GulkanTexture*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="Object" c:type="G3kObject"/>
+      </field>
+    </class>
+    <record name="PlaneClass"
+            c:type="G3kPlaneClass"
+            glib:is-gtype-struct-for="Plane">
+      <source-position filename="src/g3k-plane.h" line="36"/>
+      <field name="parent">
+        <doc xml:space="preserve"
+             filename="src/g3k-plane.h"
+             line="22">The object class structure needs to be the first
+  element in the widget class structure in order for the class mechanism
+  to work correctly. This allows a G3kPlaneClass pointer to be cast to
+  a G3kObjectClass pointer.</doc>
+        <type name="ObjectClass" c:type="G3kObjectClass"/>
+      </field>
+      <field name="init_mesh" introspectable="0">
+        <callback name="init_mesh" introspectable="0">
+          <source-position filename="src/g3k-plane.h" line="31"/>
+          <return-value>
+            <type name="Gulkan.VertexBuffer" c:type="GulkanVertexBuffer*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Plane" c:type="G3kPlane*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="update_texture_size">
+        <callback name="update_texture_size">
+          <source-position filename="src/g3k-plane.h" line="33"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Plane" c:type="G3kPlane*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_content_extent" introspectable="0">
+        <callback name="get_content_extent" introspectable="0">
+          <source-position filename="src/g3k-plane.h" line="35"/>
+          <return-value>
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Plane" c:type="G3kPlane*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <record name="PlaneUniformBuffer" c:type="G3kPlaneUniformBuffer">
+      <source-position filename="src/g3k-plane.h" line="41"/>
+      <field name="mvp" writable="1">
+        <array zero-terminated="0" fixed-size="32">
+          <type name="gfloat" c:type="float"/>
+        </array>
+      </field>
+    </record>
+    <record name="Pose" c:type="G3kPose">
+      <source-position filename="src/g3k-pose.h" line="22"/>
+      <field name="position" writable="1">
+        <type name="Graphene.Point3D" c:type="graphene_point3d_t"/>
+      </field>
+      <field name="rotation" writable="1">
+        <type name="Graphene.Quaternion" c:type="graphene_quaternion_t"/>
+      </field>
+      <method name="init_from_pose" c:identifier="g3k_pose_init_from_pose">
+        <source-position filename="src/g3k-pose.h" line="25"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pose" transfer-ownership="none">
+            <type name="Pose" c:type="G3kPose*"/>
+          </instance-parameter>
+          <parameter name="other" transfer-ownership="none">
+            <type name="Pose" c:type="G3kPose*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="to_matrix" c:identifier="g3k_pose_to_matrix">
+        <source-position filename="src/g3k-pose.h" line="34"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pose" transfer-ownership="none">
+            <type name="Pose" c:type="G3kPose*"/>
+          </instance-parameter>
+          <parameter name="out_transform" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="validate" c:identifier="g3k_pose_validate">
+        <source-position filename="src/g3k-pose.h" line="37"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pose" transfer-ownership="none">
+            <type name="Pose" c:type="G3kPose*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="new" c:identifier="g3k_pose_new" introspectable="0">
+        <source-position filename="src/g3k-pose.h" line="28"/>
+        <return-value>
+          <type name="Pose" c:type="G3kPose"/>
+        </return-value>
+        <parameters>
+          <parameter name="position" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+          <parameter name="rotation" transfer-ownership="none">
+            <type name="Graphene.Quaternion" c:type="graphene_quaternion_t*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="new_from_matrix"
+                c:identifier="g3k_pose_new_from_matrix"
+                introspectable="0">
+        <source-position filename="src/g3k-pose.h" line="31"/>
+        <return-value>
+          <type name="Pose" c:type="G3kPose"/>
+        </return-value>
+        <parameters>
+          <parameter name="m" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <class name="Primitive"
+           c:symbol-prefix="primitive"
+           c:type="G3kPrimitive"
+           parent="GObject.Object"
+           glib:type-name="G3kPrimitive"
+           glib:get-type="g3k_primitive_get_type"
+           glib:type-struct="PrimitiveClass">
+      <source-position filename="src/g3k-mesh.h" line="35"/>
+      <constructor name="new" c:identifier="g3k_primitive_new">
+        <source-position filename="src/g3k-mesh.h" line="52"/>
+        <return-value transfer-ownership="full">
+          <type name="Primitive" c:type="G3kPrimitive*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_attribute" c:identifier="g3k_primitive_add_attribute">
+        <source-position filename="src/g3k-mesh.h" line="58"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="_Bool"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="accessor" transfer-ownership="none">
+            <type name="Accessor" c:type="G3kAccessor*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_index" c:identifier="g3k_primitive_add_index">
+        <source-position filename="src/g3k-mesh.h" line="55"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="_Bool"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+          <parameter name="accessor" transfer-ownership="none">
+            <type name="Accessor" c:type="G3kAccessor*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="create_attrib_desc"
+              c:identifier="g3k_primitive_create_attrib_desc"
+              introspectable="0">
+        <source-position filename="src/g3k-mesh.h" line="69"/>
+        <return-value>
+          <type name="Vulkan.VertexInputAttributeDescription"
+                c:type="VkVertexInputAttributeDescription*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="create_pipeline"
+              c:identifier="g3k_primitive_create_pipeline"
+              introspectable="0">
+        <source-position filename="src/g3k-mesh.h" line="78"/>
+        <return-value>
+          <type name="Pipeline" c:type="G3kPipeline*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="draw" c:identifier="g3k_primitive_draw">
+        <source-position filename="src/g3k-mesh.h" line="84"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+          <parameter name="descriptor_set" transfer-ownership="none">
+            <type name="Gulkan.DescriptorSet" c:type="GulkanDescriptorSet*"/>
+          </parameter>
+          <parameter name="cmd_buffer" transfer-ownership="none">
+            <type name="Vulkan.CommandBuffer" c:type="VkCommandBuffer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_attrib_defines"
+              c:identifier="g3k_primitive_get_attrib_defines">
+        <source-position filename="src/g3k-mesh.h" line="72"/>
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_attribute_config_key"
+              c:identifier="g3k_primitive_get_attribute_config_key">
+        <source-position filename="src/g3k-mesh.h" line="63"/>
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pipeline_key"
+              c:identifier="g3k_primitive_get_pipeline_key">
+        <source-position filename="src/g3k-mesh.h" line="81"/>
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="init_vertex_buffer"
+              c:identifier="g3k_primitive_init_vertex_buffer">
+        <source-position filename="src/g3k-mesh.h" line="66"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_pipeline" c:identifier="g3k_primitive_set_pipeline">
+        <source-position filename="src/g3k-mesh.h" line="75"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Primitive" c:type="G3kPrimitive*"/>
+          </instance-parameter>
+          <parameter name="pipeline" transfer-ownership="none">
+            <type name="Pipeline" c:type="G3kPipeline*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="context">
+        <type name="Context" c:type="G3kContext*"/>
+      </field>
+      <field name="accessors">
+        <type name="GLib.HashTable" c:type="GHashTable*">
+          <type name="gpointer" c:type="gpointer"/>
+          <type name="gpointer" c:type="gpointer"/>
+        </type>
+      </field>
+      <field name="index_accessor">
+        <type name="Accessor" c:type="G3kAccessor*"/>
+      </field>
+      <field name="index_count">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <field name="index_type">
+        <type name="Vulkan.IndexType" c:type="VkIndexType"/>
+      </field>
+      <field name="material">
+        <type name="Material" c:type="G3kMaterial*"/>
+      </field>
+      <field name="vertex_buffer">
+        <type name="Gulkan.VertexBuffer" c:type="GulkanVertexBuffer*"/>
+      </field>
+      <field name="pipeline">
+        <type name="Pipeline" c:type="G3kPipeline*"/>
+      </field>
+    </class>
+    <record name="PrimitiveClass"
+            c:type="G3kPrimitiveClass"
+            glib:is-gtype-struct-for="Primitive">
+      <source-position filename="src/g3k-mesh.h" line="35"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Ray"
+           c:symbol-prefix="ray"
+           c:type="G3kRay"
+           parent="Object"
+           glib:type-name="G3kRay"
+           glib:get-type="g3k_ray_get_type"
+           glib:type-struct="RayClass">
+      <source-position filename="src/g3k-ray.h" line="21"/>
+      <constructor name="new" c:identifier="g3k_ray_new">
+        <source-position filename="src/g3k-ray.h" line="24"/>
+        <return-value transfer-ownership="full">
+          <type name="Ray" c:type="G3kRay*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_default_length"
+              c:identifier="g3k_ray_get_default_length">
+        <source-position filename="src/g3k-ray.h" line="30"/>
+        <return-value transfer-ownership="none">
+          <type name="gfloat" c:type="float"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Ray" c:type="G3kRay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_intersection" c:identifier="g3k_ray_get_intersection">
+        <source-position filename="src/g3k-ray.h" line="36"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Ray" c:type="G3kRay*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="distance" transfer-ownership="none">
+            <type name="gfloat" c:type="float*"/>
+          </parameter>
+          <parameter name="res" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reset_length" c:identifier="g3k_ray_reset_length">
+        <source-position filename="src/g3k-ray.h" line="33"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Ray" c:type="G3kRay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_length" c:identifier="g3k_ray_set_length">
+        <source-position filename="src/g3k-ray.h" line="27"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Ray" c:type="G3kRay*"/>
+          </instance-parameter>
+          <parameter name="length" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="show" c:identifier="g3k_ray_show">
+        <source-position filename="src/g3k-ray.h" line="42"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Ray" c:type="G3kRay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="RayClass"
+            c:type="G3kRayClass"
+            glib:is-gtype-struct-for="Ray">
+      <source-position filename="src/g3k-ray.h" line="21"/>
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="G3kObjectClass"/>
+      </field>
+    </record>
+    <record name="RenderEvent" c:type="G3kRenderEvent">
+      <source-position filename="src/g3k-types.h" line="61"/>
+      <field name="type" writable="1">
+        <type name="RenderEventType" c:type="G3kRenderEventType"/>
+      </field>
+    </record>
+    <enumeration name="RenderEventType" c:type="G3kRenderEventType">
+      <source-position filename="src/g3k-types.h" line="56"/>
+      <member name="start"
+              value="0"
+              c:identifier="G3K_RENDER_EVENT_FRAME_START">
+      </member>
+      <member name="end" value="1" c:identifier="G3K_RENDER_EVENT_FRAME_END">
+      </member>
+    </enumeration>
+    <class name="Renderer"
+           c:symbol-prefix="renderer"
+           c:type="G3kRenderer"
+           parent="Gulkan.Renderer"
+           glib:type-name="G3kRenderer"
+           glib:get-type="g3k_renderer_get_type"
+           glib:type-struct="RendererClass">
+      <source-position filename="src/g3k-renderer.h" line="21"/>
+      <constructor name="new" c:identifier="g3k_renderer_new">
+        <source-position filename="src/g3k-renderer.h" line="24"/>
+        <return-value transfer-ownership="full">
+          <type name="Renderer" c:type="G3kRenderer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="draw" c:identifier="g3k_renderer_draw">
+        <source-position filename="src/g3k-renderer.h" line="30"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="G3kRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_lights_buffer"
+              c:identifier="g3k_renderer_get_lights_buffer"
+              introspectable="0">
+        <source-position filename="src/g3k-renderer.h" line="33"/>
+        <return-value>
+          <type name="Gulkan.UniformBuffer" c:type="GulkanUniformBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="G3kRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pipeline"
+              c:identifier="g3k_renderer_get_pipeline"
+              introspectable="0">
+        <source-position filename="src/g3k-renderer.h" line="36"/>
+        <return-value>
+          <type name="Pipeline" c:type="G3kPipeline*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="G3kRenderer*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_render_pass"
+              c:identifier="g3k_renderer_get_render_pass"
+              introspectable="0">
+        <source-position filename="src/g3k-renderer.h" line="27"/>
+        <return-value>
+          <type name="Gulkan.RenderPass" c:type="GulkanRenderPass*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="G3kRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_sample_count"
+              c:identifier="g3k_renderer_get_sample_count"
+              introspectable="0">
+        <source-position filename="src/g3k-renderer.h" line="39"/>
+        <return-value>
+          <type name="Vulkan.SampleCountFlagBits"
+                c:type="VkSampleCountFlagBits"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Renderer" c:type="G3kRenderer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="RendererClass"
+            c:type="G3kRendererClass"
+            glib:is-gtype-struct-for="Renderer">
+      <source-position filename="src/g3k-renderer.h" line="21"/>
+      <field name="parent_class">
+        <type name="Gulkan.RendererClass" c:type="GulkanRendererClass"/>
+      </field>
+    </record>
+    <class name="Sampler"
+           c:symbol-prefix="sampler"
+           c:type="G3kSampler"
+           parent="GObject.Object"
+           glib:type-name="G3kSampler"
+           glib:get-type="g3k_sampler_get_type"
+           glib:type-struct="SamplerClass">
+      <source-position filename="src/g3k-sampler.h" line="28"/>
+      <constructor name="new" c:identifier="g3k_sampler_new">
+        <source-position filename="src/g3k-sampler.h" line="31"/>
+        <return-value transfer-ownership="full">
+          <type name="Sampler" c:type="G3kSampler*"/>
+        </return-value>
+      </constructor>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="mag_filter">
+        <type name="Vulkan.Filter" c:type="VkFilter"/>
+      </field>
+      <field name="min_filter">
+        <type name="Vulkan.Filter" c:type="VkFilter"/>
+      </field>
+      <field name="wrap_s">
+        <type name="Vulkan.SamplerAddressMode" c:type="VkSamplerAddressMode"/>
+      </field>
+      <field name="wrap_t">
+        <type name="Vulkan.SamplerAddressMode" c:type="VkSamplerAddressMode"/>
+      </field>
+      <field name="mipmap_mode">
+        <type name="Vulkan.SamplerMipmapMode" c:type="VkSamplerMipmapMode"/>
+      </field>
+    </class>
+    <record name="SamplerClass"
+            c:type="G3kSamplerClass"
+            glib:is-gtype-struct-for="Sampler">
+      <source-position filename="src/g3k-sampler.h" line="28"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Selection"
+           c:symbol-prefix="selection"
+           c:type="G3kSelection"
+           parent="Object"
+           glib:type-name="G3kSelection"
+           glib:get-type="g3k_selection_get_type"
+           glib:type-struct="SelectionClass">
+      <source-position filename="src/g3k-selection.h" line="20"/>
+      <constructor name="new" c:identifier="g3k_selection_new">
+        <source-position filename="src/g3k-selection.h" line="23"/>
+        <return-value transfer-ownership="full">
+          <type name="Selection" c:type="G3kSelection*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="set_quad" c:identifier="g3k_selection_set_quad">
+        <source-position filename="src/g3k-selection.h" line="26"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Selection" c:type="G3kSelection*"/>
+          </instance-parameter>
+          <parameter name="width" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="SelectionClass"
+            c:type="G3kSelectionClass"
+            glib:is-gtype-struct-for="Selection">
+      <source-position filename="src/g3k-selection.h" line="20"/>
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="G3kObjectClass"/>
+      </field>
+    </record>
+    <class name="Tip"
+           c:symbol-prefix="tip"
+           c:type="G3kTip"
+           parent="Plane"
+           glib:type-name="G3kTip"
+           glib:get-type="g3k_tip_get_type"
+           glib:type-struct="TipClass">
+      <source-position filename="src/g3k-tip.h" line="21"/>
+      <constructor name="new" c:identifier="g3k_tip_new">
+        <source-position filename="src/g3k-tip.h" line="24"/>
+        <return-value transfer-ownership="full">
+          <type name="Tip" c:type="G3kTip*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="animate_pulse" c:identifier="g3k_tip_animate_pulse">
+        <source-position filename="src/g3k-tip.h" line="33"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Tip" c:type="G3kTip*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_active" c:identifier="g3k_tip_set_active">
+        <doc xml:space="preserve"
+             filename="src/g3k-tip.c"
+             line="456">Changes whether the active or inactive style is rendered.
+Also cancels animations.</doc>
+        <source-position filename="src/g3k-tip.h" line="30"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-tip.c"
+                 line="458">a #G3kTip</doc>
+            <type name="Tip" c:type="G3kTip*"/>
+          </instance-parameter>
+          <parameter name="active" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-tip.c"
+                 line="459">whether to use the active or inactive style</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_apparent_size"
+              c:identifier="g3k_tip_update_apparent_size">
+        <doc xml:space="preserve"
+             filename="src/g3k-tip.c"
+             line="232">Note: Move pointer tip to the desired location before calling.</doc>
+        <source-position filename="src/g3k-tip.h" line="27"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/g3k-tip.c"
+                 line="234">a #G3kTip</doc>
+            <type name="Tip" c:type="G3kTip*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="TipClass"
+            c:type="G3kTipClass"
+            glib:is-gtype-struct-for="Tip">
+      <source-position filename="src/g3k-tip.h" line="21"/>
+      <field name="parent_class">
+        <type name="PlaneClass" c:type="G3kPlaneClass"/>
+      </field>
+    </record>
+    <enumeration name="TransformLock" c:type="G3kTransformLock">
+      <doc xml:space="preserve"
+           filename="src/g3k-controller.h"
+           line="27">The type of transformation the grab action is currently locked to.
+This will be detected at the begginging of a grab transformation
+and reset after the transformation is done.</doc>
+      <source-position filename="src/g3k-controller.h" line="45"/>
+      <member name="none" value="0" c:identifier="XRD_TRANSFORM_LOCK_NONE">
+        <doc xml:space="preserve"
+             filename="src/g3k-controller.h"
+             line="29">The grab action does not currently have a
+transformation it is locked to.</doc>
+      </member>
+      <member name="push_pull"
+              value="1"
+              c:identifier="XRD_TRANSFORM_LOCK_PUSH_PULL">
+        <doc xml:space="preserve"
+             filename="src/g3k-controller.h"
+             line="31">Only push pull transformation can be
+performed.</doc>
+      </member>
+      <member name="scale" value="2" c:identifier="XRD_TRANSFORM_LOCK_SCALE">
+        <doc xml:space="preserve"
+             filename="src/g3k-controller.h"
+             line="33">Only a scale transformation can be performed.</doc>
+      </member>
+    </enumeration>
+    <record name="TransformTransition" c:type="G3kTransformTransition">
+      <doc xml:space="preserve"
+           filename="src/g3k-object-manager.h"
+           line="38">A transition between two #XrdWindow transformation states.</doc>
+      <source-position filename="src/g3k-object-manager.h" line="57"/>
+      <field name="object" writable="1">
+        <type name="Object" c:type="G3kObject*"/>
+      </field>
+      <field name="from" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-object-manager.h"
+             line="41">The initial #graphene_matrix_t of the transiton.</doc>
+        <type name="Graphene.Matrix" c:type="graphene_matrix_t"/>
+      </field>
+      <field name="to" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-object-manager.h"
+             line="42">The final #graphene_matrix_t of the transition.</doc>
+        <type name="Graphene.Matrix" c:type="graphene_matrix_t"/>
+      </field>
+      <field name="interpolate" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-object-manager.h"
+             line="45">The current state in the range [0-1] of the transition.</doc>
+        <type name="gfloat" c:type="float"/>
+      </field>
+      <field name="last_timestamp" writable="1">
+        <doc xml:space="preserve"
+             filename="src/g3k-object-manager.h"
+             line="46">The last timestamp the transition was updated.</doc>
+        <type name="gint64" c:type="gint64"/>
+      </field>
+    </record>
+    <function name="attribute_type_from_component_type"
+              c:identifier="g3k_attribute_type_from_component_type">
+      <source-position filename="src/g3k-attribute.h" line="56"/>
+      <return-value transfer-ownership="none">
+        <type name="AttributeType" c:type="G3kAttributeType"/>
+      </return-value>
+      <parameters>
+        <parameter name="component_type" transfer-ownership="none">
+          <type name="gint64" c:type="gint64"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="attribute_type_size"
+              c:identifier="g3k_attribute_type_size">
+      <source-position filename="src/g3k-attribute.h" line="59"/>
+      <return-value transfer-ownership="none">
+        <type name="gsize" c:type="gsize"/>
+      </return-value>
+      <parameters>
+        <parameter name="type" transfer-ownership="none">
+          <type name="AttributeType" c:type="G3kAttributeType"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="attribute_type_string"
+              c:identifier="g3k_attribute_type_string">
+      <source-position filename="src/g3k-attribute.h" line="62"/>
+      <return-value transfer-ownership="none">
+        <type name="utf8" c:type="const gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="type" transfer-ownership="none">
+          <type name="AttributeType" c:type="G3kAttributeType"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="math_clamp_towards_zero_2d"
+              c:identifier="g3k_math_clamp_towards_zero_2d">
+      <source-position filename="src/g3k-math.h" line="40"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve"
+             filename="src/g3k-math.c"
+             line="117">TRUE if the point was clamped, else FALSE.
+
+The bottom left "min" and top right "max" limits define a rectangle.
+Clamp a value to the borders of this rectangle such that both x and y go
+towards zero, until a rectangle border is hit.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="min" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="112">The (x,y) limit at the bottom left.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="max" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="113">The (x,y) limit at the top right.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="point" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="114">An (x,y) point, will be clamped if outside the min, max limits.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="clamped" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="115">The clamped point, if the point was outside the limits.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="math_get_rotation_angles"
+              c:identifier="g3k_math_get_rotation_angles">
+      <doc xml:space="preserve"
+           filename="src/g3k-math.c"
+           line="14">Calculate spherical angles from a direction vector with the direction
+vector's origin as the origin of the sphere.
+
+Note that the distance (sphere radius) is not calculated. For converting
+between spherical and 3D coordinates, the caller needs to keep track of it.</doc>
+      <source-position filename="src/g3k-math.h" line="24"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="direction" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="16">a direction vector</doc>
+          <type name="Graphene.Vec3" c:type="graphene_vec3_t*"/>
+        </parameter>
+        <parameter name="azimuth" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="17">clockwise angle in deg around the y axis, starting at -z:
+"left-right" component.</doc>
+          <type name="gfloat" c:type="float*"/>
+        </parameter>
+        <parameter name="inclination" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="19">upwards angle in deg from the xz plane: "up-down" component.</doc>
+          <type name="gfloat" c:type="float*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="math_intersect_lines_2d"
+              c:identifier="g3k_math_intersect_lines_2d">
+      <source-position filename="src/g3k-math.h" line="33"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve"
+             filename="src/g3k-math.c"
+             line="70">TRUE if the lines intersect, else FALSE.
+
+2 lines are given by 2 consecutive (x,y) points each.
+Based on an algorithm in Andre LeMothe's
+"Tricks of the Windows Game Programming Gurus".
+Implementation from https://stackoverflow.com/a/1968345</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="p0" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="64">The first point of the first line.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="p1" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="65">The second point of the first line.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="p2" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="66">The first point of the second line.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="p3" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="67">The second point of the second line.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+        <parameter name="intersection" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="68">The resulting intersection point, if the lines intersect.</doc>
+          <type name="Graphene.Point" c:type="graphene_point_t*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="math_matrix_set_translation_point"
+              c:identifier="g3k_math_matrix_set_translation_point">
+      <source-position filename="src/g3k-math.h" line="29"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="matrix" transfer-ownership="none">
+          <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+        </parameter>
+        <parameter name="point" transfer-ownership="none">
+          <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="math_sphere_to_3d_coords"
+              c:identifier="g3k_math_sphere_to_3d_coords">
+      <source-position filename="src/g3k-math.h" line="46"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="azimuth" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="161">rotation around y axis, starting at -z. "left-right" component.</doc>
+          <type name="gfloat" c:type="float"/>
+        </parameter>
+        <parameter name="inclination" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="162">rotation upwards from xz plane. "up-down" component".</doc>
+          <type name="gfloat" c:type="float"/>
+        </parameter>
+        <parameter name="distance" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="163">the radius of the sphere</doc>
+          <type name="gfloat" c:type="float"/>
+        </parameter>
+        <parameter name="point" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-math.c"
+               line="164">the resulting point in 3D space on the surface of a sphere around
+(0,0,0) with @distance.</doc>
+          <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="settings_connect_and_apply"
+              c:identifier="g3k_settings_connect_and_apply">
+      <doc xml:space="preserve"
+           filename="src/g3k-settings.c"
+           line="69">Use this convenience function when you don't want to initially read a config
+value from the settings, and then connect a callback to when the value
+changes.
+
+Instead write only one callback that handles initially setting the value, as
+well as any updates to this value.</doc>
+      <source-position filename="src/g3k-settings.h" line="27"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="callback"
+                   transfer-ownership="none"
+                   scope="async"
+                   closure="3">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="71">A function that will be called with the given
+@key and @data 1) immediately and 2) when the value for the given key is
+updated.</doc>
+          <type name="GObject.Callback" c:type="GCallback"/>
+        </parameter>
+        <parameter name="schema_id" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="key" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="74">The settings key</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </parameter>
+        <parameter name="data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="75">A pointer that will be passed to the update callback.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="settings_destroy" c:identifier="g3k_settings_destroy">
+      <source-position filename="src/g3k-settings.h" line="24"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
+    <function name="settings_get_instance"
+              c:identifier="g3k_settings_get_instance">
+      <source-position filename="src/g3k-settings.h" line="21"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve"
+             filename="src/g3k-settings.c"
+             line="30">The #GSettings for xrdesktop</doc>
+        <type name="Gio.Settings" c:type="GSettings*"/>
+      </return-value>
+      <parameters>
+        <parameter name="schema_id" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="settings_is_schema_installed"
+              c:identifier="g3k_settings_is_schema_installed">
+      <source-position filename="src/g3k-settings.h" line="18"/>
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="schema_id" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="settings_update_double_val"
+              c:identifier="g3k_settings_update_double_val">
+      <doc xml:space="preserve"
+           filename="src/g3k-settings.c"
+           line="103">Convencience callback that can be registered when no action is required on
+an update of a double value.</doc>
+      <source-position filename="src/g3k-settings.h" line="33"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="settings" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="105">The gsettings</doc>
+          <type name="Gio.Settings" c:type="GSettings*"/>
+        </parameter>
+        <parameter name="key" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="106">The key</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </parameter>
+        <parameter name="val"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="107">Pointer to a double value to be updated</doc>
+          <type name="gdouble" c:type="double*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="settings_update_gboolean_val"
+              c:identifier="g3k_settings_update_gboolean_val">
+      <doc xml:space="preserve"
+           filename="src/g3k-settings.c"
+           line="133">Convencience callback that can be registered when no action is required on
+an update of a gboolean value.</doc>
+      <source-position filename="src/g3k-settings.h" line="37"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="settings" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="135">The gsettings</doc>
+          <type name="Gio.Settings" c:type="GSettings*"/>
+        </parameter>
+        <parameter name="key" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="136">The key</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </parameter>
+        <parameter name="val"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="137">Pointer to an gboolean value to be updated</doc>
+          <type name="gboolean" c:type="gboolean*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="settings_update_int_val"
+              c:identifier="g3k_settings_update_int_val">
+      <doc xml:space="preserve"
+           filename="src/g3k-settings.c"
+           line="118">Convencience callback that can be registered when no action is required on
+an update of a int value.</doc>
+      <source-position filename="src/g3k-settings.h" line="35"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="settings" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="120">The gsettings</doc>
+          <type name="Gio.Settings" c:type="GSettings*"/>
+        </parameter>
+        <parameter name="key" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="121">The key</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </parameter>
+        <parameter name="val"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="src/g3k-settings.c"
+               line="122">Pointer to an int value to be updated</doc>
+          <type name="gint" c:type="int*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="transform_lock_string"
+              c:identifier="g3k_transform_lock_string">
+      <source-position filename="src/g3k-controller.h" line="117"/>
+      <return-value transfer-ownership="none">
+        <type name="utf8" c:type="const gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="lock" transfer-ownership="none">
+          <type name="TransformLock" c:type="G3kTransformLock"/>
+        </parameter>
+      </parameters>
+    </function>
+  </namespace>
+</repository>

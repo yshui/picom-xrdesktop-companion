@@ -4,9 +4,11 @@ authors = ["Yuxuan Shui <yshuiv7@gmail.com>"]
 build = "build.rs"
 version = "0.15.0"
 edition = "2021"
-[package.metadata.system-deps.xrdesktop_0_15]
-name = "xrdesktop-0.15"
-version = "0.15"
+
+[package.metadata.system-deps.xrdesktop_0_16]
+name = "xrdesktop-0.16"
+version = "0.16"
+
 [package.metadata.docs.rs]
 features = ["dox"]
 
@@ -18,6 +20,7 @@ system-deps = "6"
 
 [dependencies]
 libc = "0.2"
+g3k = { path = "../../g3k/sys", package = "g3k-sys" }
 
 [dependencies.graphene]
 package = "graphene-sys"
@@ -43,9 +46,13 @@ git = "https://github.com/gtk-rs/gtk-rs-core"
 package = "gobject-sys"
 git = "https://github.com/gtk-rs/gtk-rs-core"
 
+[dependencies.vulkan]
+package = "vulkan-sys"
+version = "0"
+
 [dev-dependencies]
 shell-words = "1.0.0"
 tempfile = "3"
 
 [features]
-dox = []
+dox = ["gio/dox", "glib/dox", "gobject/dox", "gxr/dox", "graphene/dox", "gulkan/dox"]

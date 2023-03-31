@@ -1,6 +1,6 @@
 [package]
-name = "xrd"
-version = "0.15.0"
+name = "g3k"
+version = "0.16.0"
 authors = ["Yuxuan Shui <yshuiv7@gmail.com>"]
 edition = "2021"
 
@@ -9,7 +9,6 @@ graphene = { package = "graphene-rs", git = "https://github.com/gtk-rs/gtk-rs-co
 glib = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 gio = { git = "https://github.com/gtk-rs/gtk-rs-core" }
 gdk = { git = "https://github.com/gtk-rs/gtk3-rs" }
-ffi = { package = "xrd-sys", path = "sys" }
-gxr = { path = "../gxr" }
+ffi = { package = "g3k-sys", path = "sys" }
 gulkan = { path = "../gulkan" }
 libc = "0.2"

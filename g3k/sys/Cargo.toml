@@ -1,19 +1,19 @@
 [package]
-name = "gulkan-sys"
+name = "g3k-sys"
 authors = ["Yuxuan Shui <yshuiv7@gmail.com>"]
 build = "build.rs"
-version = "0.16.0"
+version = "0.15.0"
 edition = "2021"
 
-[package.metadata.system-deps.gulkan_0_16]
-name = "gulkan-0.16"
+[package.metadata.system-deps.g3k_0_16]
+name = "g3k-0.16"
 version = "0.16"
 
 [package.metadata.docs.rs]
 features = ["dox"]
 
 [lib]
-name = "gulkan_sys"
+name = "xrd_sys"
 
 [build-dependencies]
 system-deps = "6"
@@ -21,33 +21,37 @@ system-deps = "6"
 [dependencies]
 libc = "0.2"
 
-[dependencies.glib]
-package = "glib-sys"
-git = "https://github.com/gtk-rs/gtk-rs-core"
-
-[dependencies.gdk-pixbuf]
-package = "gdk-pixbuf-sys"
-git = "https://github.com/gtk-rs/gtk-rs-core"
-
-[dependencies.cairo]
-package = "cairo-sys-rs"
-git = "https://github.com/gtk-rs/gtk-rs-core"
-
-[dependencies.vulkan]
-package = "vulkan-sys"
-version = "0"
+[dependencies.gulkan]
+path = "../../gulkan/sys"
+package = "gulkan-sys"
 
 [dependencies.graphene]
 package = "graphene-sys"
+git = "https://github.com/gtk-rs/gtk-rs-core"
+
+[dependencies.gio]
+package = "gio-sys"
+git = "https://github.com/gtk-rs/gtk-rs-core"
+
+[dependencies.gxr]
+package = "gxr-sys"
+path = "../../gxr/sys"
+
+[dependencies.glib]
+package = "glib-sys"
 git = "https://github.com/gtk-rs/gtk-rs-core"
 
 [dependencies.gobject]
 package = "gobject-sys"
 git = "https://github.com/gtk-rs/gtk-rs-core"
 
+[dependencies.vulkan]
+package = "vulkan-sys"
+version = "0"
+
 [dev-dependencies]
 shell-words = "1.0.0"
 tempfile = "3"
 
 [features]
-dox = ["glib/dox", "gobject/dox", "graphene/dox", "cairo/dox", "gdk-pixbuf/dox"]
+dox = ["gio/dox", "glib/dox", "gobject/dox", "graphene/dox", "gulkan/dox"]

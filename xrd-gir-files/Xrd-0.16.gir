@@ -1,0 +1,1109 @@
+<?xml version="1.0"?>
+<!-- This file was automatically generated from C sources - DO NOT EDIT!
+To affect the contents of this file, edit the original C definitions,
+and/or use gtk-doc annotations.  -->
+<repository version="1.2"
+            xmlns="http://www.gtk.org/introspection/core/1.0"
+            xmlns:c="http://www.gtk.org/introspection/c/1.0"
+            xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <include name="G3k" version="0.16"/>
+  <include name="Gdk" version="3.0"/>
+  <include name="GdkPixbuf" version="2.0"/>
+  <include name="Graphene" version="1.0"/>
+  <include name="Gulkan" version="0.16"/>
+  <include name="Gxr" version="0.16"/>
+  <include name="Json" version="1.0"/>
+  <include name="cairo" version="1.0"/>
+  <package name="xrdesktop-0.16"/>
+  <c:include name="xrd.h"/>
+  <namespace name="Xrd"
+             version="0.16"
+             shared-library="libxrdesktop-0.16.so.0"
+             c:identifier-prefixes="Xrd"
+             c:symbol-prefixes="xrd">
+    <record name="ClickEvent" c:type="XrdClickEvent">
+      <doc xml:space="preserve"
+           filename="src/xrd-input-synth.h"
+           line="34">A 2D mouse click event.</doc>
+      <source-position filename="src/xrd-input-synth.h" line="51"/>
+      <field name="object" writable="1">
+        <type name="G3k.Object" c:type="G3kObject*"/>
+      </field>
+      <field name="position" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-input-synth.h"
+             line="37">A #graphene_point_t 2D screen position for the click.</doc>
+        <type name="Graphene.Point" c:type="graphene_point_t*"/>
+      </field>
+      <field name="button" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-input-synth.h"
+             line="38">The #XrdInputSynthButton identifier of the mouse button.</doc>
+        <type name="InputSynthButton" c:type="XrdInputSynthButton"/>
+      </field>
+      <field name="state" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-input-synth.h"
+             line="39">A #gboolean that is %TRUE when pressed and %FALSE when released.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="controller" writable="1">
+        <type name="G3k.Controller" c:type="G3kController*"/>
+      </field>
+    </record>
+    <class name="InputSynth"
+           c:symbol-prefix="input_synth"
+           c:type="XrdInputSynth"
+           parent="GObject.Object"
+           glib:type-name="XrdInputSynth"
+           glib:get-type="xrd_input_synth_get_type"
+           glib:type-struct="InputSynthClass">
+      <source-position filename="src/xrd-input-synth.h" line="20"/>
+      <constructor name="new" c:identifier="xrd_input_synth_new">
+        <source-position filename="src/xrd-input-synth.h" line="73"/>
+        <return-value transfer-ownership="full">
+          <type name="InputSynth" c:type="XrdInputSynth*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="G3k.Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="create_action_set"
+              c:identifier="xrd_input_synth_create_action_set">
+        <source-position filename="src/xrd-input-synth.h" line="88"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="src/xrd-input-synth.c"
+               line="390">an #GxrActionSet that will be centrally owned by,
+updated in and destroyed in #XrdShell.</doc>
+          <type name="Gxr.ActionSet" c:type="GxrActionSet*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-input-synth.c"
+                 line="388">the #XrdInputSynth</doc>
+            <type name="InputSynth" c:type="XrdInputSynth*"/>
+          </instance-parameter>
+          <parameter name="manifest" transfer-ownership="none">
+            <type name="Gxr.Manifest" c:type="GxrManifest*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="move_cursor" c:identifier="xrd_input_synth_move_cursor">
+        <source-position filename="src/xrd-input-synth.h" line="82"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="InputSynth" c:type="XrdInputSynth*"/>
+          </instance-parameter>
+          <parameter name="window" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </parameter>
+          <parameter name="controller_pose" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+          <parameter name="intersection" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reset_press_state"
+              c:identifier="xrd_input_synth_reset_press_state">
+        <doc xml:space="preserve"
+             filename="src/xrd-input-synth.c"
+             line="139">Issue a button release event for every button that previously was used for a
+button press event, but has not been released yet.
+
+When calling this function, also consider xrd_input_synth_reset_scroll().</doc>
+        <source-position filename="src/xrd-input-synth.h" line="79"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-input-synth.c"
+                 line="141">The #XrdInputSynth</doc>
+            <type name="InputSynth" c:type="XrdInputSynth*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="reset_scroll" c:identifier="xrd_input_synth_reset_scroll">
+        <doc xml:space="preserve"
+             filename="src/xrd-input-synth.c"
+             line="435">Resets the internal state of the scrolling, so the in-flight scroll distance
+on the touchpad is discarded.
+
+When calling this function, also consider xrd_input_synth_reset_press_state()</doc>
+        <source-position filename="src/xrd-input-synth.h" line="76"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-input-synth.c"
+                 line="437">The #XrdInputSynth</doc>
+            <type name="InputSynth" c:type="XrdInputSynth*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <glib:signal name="click-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="move-cursor-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <enumeration name="InputSynthButton" c:type="XrdInputSynthButton">
+      <source-position filename="src/xrd-input-synth.h" line="32"/>
+      <member name="eft_button" value="1" c:identifier="LEFT_BUTTON">
+      </member>
+      <member name="iddle_button" value="2" c:identifier="MIDDLE_BUTTON">
+      </member>
+      <member name="ight_button" value="3" c:identifier="RIGHT_BUTTON">
+      </member>
+      <member name="croll_up" value="4" c:identifier="SCROLL_UP">
+      </member>
+      <member name="croll_down" value="5" c:identifier="SCROLL_DOWN">
+      </member>
+      <member name="croll_left" value="6" c:identifier="SCROLL_LEFT">
+      </member>
+      <member name="croll_right" value="7" c:identifier="SCROLL_RIGHT">
+      </member>
+    </enumeration>
+    <record name="InputSynthClass"
+            c:type="XrdInputSynthClass"
+            glib:is-gtype-struct-for="InputSynth">
+      <source-position filename="src/xrd-input-synth.h" line="20"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="MoveCursorEvent" c:type="XrdMoveCursorEvent">
+      <doc xml:space="preserve"
+           filename="src/xrd-input-synth.h"
+           line="53">A 2D mouse move event.
+
+Ignoring this events means only updating the cursor position in VR so it
+does not appear frozen, but don't actually synthesize mouse move events.</doc>
+      <source-position filename="src/xrd-input-synth.h" line="70"/>
+      <field name="window" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-input-synth.h"
+             line="55">The #XrdWindow on which the cursor was moved.</doc>
+        <type name="Window" c:type="XrdWindow*"/>
+      </field>
+      <field name="position" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-input-synth.h"
+             line="56">A #graphene_point_t with the current 2D screen position.</doc>
+        <type name="Graphene.Point" c:type="graphene_point_t*"/>
+      </field>
+      <field name="ignore" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-input-synth.h"
+             line="57">A #gboolean wheather the synthesis should be ignored.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+    </record>
+    <class name="ShakeCompensator"
+           c:symbol-prefix="shake_compensator"
+           c:type="XrdShakeCompensator"
+           parent="GObject.Object"
+           glib:type-name="XrdShakeCompensator"
+           glib:get-type="xrd_shake_compensator_get_type"
+           glib:type-struct="ShakeCompensatorClass">
+      <source-position filename="src/xrd-shake-compensator.h" line="20"/>
+      <constructor name="new" c:identifier="xrd_shake_compensator_new">
+        <source-position filename="src/xrd-shake-compensator.h" line="27"/>
+        <return-value transfer-ownership="full">
+          <type name="ShakeCompensator" c:type="XrdShakeCompensator*"/>
+        </return-value>
+      </constructor>
+      <method name="get_button"
+              c:identifier="xrd_shake_compensator_get_button">
+        <source-position filename="src/xrd-shake-compensator.h" line="49"/>
+        <return-value transfer-ownership="none">
+          <type name="InputSynthButton" c:type="XrdInputSynthButton"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShakeCompensator" c:type="XrdShakeCompensator*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_drag" c:identifier="xrd_shake_compensator_is_drag">
+        <source-position filename="src/xrd-shake-compensator.h" line="36"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShakeCompensator" c:type="XrdShakeCompensator*"/>
+          </instance-parameter>
+          <parameter name="window" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </parameter>
+          <parameter name="controller_pose" transfer-ownership="none">
+            <type name="Graphene.Matrix" c:type="graphene_matrix_t*"/>
+          </parameter>
+          <parameter name="intersection" transfer-ownership="none">
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="is_recording"
+              c:identifier="xrd_shake_compensator_is_recording">
+        <source-position filename="src/xrd-shake-compensator.h" line="52"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShakeCompensator" c:type="XrdShakeCompensator*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="record" c:identifier="xrd_shake_compensator_record">
+        <source-position filename="src/xrd-shake-compensator.h" line="55"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShakeCompensator" c:type="XrdShakeCompensator*"/>
+          </instance-parameter>
+          <parameter name="position" transfer-ownership="none">
+            <type name="Graphene.Point" c:type="graphene_point_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="replay_move_queue"
+              c:identifier="xrd_shake_compensator_replay_move_queue">
+        <source-position filename="src/xrd-shake-compensator.h" line="30"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShakeCompensator" c:type="XrdShakeCompensator*"/>
+          </instance-parameter>
+          <parameter name="synth" transfer-ownership="none">
+            <type name="InputSynth" c:type="XrdInputSynth*"/>
+          </parameter>
+          <parameter name="move_cursor_event_signal" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="hover_window" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reset" c:identifier="xrd_shake_compensator_reset">
+        <source-position filename="src/xrd-shake-compensator.h" line="46"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShakeCompensator" c:type="XrdShakeCompensator*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="start_recording"
+              c:identifier="xrd_shake_compensator_start_recording">
+        <source-position filename="src/xrd-shake-compensator.h" line="42"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShakeCompensator" c:type="XrdShakeCompensator*"/>
+          </instance-parameter>
+          <parameter name="button" transfer-ownership="none">
+            <type name="InputSynthButton" c:type="XrdInputSynthButton"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="ShakeCompensatorClass"
+            c:type="XrdShakeCompensatorClass"
+            glib:is-gtype-struct-for="ShakeCompensator">
+      <source-position filename="src/xrd-shake-compensator.h" line="20"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="Shell"
+           c:symbol-prefix="shell"
+           c:type="XrdShell"
+           parent="GObject.Object"
+           glib:type-name="XrdShell"
+           glib:get-type="xrd_shell_get_type"
+           glib:type-struct="ShellClass">
+      <source-position filename="src/xrd-shell.h" line="30"/>
+      <constructor name="new" c:identifier="xrd_shell_new">
+        <source-position filename="src/xrd-shell.h" line="37"/>
+        <return-value transfer-ownership="full">
+          <type name="Shell" c:type="XrdShell*"/>
+        </return-value>
+      </constructor>
+      <constructor name="new_from_g3k" c:identifier="xrd_shell_new_from_g3k">
+        <source-position filename="src/xrd-shell.h" line="40"/>
+        <return-value transfer-ownership="full">
+          <type name="Shell" c:type="XrdShell*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="G3k.Context" c:type="G3kContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_vulkan_extensions"
+                   c:identifier="xrd_shell_new_from_vulkan_extensions"
+                   introspectable="0">
+        <source-position filename="src/xrd-shell.h" line="33"/>
+        <return-value transfer-ownership="full">
+          <type name="Shell" c:type="XrdShell*"/>
+        </return-value>
+        <parameters>
+          <parameter name="instance_ext_list" transfer-ownership="none">
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="device_ext_list" transfer-ownership="none">
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_button" c:identifier="xrd_shell_add_button">
+        <doc xml:space="preserve"
+             filename="src/xrd-shell.c"
+             line="274">Buttons are special windows that can not be grabbed and dragged around.
+Instead a button's press_callback is called on the grab action.</doc>
+        <source-position filename="src/xrd-shell.h" line="56"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="276">The #XrdShell</doc>
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+          <parameter name="button" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="277">The button (#XrdWindow) to add.</doc>
+            <type name="G3k.Button" c:type="G3kButton*"/>
+          </parameter>
+          <parameter name="position" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="278">World space position of the button.</doc>
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+          <parameter name="press_callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="279">A function that will be called when the
+button is grabbed.</doc>
+            <type name="GObject.Callback" c:type="GCallback"/>
+          </parameter>
+          <parameter name="press_callback_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="281">User pointer passed to @press_callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="parent" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="282">Parent node in the scene graph. May be NULL to choose the root node.</doc>
+            <type name="G3k.Object" c:type="G3kObject*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_window" c:identifier="xrd_shell_add_window">
+        <source-position filename="src/xrd-shell.h" line="43"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="201">The #XrdShell</doc>
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+          <parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="202">The #XrdWindow to add</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </parameter>
+          <parameter name="parent" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="203">The parent node in the scene graph. If NULL, the root node is used.</doc>
+            <type name="G3k.Object" c:type="G3kObject*"/>
+          </parameter>
+          <parameter name="draggable" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="204">Desktop windows should set this to TRUE. This will enable the
+expected interaction of being able to grab windows and drag them around.
+It should be set to FALSE for example for
+ - child windows
+ - windows in a container that is attached to the FOV, a controller, etc.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="lookup_key"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="209">If looking up the #XrdWindow by a key with
+xrd_shell_lookup_window() should be enabled, set to != NULL.
+Note that an #XrdWindow can be replaced by the overlay-scene switch.
+Therefore the #XrdWindow should always be looked up instead of cached.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_desktop_cursor"
+              c:identifier="xrd_shell_get_desktop_cursor">
+        <source-position filename="src/xrd-shell.h" line="88"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/xrd-shell.c"
+               line="410">The #G3kCursor.</doc>
+          <type name="G3k.Cursor" c:type="G3kCursor*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="408">The #XrdShell</doc>
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_g3k"
+              c:identifier="xrd_shell_get_g3k"
+              introspectable="0">
+        <source-position filename="src/xrd-shell.h" line="70"/>
+        <return-value>
+          <type name="G3k.Context" c:type="G3kContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_input_synth" c:identifier="xrd_shell_get_input_synth">
+        <source-position filename="src/xrd-shell.h" line="82"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/xrd-shell.c"
+               line="504">A #XrdInputSynth.</doc>
+          <type name="InputSynth" c:type="XrdInputSynth*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="502">The #XrdShell</doc>
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_keyboard"
+              c:identifier="xrd_shell_get_keyboard"
+              introspectable="0">
+        <source-position filename="src/xrd-shell.h" line="64"/>
+        <return-value>
+          <type name="G3k.Keyboard" c:type="G3kKeyboard*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_keyboard_window"
+              c:identifier="xrd_shell_get_keyboard_window">
+        <source-position filename="src/xrd-shell.h" line="67"/>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve"
+               filename="src/xrd-shell.c"
+               line="363">The window that is currently used for
+keyboard input. Can be %NULL.</doc>
+          <type name="Window" c:type="XrdWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="361">The #XrdShell</doc>
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_synth_hovered"
+              c:identifier="xrd_shell_get_synth_hovered">
+        <source-position filename="src/xrd-shell.h" line="73"/>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve"
+               filename="src/xrd-shell.c"
+               line="382">If the controller used for synthesizing
+input is hovering over an #XrdWindow, return this window, else %NULL.</doc>
+          <type name="Window" c:type="XrdWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="380">The #XrdShell</doc>
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="lookup_window" c:identifier="xrd_shell_lookup_window">
+        <source-position filename="src/xrd-shell.h" line="50"/>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve"
+               filename="src/xrd-shell.c"
+               line="260">a #XrdWindow</doc>
+          <type name="Window" c:type="XrdWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="257">The #XrdShell</doc>
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+          <parameter name="key"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="258">The key</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="poll_runtime_events"
+              c:identifier="xrd_shell_poll_runtime_events">
+        <source-position filename="src/xrd-shell.h" line="85"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_window" c:identifier="xrd_shell_remove_window">
+        <doc xml:space="preserve"
+             filename="src/xrd-shell.c"
+             line="454">Removes an #XrdWindow from the management of the #XrdShell and the
+#G3kObjectManager.
+Note that the #XrdWindow will not be destroyed by this function.</doc>
+        <source-position filename="src/xrd-shell.h" line="53"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="456">The #XrdShell</doc>
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+          <parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-shell.c"
+                 line="457">The #XrdWindow to remove.</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_pin" c:identifier="xrd_shell_set_pin">
+        <source-position filename="src/xrd-shell.h" line="76"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+          <parameter name="win" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </parameter>
+          <parameter name="pin" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="show_pinned_only"
+              c:identifier="xrd_shell_show_pinned_only">
+        <source-position filename="src/xrd-shell.h" line="79"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Shell" c:type="XrdShell*"/>
+          </instance-parameter>
+          <parameter name="pinned_only" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <glib:signal name="click-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="keyboard-press-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="move-cursor-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="ShellClass"
+            c:type="XrdShellClass"
+            glib:is-gtype-struct-for="Shell">
+      <source-position filename="src/xrd-shell.h" line="30"/>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <constant name="TIP_VIEWPORT_SCALE"
+              value="3"
+              c:type="XRD_TIP_VIEWPORT_SCALE">
+      <source-position filename="src/xrd-shell.h" line="27"/>
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <class name="Window"
+           c:symbol-prefix="window"
+           c:type="XrdWindow"
+           parent="G3k.Plane"
+           glib:type-name="XrdWindow"
+           glib:get-type="xrd_window_get_type"
+           glib:type-struct="WindowClass">
+      <source-position filename="src/xrd-window.h" line="20"/>
+      <constructor name="new" c:identifier="xrd_window_new">
+        <source-position filename="src/xrd-window.h" line="47"/>
+        <return-value transfer-ownership="full">
+          <type name="Window" c:type="XrdWindow*"/>
+        </return-value>
+        <parameters>
+          <parameter name="g3k" transfer-ownership="none">
+            <type name="G3k.Context" c:type="G3kContext*"/>
+          </parameter>
+          <parameter name="title" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="native"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="size_pixels" transfer-ownership="none">
+            <type name="Vulkan.Extent2D" c:type="VkExtent2D"/>
+          </parameter>
+          <parameter name="size_meters" transfer-ownership="none">
+            <type name="Graphene.Size" c:type="graphene_size_t*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_child" c:identifier="xrd_window_add_child">
+        <doc xml:space="preserve"
+             filename="src/xrd-window.c"
+             line="518">x axis points right, y axis points up.</doc>
+        <source-position filename="src/xrd-window.h" line="65"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="520">The #XrdWindow</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="child" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="521">An already existing window.
+window's center in pixels.</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="close" c:identifier="xrd_window_close">
+        <source-position filename="src/xrd-window.h" line="86"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="601">The #XrdWindow
+MUST be called when destroying a window to free its resources.</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_parent"
+              c:identifier="xrd_window_get_parent"
+              introspectable="0">
+        <source-position filename="src/xrd-window.h" line="95"/>
+        <return-value>
+          <type name="Window" c:type="XrdWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pixel_intersection"
+              c:identifier="xrd_window_get_pixel_intersection">
+        <source-position filename="src/xrd-window.h" line="60"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="431">The #XrdWindow</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="intersection_3d" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="432">A #graphene_point3d_t intersection point in meters.</doc>
+            <type name="Graphene.Point3D" c:type="graphene_point3d_t*"/>
+          </parameter>
+          <parameter name="intersection_pixels" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="433">Intersection in object coordinates with origin at
+top-left in pixels.</doc>
+            <type name="Graphene.Point" c:type="graphene_point_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_rect"
+              c:identifier="xrd_window_get_rect"
+              introspectable="0">
+        <source-position filename="src/xrd-window.h" line="57"/>
+        <return-value>
+          <type name="WindowRect" c:type="XrdWindowRect*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="has_parent" c:identifier="xrd_window_has_parent">
+        <source-position filename="src/xrd-window.h" line="92"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_pinned" c:identifier="xrd_window_is_pinned">
+        <source-position filename="src/xrd-window.h" line="83"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_selected" c:identifier="xrd_window_is_selected">
+        <source-position filename="src/xrd-window.h" line="71"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="reset_color" c:identifier="xrd_window_reset_color">
+        <source-position filename="src/xrd-window.h" line="74"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_color" c:identifier="xrd_window_set_color">
+        <source-position filename="src/xrd-window.h" line="89"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="color" transfer-ownership="none">
+            <type name="Graphene.Vec4" c:type="const graphene_vec4_t*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_flip_y" c:identifier="xrd_window_set_flip_y">
+        <source-position filename="src/xrd-window.h" line="77"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="flip_y" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_pin" c:identifier="xrd_window_set_pin">
+        <source-position filename="src/xrd-window.h" line="80"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="573">The #XrdWindow</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="pinned" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="574">The pin status to set this window to</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="hide_unpinned" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="575">If TRUE, the window will be hidden if it is unpinned, and
+shown if it is pinned. This corresponds to the "show only pinned windows"
+mode set up in #XrdShell.
+If FALSE, windows are always shown.
+Note that @hide_unpinned only determines initial visibility, and does not
+keep track of further mode changes.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_rect" c:identifier="xrd_window_set_rect">
+        <source-position filename="src/xrd-window.h" line="54"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="rect" transfer-ownership="none">
+            <type name="WindowRect" c:type="XrdWindowRect*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_selection_color"
+              c:identifier="xrd_window_set_selection_color">
+        <source-position filename="src/xrd-window.h" line="68"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="is_selected" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="native"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="gpointer" c:type="gpointer"/>
+      </property>
+      <property name="title"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none"
+                default-value="Untitled">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <glib:signal name="button-press-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="button-release-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="destroy" when="cleanup" no-recurse="1" no-hooks="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="motion-notify-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="scroll-event" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gdk.Event"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="show" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="WindowClass"
+            c:type="XrdWindowClass"
+            glib:is-gtype-struct-for="Window">
+      <source-position filename="src/xrd-window.h" line="20"/>
+      <field name="parent_class">
+        <type name="G3k.PlaneClass" c:type="G3kPlaneClass"/>
+      </field>
+    </record>
+    <record name="WindowRect" c:type="XrdWindowRect">
+      <doc xml:space="preserve"
+           filename="src/xrd-window.h"
+           line="33">Describes for example a rectangle on a submitted texture.</doc>
+      <source-position filename="src/xrd-window.h" line="44"/>
+      <field name="bl" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-window.h"
+             line="36">The bottom right point of the rect</doc>
+        <type name="WindowRectPoint" c:type="XrdWindowRectPoint"/>
+      </field>
+      <field name="tr" writable="1">
+        <type name="WindowRectPoint" c:type="XrdWindowRectPoint"/>
+      </field>
+    </record>
+    <record name="WindowRectPoint" c:type="XrdWindowRectPoint">
+      <source-position filename="src/xrd-window.h" line="31"/>
+      <field name="x" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-window.h"
+             line="24">The x coordinate of the point</doc>
+        <type name="guint32" c:type="uint32_t"/>
+      </field>
+      <field name="y" writable="1">
+        <doc xml:space="preserve"
+             filename="src/xrd-window.h"
+             line="25">The y coordinate of the point</doc>
+        <type name="guint32" c:type="uint32_t"/>
+      </field>
+    </record>
+  </namespace>
+</repository>

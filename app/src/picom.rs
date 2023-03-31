@@ -35,7 +35,7 @@ trait Compositor {
     fn win_unmapped(&self, wid: u32) -> zbus::Result<()>;
 }
 
-#[dbus_proxy(interface = "picom.Window")]
+#[dbus_proxy(interface = "picom.Window", assume_defaults = false)]
 trait Window {
     /// ClientWin property
     #[dbus_proxy(property)]

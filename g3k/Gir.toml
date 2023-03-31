@@ -1,12 +1,12 @@
 [options]
 girs_directories = ["../gir-files", "../xrd-gir-files"]
-library = "Xrd"
+library = "G3k"
 version = "0.16"
-min_cfg_version = "0.6"
+min_cfg_version = "0.16"
 work_mode = "normal"
 concurrency = "send"
 
-external_libraries = [ "Gio", "Gdk", "GLib", "GObject", "Gxr", "Graphene", "Gulkan" ]
+external_libraries = [ "Gio", "Gdk", "GLib", "GObject", "Graphene", "Gulkan" ]
 
 generate = [
 	"Xrd.WindowManager",

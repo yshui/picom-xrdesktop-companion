@@ -2,6 +2,7 @@
 members = [
   "xrd",
   "xrd/sys",
+  "g3k/sys",
   "gxr",
   "gxr/sys",
   "gulkan",

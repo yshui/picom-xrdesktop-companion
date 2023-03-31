@@ -1,17 +1,10 @@
 [options]
 girs_directories = ["../gir-files", "../xrd-gir-files"]
 library = "Gulkan"
-version = "0.15"
-min_cfg_version = "0.15"
+version = "0.16"
+min_cfg_version = "0.16"
 work_mode = "normal"
 concurrency = "send+sync"
 
 external_libraries = [ "GLib", "GObject", "Graphene", "cairo", "GdkPixbuf" ]
 generate = [ "Gulkan.Texture" ]
-
-[[object]]
-name = "Gulkan.Client"
-status = "generate"
-    [[object.function]]
-    name = "new_from_extensions"
-    ignore = true
