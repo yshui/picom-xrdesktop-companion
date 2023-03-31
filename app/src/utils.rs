@@ -13,10 +13,8 @@ pub enum Error {
 type Result<T, E = Error> = std::result::Result<T, E>;
 
 use std::any::Any;
-struct Request<T>(
-    Box<dyn FnOnce(&mut T) -> Box<dyn Any + Send> + Send>,
-    Sender<Box<dyn Any + Send>>,
-);
+type Closure<T> = Box<dyn FnOnce(&mut T) -> Box<dyn Any + Send> + Send>;
+struct Request<T>(Closure<T>, Sender<Box<dyn Any + Send>>);
 
 // feature: downcast_unchecked
 trait UnsafeAny<T> {

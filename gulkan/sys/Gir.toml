@@ -1,6 +1,6 @@
 
 [options]
-girs_directories = ["../gir-files", "../xrd-gir-files"]
+girs_directories = ["../../gir-files", "../../xrd-gir-files"]
 library = "Gulkan"
 version = "0.15"
 min_cfg_version = "0.15"

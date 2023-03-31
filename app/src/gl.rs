@@ -1,7 +1,12 @@
-use glium::{backend::Facade, framebuffer::ToColorAttachment, uniforms::AsUniformValue, Texture2d};
-use glutin::platform::{
-    unix::{RawHandle, WindowExtUnix},
-    ContextTraitExt,
+use glium::{
+    backend::Facade,
+    framebuffer::ToColorAttachment,
+    glutin::platform::{
+        unix::{RawHandle, WindowExtUnix},
+        ContextTraitExt,
+    },
+    uniforms::AsUniformValue,
+    GlObject, Texture2d,
 };
 use std::{collections::HashMap, ffi::c_void, os::unix::prelude::RawFd, sync::Arc};
 
@@ -42,7 +47,7 @@ pub enum Error {
     #[error("can't load libGLX {0}")]
     Loading(#[from] libloading::Error),
     #[error("{0}")]
-    GlutinOs(#[from] glutin::error::OsError),
+    GlutinOs(#[from] glium::glutin::error::OsError),
     #[error("{0}")]
     TextureImport(#[from] glium::texture::TextureImportError),
     #[error("{0}")]
@@ -126,10 +131,12 @@ implement_vertex!(Vertex, position);
 
 impl GlInner {
     fn new(x11: Arc<RustConnection>, screen: u32) -> Result<GlInner> {
-        use glutin::platform::unix::EventLoopBuilderExtUnix;
-        let el = glutin::event_loop::EventLoopBuilder::<()>::new().with_any_thread(true).build();
-        let wb = glutin::window::WindowBuilder::new().with_visible(false);
-        let cb = glutin::ContextBuilder::new()
+        use glium::glutin::platform::unix::EventLoopBuilderExtUnix;
+        let el = glium::glutin::event_loop::EventLoopBuilder::<()>::new()
+            .with_any_thread(true)
+            .build();
+        let wb = glium::glutin::window::WindowBuilder::new().with_visible(false);
+        let cb = glium::glutin::ContextBuilder::new()
             .with_vsync(false)
             .with_multisampling(0);
         let display = glium::Display::new(wb, cb, &el)?;
@@ -248,9 +255,7 @@ impl GlInner {
             )
         };
         if num_config == 0 {
-            return Err(Error::NoFbConfig(
-                visual.visual_id,
-            ));
+            return Err(Error::NoFbConfig(visual.visual_id));
         }
         let configs = unsafe { std::slice::from_raw_parts(config, num_config as _) };
         for &config in configs {
@@ -317,14 +322,12 @@ impl GlInner {
                 continue;
             }
             let (fb_depth, _) = self.find_visual(fb_visual as _).unwrap();
-            if fb_depth != depth as u8 {
+            if fb_depth != depth {
                 continue;
             }
             return Ok(config);
         }
-        Err(Error::NoFbConfig(
-            visual.visual_id,
-        ))
+        Err(Error::NoFbConfig(visual.visual_id))
     }
     fn bind_texture(
         &mut self,
@@ -446,6 +449,25 @@ impl GlInner {
         }
         Ok(())
     }
+    #[allow(dead_code)]
+    fn new_texture(&mut self, width: u32, height: u32) -> Result<u32> {
+        let texture = glium::texture::Texture2d::empty_with_format(
+            &self.glium,
+            glium::texture::UncompressedFloatFormat::U8U8U8U8,
+            glium::texture::MipmapsOption::NoMipmap,
+            width,
+            height,
+        )?;
+        let id = texture.get_id();
+        self.textures.insert(
+            texture.get_id() as usize,
+            TextureInner {
+                texture: AnyTexture2d::Linear(texture),
+                glxpixmap: None,
+            },
+        );
+        Ok(id)
+    }
     fn blit(&mut self, src: usize, dst: usize) -> Result<()> {
         use glium::uniform;
         let src = self.textures.get(&src).unwrap();
@@ -499,7 +521,6 @@ impl GlInner {
         use glium::texture::{
             Dimensions, ExternalTilingMode, ImportParameters, MipmapsOption, SrgbFormat,
         };
-        use glium::GlObject;
         use std::os::unix::io::FromRawFd;
         let texture = unsafe {
             SrgbTexture2d::new_from_fd(

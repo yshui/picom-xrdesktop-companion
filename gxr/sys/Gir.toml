@@ -1,9 +1,9 @@
 
 [options]
-girs_directories = ["../gir-files", "../xrd-gir-files"]
+girs_directories = ["../../gir-files", "../../xrd-gir-files"]
 library = "Gxr"
 version = "0.15"
 min_cfg_version = "0.15"
 work_mode = "sys"
 
-external_libraries = [ "Gio", "GLib", "GObject", "cairo", "GdkPixbuf", "Gdk" ]
+external_libraries = [ "Gio", "GLib", "GObject", "cairo", "GdkPixbuf" ]

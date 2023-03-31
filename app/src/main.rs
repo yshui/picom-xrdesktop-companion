@@ -220,13 +220,15 @@ impl std::fmt::Debug for App {
 
 impl Drop for App {
     fn drop(&mut self) {
-        let mut window_state = self.window_state.blocking_write();
-        // Drop the Windows to defuse the drop bombs
-        for (_, w) in window_state.windows.drain() {
-            let w = w.into_inner();
-            // We own window_state at this point
-            unsafe { w.drop_sync().unwrap() };
-        }
+        block_in_place(|| {
+            let mut window_state = self.window_state.blocking_write();
+            // Drop the Windows to defuse the drop bombs
+            for (_, w) in window_state.windows.drain() {
+                let w = w.into_inner();
+                // We own window_state at this point
+                unsafe { w.drop_sync().unwrap() };
+            }
+        })
     }
 }
 impl App {
@@ -276,7 +278,7 @@ impl App {
             input_synth,
             screen: screen as u32,
             x11,
-            display: std::env::var("DISPLAY").unwrap().replace(':', "_").replace('.', "_"),
+            display: std::env::var("DISPLAY").unwrap().replace([':', '.'], "_"),
             cursors: Default::default(),
             atoms,
             pending_windows: Default::default(),
@@ -334,7 +336,7 @@ impl App {
             })
         };
         let xrd_cursor = xrd_client.desktop_cursor().unwrap();
-        xrd_cursor.set_and_submit_texture(&cursor.texture);
+        xrd_cursor.set_and_submit_texture(cursor.texture.clone());
         xrd_cursor.set_hotspot(cursor.hotspot_x as _, cursor.hotspot_y as _);
         Ok(())
     }
@@ -425,17 +427,14 @@ impl App {
             InputEvent::KeyPresses { string } => {
                 debug!("key press {:?}", string);
                 block_in_place(|| {
-                    string
-                        .into_iter()
-                        .map(|ch| {
-                            (if ch == b'\n' as _ {
-                                input_synth.ascii_char(b'\r' as _)
-                            } else {
-                                input_synth.ascii_char(ch as _)
-                            })
-                            .map_err(Into::into)
+                    string.into_iter().try_for_each(|ch| {
+                        (if ch == b'\n' as _ {
+                            input_synth.ascii_char(b'\r' as _)
+                        } else {
+                            input_synth.ascii_char(ch as _)
                         })
-                        .collect()
+                        .map_err(Into::into)
+                    })
                 })
             }
         };
@@ -491,11 +490,13 @@ impl App {
 
         // feature: never_type
         // tokio task for receiving X events
-        let _: tokio::task::JoinHandle<Result<() /* ! */>> = spawn_blocking(move || loop {
-            let event = x11_clone.wait_for_event()?;
-            tx.blocking_send(event)?;
-            while let Some(event) = x11_clone.poll_for_event()? {
+        spawn_blocking(move || -> Result<()> {
+            loop {
+                let event = x11_clone.wait_for_event()?;
                 tx.blocking_send(event)?;
+                while let Some(event) = x11_clone.poll_for_event()? {
+                    tx.blocking_send(event)?;
+                }
             }
         });
         let (mut exit_rx, mut input_rx) = {
@@ -562,7 +563,7 @@ impl App {
             let (tx, exit_rx) = tokio::sync::mpsc::channel(1);
             xrd_client.connect_request_quit_event(move |_, reason| {
                 if reason.reason == gxr::sys::GXR_QUIT_SHUTDOWN {
-                    let _ = tx.blocking_send(reason.clone());
+                    let _ = tx.blocking_send(*reason);
                 }
             });
 
@@ -618,30 +619,28 @@ impl App {
                     let this = self.clone();
                     let mut window_state = this.window_state.write().await;
                     let w = window_state.windows.remove(&wid);
-                    match w {
-                        Some(w) =>  {
-                            let w = w.into_inner();
-                            window_state.client_window_to_window.remove(&w.client_wid);
-                            drop(window_state);
+                    if let Some(w) = w {
+                        let w = w.into_inner();
+                        window_state.client_window_to_window.remove(&w.client_wid);
+                        drop(window_state);
 
-                            // We have to remove window from window_state before handling any
-                            // further events, so we wouldn't close a window with the same wid that
-                            // is created _after_ we receive this event. That's why it is not part of
-                            // tokio::spawn.
-                            tokio::spawn(async move {
-                                let window_state = this.window_state.write().await;
-                                // window_state here is locked exclusively at this point.
-                                unsafe { w.drop().await.unwrap() };
-                                drop(window_state);
-                                debug!("{wid:#010x} dropped");
-                            });
-                        }
-                        None => {},
+                        // We have to remove window from window_state before handling any
+                        // further events, so we wouldn't close a window with the same wid that
+                        // is created _after_ we receive this event. That's why it is not part of
+                        // tokio::spawn.
+                        tokio::spawn(async move {
+                            let window_state = this.window_state.write().await;
+                            // window_state here is locked exclusively at this point.
+                            unsafe { w.drop().await.unwrap() };
+                            drop(window_state);
+                            debug!("{wid:#010x} dropped");
+                        });
                     }
                 }
                 input_event = input_rx.recv() => {
                     let input_event = input_event.unwrap();
                     let this = self.clone();
+                    #[allow(clippy::redundant_async_block)]
                     tokio::spawn(async move { this.handle_input_events(input_event).await });
                 }
                 exit = exit_rx.recv() => {
@@ -746,7 +745,7 @@ impl App {
 
         let xrd_window = w.xrd_window.get_mut();
         if refreshed {
-            xrd_window.set_and_submit_texture(&textures.remote_texture);
+            xrd_window.set_and_submit_texture(textures.remote_texture.clone());
         } else {
             xrd_window.submit_texture();
         }
@@ -833,7 +832,7 @@ impl App {
                     xrd_client.as_ptr(),
                     xrd_window.as_ptr(),
                     true as _,
-                    std::mem::transmute(wid as usize),
+                    wid as usize as *mut _,
                 )
             };
             xrd_window
@@ -1009,8 +1008,7 @@ impl App {
                 })
             })
             .collect();
-        let () = futs.try_collect().await?;
-        Ok(())
+        Ok(futs.try_collect().await?)
     }
 }
 
@@ -1031,8 +1029,10 @@ lazy_static::lazy_static! {
     pub static ref RENDERDOC: std::sync::Mutex<Option<RenderDoc>> =
         std::sync::Mutex::new(maybe_load_renderdoc());
 }
+
+type LockWheel = RefCell<Option<Pin<Box<dyn Generator<(), Return = (), Yield = ()>>>>>;
 thread_local! {
-    static LOCKWHEEL: RefCell<Option<Pin<Box<dyn Generator<(), Return=(), Yield=()>>>>> = RefCell::new(None);
+    static LOCKWHEEL: LockWheel = RefCell::new(None);
     static OLD_POLL_FN: RefCell<glib_sys::GPollFunc> = RefCell::new(None);
 }
 
@@ -1132,7 +1132,7 @@ fn main() -> Result<()> {
             lw.borrow_mut().take();
         });
     });
-    let result = runtime.block_on(ctx.clone().run());
+    let result = runtime.block_on(ctx.run());
     info!("App exited {:?}", result);
 
     // Stop glib mainloop

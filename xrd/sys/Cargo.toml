@@ -4,9 +4,11 @@ authors = ["Yuxuan Shui <yshuiv7@gmail.com>"]
 build = "build.rs"
 version = "0.15.0"
 edition = "2021"
+
 [package.metadata.system-deps.xrdesktop_0_15]
 name = "xrdesktop-0.15"
 version = "0.15"
+
 [package.metadata.docs.rs]
 features = ["dox"]
 
@@ -48,4 +50,4 @@ shell-words = "1.0.0"
 tempfile = "3"
 
 [features]
-dox = []
+dox = ["gio/dox", "glib/dox", "gobject/dox", "gxr/dox", "graphene/dox", "gulkan/dox"]
