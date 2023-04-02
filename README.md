@@ -88,7 +88,7 @@ And believe me, what it does is arcane. Besides that, your program also has to i
 OTOH, `picom`, as a compositor, has already implemented the arcane window managing functionality just to function as a compositor. And fortunately, it also has a dbus interface that exposes its knowledge regarding windows. And that's what this program uses to mirror your windows. That's the only part of `picom` this program needs, so you don't even have to run `picom` as your compositor. If you want, you can run:
 
 ```
-picom --dbus --experimental-backends --backend dummy
+picom --dbus --backend dummy
 ```
 
 this way picom will provide the window information but not run as a compositor.
