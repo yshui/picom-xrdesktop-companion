@@ -28,7 +28,7 @@ There are also a bunch of example videos in [this article](https://www.collabora
 
 First, you need to [build this program](#building)
 
-To use this program, you must have `picom` installed on your system. For now, only the latest git version of `picom` is supported. ([AUR](https://aur.archlinux.org/packages/picom-git)).
+To use this program, you must have `picom` installed on your system. 
 
 First, make sure `picom` is running with dbus support enabled:
 
