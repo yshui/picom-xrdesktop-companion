@@ -1,0 +1,45 @@
+.arch_template: &arch_definition
+  image: archlinux/base:latest
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -S --noconfirm pkgconf meson gdk-pixbuf2 vulkan-headers vulkan-icd-loader graphene cairo glslang glfw-x11 glew shaderc json-glib
+
+build:arch:gcc:
+  <<: *arch_definition
+  script:
+    - pacman -S --noconfirm gcc
+    - CC=gcc meson build
+    - ninja -C build
+    - ninja -C build install
+
+build:arch:clang:
+  <<: *arch_definition
+  script:
+    - pacman -S --noconfirm clang
+    - CC=clang meson build
+    - ninja -C build
+    - ninja -C build install
+
+build:ubuntu18.04:
+  image: ubuntu:18.04
+  before_script:
+    - DEBIAN_FRONTEND=noninteractive apt update
+    - DEBIAN_FRONTEND=noninteractive apt -y install software-properties-common
+    - add-apt-repository -y ppa:graphics-drivers/ppa
+    - DEBIAN_FRONTEND=noninteractive apt -y full-upgrade
+    - DEBIAN_FRONTEND=noninteractive apt -y install meson gcc pkg-config libglib2.0-dev libgdk-pixbuf2.0-dev libvulkan-dev libgraphene-1.0-dev libcairo2-dev glslang-tools
+  script:
+    - meson build
+    - ninja -C build
+    - ninja -C build install
+
+build:ubuntu20.04:
+  image: ubuntu:20.04
+  before_script:
+    - DEBIAN_FRONTEND=noninteractive apt update
+    - DEBIAN_FRONTEND=noninteractive apt -y full-upgrade
+    - DEBIAN_FRONTEND=noninteractive apt -y install meson gcc pkg-config libglib2.0-dev libgdk-pixbuf2.0-dev libvulkan-dev libgraphene-1.0-dev libcairo2-dev glslang-tools
+  script:
+    - meson build
+    - ninja -C build
+    - ninja -C build install
