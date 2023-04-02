@@ -530,7 +530,7 @@ impl App {
                                 )
                             };
                             let translate = graphene::Matrix::new_translate(
-                                &graphene::Point3D::new(x * width_meters, y * height_meters, 0.1),
+                                &graphene::Point3D::new(x * width_meters, y * height_meters, 0.01),
                             );
                             let mut transform = translate.multiply(&transform);
                             log::info!("transform: {:?}, window: {}", transform, window.name);
