@@ -1,0 +1,12 @@
+{
+   VR_InitInternal2
+   Memcheck:Leak
+   ...
+   fun:VR_InitInternal2
+}
+{
+   _dl_catch_exception
+   Memcheck:Leak
+   ...
+   fun:_dl_catch_exception
+}

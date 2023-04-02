@@ -1,0 +1,25 @@
+{
+   libpixman
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   obj:/usr/lib/libpixman-1.so.*
+   ...
+}
+{
+   glfwInit
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:glfwInit
+}
+{
+   XcursorImageLoadCursor
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_XcursorGetDisplayInfo
+   fun:XcursorSupportsARGB
+   fun:XcursorImageLoadCursor
+}

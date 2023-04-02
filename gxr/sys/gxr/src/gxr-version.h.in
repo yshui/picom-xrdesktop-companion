@@ -1,0 +1,87 @@
+/*
+ * gxr
+ * Copyright 2018 Collabora Ltd.
+ * Author: Lubosz Sarnecki <lubosz.sarnecki@collabora.com>
+ * SPDX-License-Identifier: MIT
+ */
+
+#ifndef GXR_VERSION_H
+#define GXR_VERSION_H
+
+#if !defined(GXR_INSIDE) && !defined(GXR_COMPILATION)
+# error "Only <gxr.h> can be included directly."
+#endif
+
+/**
+ * SECTION:gxrversion
+ * @short_description: gxr version checking
+ *
+ * gxr provides macros to check the version of the library
+ * at compile-time
+ */
+
+/**
+ * GXR_MAJOR_VERSION:
+ *
+ * gxr major version component (e.g. 1 if %GXR_VERSION is 1.2.3)
+ */
+#define GXR_MAJOR_VERSION (@MAJOR_VERSION@)
+
+/**
+ * GXR_MINOR_VERSION:
+ *
+ * gxr minor version component (e.g. 2 if %GXR_VERSION is 1.2.3)
+ */
+#define GXR_MINOR_VERSION (@MINOR_VERSION@)
+
+/**
+ * GXR_MICRO_VERSION:
+ *
+ * gxr micro version component (e.g. 3 if %GXR_VERSION is 1.2.3)
+ */
+#define GXR_MICRO_VERSION (@MICRO_VERSION@)
+
+/**
+ * GXR_VERSION
+ *
+ * gxr version.
+ */
+#define GXR_VERSION (@VERSION@)
+
+/**
+ * GXR_VERSION_S:
+ *
+ * gxr version, encoded as a string, useful for printing and
+ * concatenation.
+ */
+#define GXR_VERSION_S "@VERSION@"
+
+#define GXR_ENCODE_VERSION(major,minor,micro) \
+        ((major) << 24 | (minor) << 16 | (micro) << 8)
+
+/**
+ * GXR_VERSION_HEX:
+ *
+ * gxr version, encoded as an hexadecimal number, useful for
+ * integer comparisons.
+ */
+#define GXR_VERSION_HEX \
+        (GXR_ENCODE_VERSION (GXR_MAJOR_VERSION, GXR_MINOR_VERSION, GXR_MICRO_VERSION))
+
+/**
+ * GXR_CHECK_VERSION:
+ * @major: required major version
+ * @minor: required minor version
+ * @micro: required micro version
+ *
+ * Compile-time version checking. Evaluates to %TRUE if the version
+ * of gxr is greater than the required one.
+ */
+#define GXR_CHECK_VERSION(major,minor,micro)   \
+        (GXR_MAJOR_VERSION > (major) || \
+         (GXR_MAJOR_VERSION == (major) && GXR_MINOR_VERSION > (minor)) || \
+         (GXR_MAJOR_VERSION == (major) && GXR_MINOR_VERSION == (minor) && \
+          GXR_MICRO_VERSION >= (micro)))
+
+#endif /* GXR_VERSION_H */
+

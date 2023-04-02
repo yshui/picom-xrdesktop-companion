@@ -1,0 +1,28 @@
+---
+Language:        Cpp
+# BasedOnStyle:  Mozilla
+AllowShortFunctionsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: true
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+DerivePointerAlignment: false
+IndentWidth: 2
+SpacesBeforeTrailingComments: 2
+ColumnLimit: 80
+BreakBeforeBraces: GNU
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BinPackParameters: false
+BinPackArguments: true # false for parameters in function *calls* each on a new line
+IndentWrappedFunctionNames: false
+SpaceBeforeParens: Always
+# AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+
+PointerAlignment: Right
+# Note: PointerAlignment: Right is not implemented, you need to fix the asterisks yourself
+# https://stackoverflow.com/questions/32682426/clang-format-align-function-parameter-names#comment83837294_48407310
+# https://stackoverflow.com/a/40312667
+...
+

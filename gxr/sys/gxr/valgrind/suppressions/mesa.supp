@@ -1,0 +1,28 @@
+{
+   mesa: vkEnumerateInstanceExtensionProperties
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:vkEnumerateInstanceExtensionProperties
+}
+{
+   vkDestroyInstance
+   Memcheck:Leak
+   ...
+   fun:vkDestroyInstance
+}
+{
+   vkCreateInstance
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/libvulkan.so.*
+   fun:vkCreateInstance
+}
+{
+   vkEnumeratePhysicalDevices
+   Memcheck:Cond
+   ...
+   obj:/usr/lib/libvulkan.so.*
+   ...
+   fun:vkEnumeratePhysicalDevices
+}

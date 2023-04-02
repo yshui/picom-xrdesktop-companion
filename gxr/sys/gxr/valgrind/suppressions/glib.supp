@@ -1,0 +1,136 @@
+{
+   g_type_register_fundamental
+   Memcheck:Leak
+   ...
+   fun:g_type_register_fundamental
+}
+{
+   g_value_register_transform_func
+   Memcheck:Leak
+   ...
+   fun:g_value_register_transform_func
+}
+{
+   g_object_new_with_properties
+   Memcheck:Leak
+   ...
+   fun:g_object_new_with_properties
+}
+{
+   libglib / ld reachable
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/libglib-2.0.so.*
+   fun:call_init.part.0
+   fun:_dl_init
+   obj:/usr/lib/ld-*.so
+}
+{
+   g_hash_table_new_full
+   Memcheck:Leak
+   ...
+   fun:g_hash_table_new_full
+}
+{
+   g_param_type_register_static
+   Memcheck:Leak
+   ...
+   fun:g_param_type_register_static
+}
+{
+   libgobject
+   Memcheck:Leak
+   ...
+   fun:calloc
+   fun:g_malloc0
+   obj:/usr/lib/libgobject-2.0.so.*
+   ...
+   fun:call_init.part.0
+   fun:_dl_init
+   obj:/usr/lib/ld-2.28.so
+}
+{
+   g_rw_lock_writer_lock
+   Memcheck:Leak
+   ...
+   fun:g_rw_lock_writer_lock
+}
+{
+   g_intern_static_string
+   Memcheck:Leak
+   ...
+   fun:g_intern_static_string
+}
+{
+   g_print
+   Memcheck:Leak
+   ...
+   fun:g_print
+}
+{
+   gdk_pixbuf_new_from_resource
+   Memcheck:Leak
+   ...
+   fun:gdk_pixbuf_new_from_resource
+}
+{
+   gdk_pixbuf_loader_write
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:gdk_pixbuf_loader_write
+}
+{
+   g_main_loop_run malloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:g_main_loop_run
+}
+{
+   g_main_loop_new
+   Memcheck:Leak
+   ...
+   fun:g_main_loop_new
+}
+{
+   g_timeout_add_full
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:g_malloc
+   fun:g_memdup
+   obj:/usr/lib/libglib-2.0.so.*
+   obj:/usr/lib/libglib-2.0.so.*
+   obj:/usr/lib/libglib-2.0.so.*
+   fun:g_source_attach
+   fun:g_timeout_add_full
+}
+{
+   g_resources_lookup_data
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib/libglib-2.0.so.*
+   fun:g_rec_mutex_lock
+   fun:g_variant_type_info_get
+   fun:g_variant_serialised_get_child
+   fun:g_variant_get_child_value
+   obj:/usr/lib/libgio-2.0.so.*
+   obj:/usr/lib/libgio-2.0.so.*
+   fun:g_resource_lookup_data
+   fun:g_resources_lookup_data
+}
+{
+   libgobject _dl_init
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   obj:/usr/lib/libgobject-2.0.so.*
+   obj:/usr/lib/libgobject-2.0.so.*
+   fun:call_init.part.0
+   fun:_dl_init
+   obj:/usr/lib/ld-*.so
+}

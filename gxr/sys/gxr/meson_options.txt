@@ -1,0 +1,26 @@
+option('api_doc',
+  type: 'boolean',
+  value: false,
+  description: 'Build API documentation using GTK-Doc'
+)
+
+option('backends',
+  type: 'array',
+  choices: [ 'auto', 'openvr', 'openxr' ],
+  value: [ 'auto' ],
+  description: 'XR runtime backends to build'
+)
+
+option('cube_renderdoc',
+       type: 'boolean',
+       value: false,
+       description: 'Enable debugging the cube example with renderdoc'
+)
+
+option('introspection', type : 'boolean', value : false)
+
+option('tests',
+  type: 'boolean',
+  value: true,
+  description: 'Build the tests'
+)
