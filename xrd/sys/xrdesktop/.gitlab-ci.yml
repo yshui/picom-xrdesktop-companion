@@ -1,0 +1,59 @@
+.build_template: &build_definition
+  script:
+    # Build gulkan
+    - mkdir deps
+    - cd deps
+    - git clone --depth 1 https://gitlab.freedesktop.org/xrdesktop/gulkan.git
+    - cd gulkan
+    - CC=clang meson build --prefix /usr
+    - ninja -C build install
+    - cd ..
+    # Build gxr
+    - git clone --depth 1 https://gitlab.freedesktop.org/xrdesktop/gxr.git
+    - cd gxr
+    - CC=clang meson build --prefix /usr
+    - ninja -C build install
+    - cd ..
+    # Build xrdesktop
+    - cd ..
+    - CC=clang meson build --prefix /usr
+    - ninja -C build install
+    - meson test -C build/ --no-suite xrdesktop:xr
+
+build:arch:
+  image: archlinux/base:latest
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -S --noconfirm pkgconf meson git clang # generic build deps
+    - pacman -S --noconfirm gdk-pixbuf2 vulkan-headers vulkan-icd-loader graphene cairo glslang  # gulkan deps
+    - pacman -S --noconfirm gtk3 json-glib libffi # gxr deps
+    - pacman -S --noconfirm pygobject-devel # xrdesktop deps
+  <<: *build_definition
+
+
+build:ubuntu20.04:
+  image: ubuntu:20.04
+  before_script:
+    - DEBIAN_FRONTEND=noninteractive apt update
+    - DEBIAN_FRONTEND=noninteractive apt -y install meson clang pkg-config git # generic build deps
+    - DEBIAN_FRONTEND=noninteractive apt -y install libglib2.0-dev libgdk-pixbuf2.0-dev libvulkan-dev libgraphene-1.0-dev libcairo2-dev glslang-tools # gulkan deps
+    - DEBIAN_FRONTEND=noninteractive apt -y install libgtk-3-dev libjson-glib-dev # gxr deps
+    - DEBIAN_FRONTEND=noninteractive apt -y install python3-dev python-gi-dev # xrdesktop deps
+    - export PYTHONPATH=$PYTHONPATH:/usr/lib/python3.8/site-packages/ # Add standard python package path for tests
+  <<: *build_definition
+
+build:ubuntu18.04:
+  image: ubuntu:18.04
+  before_script:
+    - DEBIAN_FRONTEND=noninteractive apt update
+    - DEBIAN_FRONTEND=noninteractive apt -y install software-properties-common
+    - add-apt-repository -y ppa:graphics-drivers/ppa # for glslang-tools
+    - DEBIAN_FRONTEND=noninteractive apt -y full-upgrade
+    - DEBIAN_FRONTEND=noninteractive apt -y install clang ninja-build pkg-config git # generic build deps
+    - DEBIAN_FRONTEND=noninteractive apt -y install libglib2.0-dev libgdk-pixbuf2.0-dev libvulkan-dev libgraphene-1.0-dev libcairo2-dev glslang-tools # gulkan deps
+    - DEBIAN_FRONTEND=noninteractive apt -y install libgtk-3-dev libjson-glib-dev # gxr deps
+    - DEBIAN_FRONTEND=noninteractive apt -y install python3-dev python-gi-dev # xrdesktop deps
+    - DEBIAN_FRONTEND=noninteractive apt -y install python3-pip # to get recent meson on ubuntu 18.04
+    - pip3 install meson
+    - export PYTHONPATH=$PYTHONPATH:/usr/lib/python3.6/site-packages/ # Add standard python package path for tests
+  <<: *build_definition

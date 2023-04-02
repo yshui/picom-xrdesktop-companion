@@ -1,0 +1,7 @@
+option('renderdoc',
+  type: 'boolean',
+  value: false,
+  description: 'Enable debugging XrdSceneRender with renderdoc'
+)
+
+option('introspection', type : 'boolean', value : false)

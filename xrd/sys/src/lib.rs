@@ -559,7 +559,7 @@ impl ::std::fmt::Debug for XrdWindow {
     }
 }
 
-#[link(name = "xrdesktop-0.15")]
+#[link(name = "xrdesktop-0.15", modifiers = "-bundle,+whole-archive", kind = "static")]
 extern "C" {
 
     //=========================================================================
@@ -975,3 +975,6 @@ extern "C" {
     );
 
 }
+
+pub const SCHEMA: &'static str =
+    include_str!(concat!(env!("OUT_DIR"), "/xrd/share/glib-2.0/schemas/org.xrdesktop.gschema.xml"));

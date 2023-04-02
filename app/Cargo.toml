@@ -38,6 +38,7 @@ drop_bomb = "0.1.5"
 next-gen = "0.1.1"
 inputsynth = "0.1.1"
 input = "0.8.2"
+dirs = "5.0.0"
 
 [build-dependencies]
 bindgen = "0.64.0"

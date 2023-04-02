@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/shaders">
+    <file>device_model.vert.spv</file>
+    <file>device_model.frag.spv</file>
+    <file>pointer.vert.spv</file>
+    <file>pointer.frag.spv</file>
+    <file>window.vert.spv</file>
+    <file>window.frag.spv</file>
+  </gresource>
+</gresources>

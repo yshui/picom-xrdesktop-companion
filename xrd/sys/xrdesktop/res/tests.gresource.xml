@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/res">
+    <file>cat.jpg</file>
+    <file>hawk.jpg</file>
+    <file>cursor.png</file>
+    <file>bindings/openvr/example_model_actions.json</file>
+    <file>bindings/openvr/example_model_bindings_vive_controller.json</file>
+  </gresource>
+</gresources>

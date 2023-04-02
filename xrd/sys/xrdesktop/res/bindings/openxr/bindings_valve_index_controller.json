@@ -1,0 +1,207 @@
+{
+  "interaction_profile": "/interaction_profiles/valve/index_controller",
+
+  "bindings": {
+    "/actions/wm/": {
+      "sources": [
+        {
+          "path": "/user/hand/left/input/trigger",
+          "inputs": {
+            "pull": {
+              "output": "/actions/wm/in/grab_window"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/trigger",
+          "inputs": {
+            "click": {
+              "output": "/actions/wm/in/reset_orientation"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/thumbstick",
+          "inputs": {
+            "click": {
+              "output": "/actions/wm/in/show_keyboard"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/trackpad",
+          "inputs": {
+            "position": {
+              "output": "/actions/wm/in/push_pull"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/thumbstick",
+          "inputs": {
+            "position": {
+              "output": "/actions/wm/in/push_pull_scale"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/b",
+          "inputs": {
+            "click": {
+              "output": "/actions/wm/in/menu"
+            }
+          }
+        },
+
+        {
+          "path": "/user/hand/right/input/trigger",
+          "inputs": {
+            "pull": {
+              "output": "/actions/wm/in/grab_window"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/trigger",
+          "inputs": {
+            "click": {
+              "output": "/actions/wm/in/reset_orientation"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/thumbstick",
+          "inputs": {
+            "click": {
+              "output": "/actions/wm/in/show_keyboard"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/trackpad",
+          "inputs": {
+            "position": {
+              "output": "/actions/wm/in/push_pull"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/thumbstick",
+          "inputs": {
+            "position": {
+              "output": "/actions/wm/in/push_pull_scale"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/b",
+          "inputs": {
+            "click": {
+              "output": "/actions/wm/in/menu"
+            }
+          }
+        }
+
+      ],
+      "poses": [
+        {
+          "path": "/user/hand/left/input/aim/pose",
+          "output": "/actions/wm/in/hand_pose"
+        },
+        {
+          "path": "/user/hand/left/input/grip/pose",
+          "output": "/actions/wm/in/hand_pose_hand_grip"
+        },
+
+        {
+          "path": "/user/hand/right/input/aim/pose",
+          "output": "/actions/wm/in/hand_pose"
+        },
+        {
+          "path": "/user/hand/right/input/grip/pose",
+          "output": "/actions/wm/in/hand_pose_hand_grip"
+        }
+      ],
+      "haptics": [
+        {
+          "path": "/user/hand/left/output/haptic",
+          "output": "/actions/wm/out/haptic"
+        },
+
+        {
+          "path": "/user/hand/right/output/haptic",
+          "output": "/actions/wm/out/haptic"
+        }
+      ]
+    },
+    "/actions/mouse_synth": {
+      "sources": [
+        {
+          "path": "/user/hand/left/input/a",
+          "inputs": {
+            "click": {
+              "output": "/actions/mouse_synth/in/left_click"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/b",
+          "inputs": {
+            "click": {
+              "output": "/actions/mouse_synth/in/right_click"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/trackpad",
+          "inputs": {
+            "position": {
+              "output": "/actions/mouse_synth/in/scroll"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/trackpad",
+          "inputs": {
+            "force": {
+              "output": "/actions/mouse_synth/in/middle_click"
+            }
+          }
+        },
+
+        {
+          "path": "/user/hand/right/input/a",
+          "inputs": {
+            "click": {
+              "output": "/actions/mouse_synth/in/left_click"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/b",
+          "inputs": {
+            "click": {
+              "output": "/actions/mouse_synth/in/right_click"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/trackpad",
+          "inputs": {
+            "position": {
+              "output": "/actions/mouse_synth/in/scroll"
+            }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/trackpad",
+          "inputs": {
+            "force": {
+              "output": "/actions/mouse_synth/in/middle_click"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

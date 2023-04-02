@@ -1,0 +1,32 @@
+{
+   "bindings" : {
+      "/actions/model" : {
+         "poses" : [
+            {
+               "output" : "/actions/model/in/hand_primary",
+               "path" : "/user/hand/right/pose/raw"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {
+                  "east" : {
+                     "output" : "/actions/model/in/previous"
+                  },
+                  "west" : {
+                     "output" : "/actions/model/in/next"
+                  }
+               },
+               "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "click"
+               },
+               "path" : "/user/hand/right/input/trackpad"
+            }
+         ]
+      }
+   },
+   "controller_type" : "vive_controller",
+   "description" : "Model example bindings for the Vive controller",
+   "name" : "Model example Vive Controller"
+}

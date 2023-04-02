@@ -1,0 +1,211 @@
+{
+   "bindings" : {
+      "/actions/mouse_synth": {
+         "sources": [
+            {
+               "path": "/user/hand/right/input/a",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/left_click"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/b",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/right_click"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/a",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/left_click"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/b",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/right_click"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trackpad",
+               "mode": "trackpad",
+               "inputs": {
+                  "position": {
+                     "output": "/actions/mouse_synth/in/scroll"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/trackpad",
+               "mode": "trackpad",
+               "inputs": {
+                  "position": {
+                     "output": "/actions/mouse_synth/in/scroll"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trackpad",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/middle_click"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/trackpad",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/middle_click"
+                  }
+               }
+            }
+         ]
+      },
+      "/actions/wm": {
+         "poses": [
+            {
+               "output": "/actions/wm/in/hand_pose",
+               "path": "/user/hand/right/pose/tip"
+            },
+            {
+               "output": "/actions/wm/in/hand_pose",
+               "path": "/user/hand/left/pose/tip"
+            },
+            {
+               "output": "/actions/wm/in/hand_pose_hand_grip",
+               "path": "/user/hand/right/pose/handgrip"
+            },
+            {
+               "output": "/actions/wm/in/hand_pose_hand_grip",
+               "path": "/user/hand/left/pose/handgrip"
+            }
+         ],
+         "haptics": [
+            {
+               "output": "/actions/wm/out/haptic",
+               "path": "/user/hand/right/output/haptic"
+            },
+            {
+               "output": "/actions/wm/out/haptic",
+               "path": "/user/hand/left/output/haptic"
+            }
+         ],
+         "sources": [
+            {
+               "path": "/user/hand/right/input/trigger",
+               "mode": "trigger",
+               "inputs": {
+                  "pull": {
+                     "output": "/actions/wm/in/grab_window"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/trigger/click",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/reset_orientation"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/trackpad",
+               "mode": "trackpad",
+               "inputs": {
+                  "position": {
+                     "output": "/actions/wm/in/push_pull"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/b",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/menu"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/b",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/menu"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trigger",
+               "mode": "trigger",
+               "inputs": {
+                  "pull": {
+                     "output": "/actions/wm/in/grab_window"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trigger/click",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/reset_orientation"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trackpad",
+               "mode": "trackpad",
+               "inputs": {
+                  "position": {
+                     "output": "/actions/wm/in/push_pull"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/thumbstick",
+               "mode": "joystick",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/show_keyboard"
+                  },
+                  "position": {
+                     "output": "/actions/wm/in/push_pull_scale"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/thumbstick",
+               "mode": "joystick",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/show_keyboard"
+                  },
+                  "position": {
+                     "output": "/actions/wm/in/push_pull_scale"
+                  }
+               }
+            }
+         ]
+      }
+   },
+   "controller_type" : "knuckles",
+   "description" : "xrdesktop bindings for the Knuckles Controller",
+   "name" : "xrdesktop Knuckles Controller"
+}

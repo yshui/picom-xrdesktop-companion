@@ -1,0 +1,98 @@
+{
+  "default_bindings":[
+    {
+      "controller_type":"khronos_simple",
+      "binding_url":"bindings_khronos_simple_controller.json"
+    },
+    {
+      "controller_type":"mnd_psmv",
+      "binding_url":"bindings_mnd_psmv_controller.json"
+    },
+    {
+      "controller_type": "index",
+      "binding_url": "bindings_valve_index_controller.json"
+    },
+    {
+      "controller_type": "htcvive",
+      "binding_url": "bindings_htc_vive_controller.json"
+    }
+  ],
+  "actions":[
+    {
+      "name":"/actions/wm/in/grab_window",
+      "type":"vector1"
+    },
+    {
+      "name":"/actions/wm/in/reset_orientation",
+      "type":"boolean"
+    },
+    {
+      "name":"/actions/wm/in/show_keyboard",
+      "type":"boolean"
+    },
+    {
+      "name":"/actions/wm/in/push_pull",
+      "type": "vector2"
+    },
+    {
+      "name":"/actions/wm/in/push_pull_scale",
+      "type": "vector2"
+    },
+    {
+      "name": "/actions/wm/in/hand_pose",
+      "type": "pose"
+    },
+    {
+      "name": "/actions/wm/in/hand_pose_hand_grip",
+      "type": "pose"
+    },
+    {
+      "name": "/actions/wm/out/haptic",
+      "type": "vibration"
+    },
+    {
+      "name":"/actions/wm/in/menu",
+      "type":"boolean"
+    },
+    {
+      "name":"/actions/mouse_synth/in/left_click",
+      "type":"boolean"
+    },
+    {
+      "name":"/actions/mouse_synth/in/right_click",
+      "type":"boolean"
+    },
+    {
+      "name":"/actions/mouse_synth/in/middle_click",
+      "type":"boolean"
+    },
+    {
+      "name":"/actions/mouse_synth/in/scroll",
+      "type": "vector2"
+    }
+  ],
+  "action_sets": [
+    {
+      "name": "/actions/wm"
+    },
+    {
+      "name": "/actions/mouse_synth"
+    }
+  ],
+  "localization":[
+    {
+      "language_tag":"en_US",
+      "/actions/wm/in/grab_window":"Grab Window",
+      "/actions/wm/in/reset_orientation":"Reset Window Orientation",
+      "/actions/wm/in/show_keyboard":"Show On Screen Keyboard",
+      "/actions/wm/in/push_pull":"Move window along Z axis",
+      "/actions/wm/in/push_pull_scale":"Scale Window",
+      "/actions/wm/in/hand_pose" : "Controller Ray Pose",
+      "/actions/wm/out/haptic" : "Haptic Feedback",
+      "/actions/wm/in/menu" : "Window Manager Menu",
+      "/actions/mouse_synth/in/left_click" : "Left Click",
+      "/actions/mouse_synth/in/right_click" : "Right Click",
+      "/actions/mouse_synth/in/scroll" : "Scroll"
+    }
+  ]
+}

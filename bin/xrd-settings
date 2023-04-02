@@ -1,0 +1,247 @@
+#!/usr/bin/env python3
+
+import gi
+import os
+import sys
+
+gi.require_version('Gtk', '3.0')
+
+from gi.repository import Gtk, Gio, Gdk, GLib
+
+adjustments = ["analog-threshold", "desktop-cursor-width-meters", "grab-window-threshold",
+               "input-poll-rate-ms", "scroll-threshold", "scroll-to-push-ratio", "scroll-to-scale-ratio",
+               "shake-compensation-duration-ms", "shake-compensation-threshold", "pointer-tip-pulse-alpha",
+               "pointer-tip-width-meters"]
+
+switches = ["pointer-tip-keep-apparent-size", "shake-compensation-enabled", "pointer-ray-enabled", "pin-new-windows", "show-only-pinned-startup"]
+color_buttons = ["pointer-tip-active-color", "pointer-tip-passive-color"]
+radio_buttons = {
+    "default-api": ["openvr", "openxr"],
+    "default-mode": ["overlay", "scene"]
+}
+used_keys = adjustments + switches + color_buttons + list(radio_buttons.keys()) + ["pointer-tip-resolution"]
+
+
+def variant_to_rgba(var):
+    r, g, b = var.unpack()
+    return Gdk.RGBA(r, g, b, 1.0)
+
+
+# noinspection PyArgumentList
+def rgba_to_variant(rgba):
+    return GLib.Variant.new_tuple(GLib.Variant.new_double(rgba.red),
+                                  GLib.Variant.new_double(rgba.green),
+                                  GLib.Variant.new_double(rgba.blue))
+
+
+# noinspection PyArgumentList
+class XrdSettings(Gtk.Application):
+    def reset(self, button):
+        for k in self.settings.keys():
+            key = self.schema.get_key(k)
+            self.settings.set_value(k, key.get_default_value())
+
+    def update_shake_compensation_rows(self):
+        enabled = self.settings.get_value("shake-compensation-enabled")
+
+        rows = [self.rows[x] for x in ["shake-compensation-duration-ms", "shake-compensation-threshold"]]
+        for row in rows:
+            row.set_visible(enabled)
+
+    def store_color_setting(self, button, key):
+        rgba = button.get_rgba()
+        variant = rgba_to_variant(rgba)
+        self.settings.set_value(key, variant)
+
+    def store_pointer_tip_resolution_setting(self, combo_box):
+        it = combo_box.get_active_iter()
+        store = combo_box.get_model()
+
+        width = store[it][1]
+        var = GLib.Variant.new_tuple(GLib.Variant.new_int32(width),
+                                     GLib.Variant.new_int32(width))
+
+        self.settings.set_value('pointer-tip-resolution', var)
+
+    def update_radio_widget(self, key):
+        value = self.settings.get_string(key)
+        self.radio_buttons[key][value].set_active(True)
+
+        if key == "default-api":
+            if value == "openxr":
+                self.radio_buttons["default-mode"]["overlay"].set_sensitive(False)
+                self.radio_buttons["default-mode"]["scene"].set_active(True)
+            elif value == "openvr":
+                self.radio_buttons["default-mode"]["overlay"].set_sensitive(True)
+                self.radio_buttons["default-mode"]["overlay"].set_active(True)
+
+    def store_radio_setting(self, button, key, value):
+        if button.get_active():
+            self.settings.set_string(key, value)
+
+    def update_color_widget(self, name):
+        active_tip_color = self.settings.get_value(name)
+        rgba = variant_to_rgba(active_tip_color)
+        self.color_buttons[name].set_rgba(rgba)
+
+    def update_pointer_tip_resolution_widget(self):
+        pointer_tip_resolution = self.settings.get_value('pointer-tip-resolution')
+        store = self.pointer_tip_resolution_combo_box.get_model()
+
+        for row in store:
+            name, width = row
+            if pointer_tip_resolution[0] == width:
+                self.pointer_tip_resolution_combo_box.set_active_iter(row.iter)
+
+    def _changed_cb(self, settings, key):
+        if key in color_buttons:
+            self.update_color_widget(key)
+        elif key == "pointer-tip-resolution":
+            self.update_pointer_tip_resolution_widget()
+        elif key == "shake-compensation-enabled":
+            self.update_shake_compensation_rows()
+        elif key in radio_buttons.keys():
+            self.update_radio_widget(key)
+
+    def init_settings(self):
+        available_keys = self.settings.keys()
+
+        unused_keys = [k for k in available_keys if k not in used_keys]
+        if unused_keys:
+            print("Unused keys", unused_keys)
+
+        for k in used_keys:
+            key = self.schema.get_key(k)
+            self.summaries[k].set_text(key.get_summary())
+            self.rows[k].set_tooltip_text(key.get_description())
+
+        self.update_pointer_tip_resolution_widget()
+        self.pointer_tip_resolution_combo_box.connect("changed", self.store_pointer_tip_resolution_setting)
+
+        for b in color_buttons:
+            self.update_color_widget(b)
+
+        for a in adjustments:
+            self.settings.bind(a, self.adjustments[a], "value", Gio.SettingsBindFlags.DEFAULT)
+
+        for s in switches:
+            self.settings.bind(s, self.switches[s], "active", Gio.SettingsBindFlags.DEFAULT)
+
+        self.update_shake_compensation_rows()
+
+        for k in radio_buttons.keys():
+            self.update_radio_widget(k)
+
+        self.settings.connect("changed", self._changed_cb)
+
+    def do_activate(self):
+        self.window.present()
+        Gtk.main()
+
+    @staticmethod
+    def init_widgets(builder, d, names, suffix):
+        for n in names:
+            glade_name = n.replace("-", "_") + "_" + suffix
+            d[n] = builder.get_object(glade_name)
+
+    def __init__(self):
+        Gtk.Application.__init__(self, application_id="org.xrdesktop.settings",
+                                 flags=Gio.ApplicationFlags.FLAGS_NONE)
+        builder = Gtk.Builder()
+
+        script_path = os.path.realpath(__file__)
+        script_dir = os.path.dirname(script_path)
+        ui_path = os.path.join(script_dir, "xrd-settings.ui")
+        if not os.path.isfile(ui_path):
+            pkgdatadir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "data")
+            resource_file = os.path.join(pkgdatadir, "org.xrdesktop.settings.gresource")
+            resources = Gio.resource_load(resource_file)
+            Gio.resources_register(resources)
+            builder.add_from_resource("/org/xrdesktop/xrd-settings.ui")
+        else:
+            builder.add_from_file(ui_path)
+
+        self.adjustments = {}
+        self.init_widgets(builder, self.adjustments, adjustments, "adjustment")
+        self.switches = {}
+        self.init_widgets(builder, self.switches, switches, "switch")
+        self.color_buttons = {}
+        self.init_widgets(builder, self.color_buttons, color_buttons, "button")
+        self.rows = {}
+        self.init_widgets(builder, self.rows, used_keys, "row")
+        self.summaries = {}
+        self.init_widgets(builder, self.summaries, used_keys, "summary")
+
+        self.pointer_tip_resolution_combo_box = builder.get_object("pointer_tip_resolution_combo_box")
+        self.reset_button = builder.get_object("reset")
+
+        self.radio_buttons = {
+            "default-api": {},
+            "default-mode": {}
+        }
+
+        for k, vs in radio_buttons.items():
+            for v in vs:
+                glade_name = k.replace("-", "_") + "_button_" + v
+                self.radio_buttons[k][v] = builder.get_object(glade_name)
+                self.radio_buttons[k][v].connect("toggled", self.store_radio_setting, k, v)
+
+        self.window = builder.get_object("window")
+
+        self.settings = Gio.Settings.new(schema_id="org.xrdesktop")
+        src = Gio.SettingsSchemaSource.get_default()
+        self.schema = src.lookup("org.xrdesktop", True)
+        if self.schema is None:
+            dialog = Gtk.MessageDialog(
+                transient_for=self.window,
+                flags=0,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.OK,
+                text="ERROR: GLib settings schema not found",
+            )
+            dialog.format_secondary_text("Schema \"org.xrdesktop\" not found.")
+            dialog.run()
+            dialog.destroy()
+            sys.exit(1)
+
+        self.init_settings()
+
+        for b in color_buttons:
+            self.color_buttons[b].connect("color-set", self.store_color_setting, b)
+        self.window.connect("destroy", Gtk.main_quit)
+        self.reset_button.connect("clicked", self.reset)
+
+    def on_about(self, action, param):
+        from xrdesktop.config import version
+        about_dialog = Gtk.AboutDialog(transient_for=self.window, modal=True,
+                                       logo_icon_name="org.xrdesktop.settings",
+                                       license_type="mit-x11",
+                                       program_name="xrdesktop",
+                                       copyright="Copyright 2019 - 2020 Collabora Ltd.",
+                                       website="https://gitlab.freedesktop.org/xrdesktop",
+                                       website_label="Freedesktop Gitlab",
+                                       authors=["Lubosz Sarnecki", "Christoph Haag"],
+                                       version=version)
+        about_dialog.present()
+
+    def on_help(self, action, param):
+        wiki_url = "https://gitlab.freedesktop.org/xrdesktop/xrdesktop/-/wikis/home"
+        Gtk.show_uri_on_window(self.window, wiki_url, Gdk.CURRENT_TIME)
+
+    def do_startup(self):
+        Gtk.Application.do_startup(self)
+
+        action = Gio.SimpleAction.new("about", None)
+        action.connect("activate", self.on_about)
+        self.add_action(action)
+
+        action = Gio.SimpleAction.new("help", None)
+        action.connect("activate", self.on_help)
+        self.add_action(action)
+
+        self.window.set_application(self)
+
+
+if __name__ == "__main__":
+    app = XrdSettings()
+    app.run(sys.argv)

@@ -31,6 +31,7 @@ mod gl;
 mod input;
 mod picom;
 mod utils;
+mod setup;
 
 const PIXELS_PER_METER: f32 = 600.0;
 type Result<T> = anyhow::Result<T>;
@@ -1230,6 +1231,7 @@ fn main() -> Result<()> {
     ))
     .format_timestamp_millis()
     .init();
+    setup::setup();
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(4)
         .enable_all()

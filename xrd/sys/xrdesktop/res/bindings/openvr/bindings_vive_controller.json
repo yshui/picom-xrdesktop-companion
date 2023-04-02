@@ -1,0 +1,187 @@
+{
+   "bindings" : {
+      "/actions/mouse_synth": {
+         "sources": [
+            {
+               "path": "/user/hand/right/input/trackpad",
+               "mode": "trackpad",
+               "inputs": {
+                  "position": {
+                     "output": "/actions/mouse_synth/in/scroll"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/application_menu",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/right_click"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/trackpad",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/left_click"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trackpad",
+               "mode": "trackpad",
+               "inputs": {
+                  "position": {
+                     "output": "/actions/mouse_synth/in/scroll"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trackpad",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/left_click"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/application_menu",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/mouse_synth/in/right_click"
+                  }
+               }
+            }
+         ]
+      },
+      "/actions/wm": {
+         "poses": [
+            {
+               "output": "/actions/wm/in/hand_pose",
+               "path": "/user/hand/right/pose/raw"
+            },
+            {
+               "output": "/actions/wm/in/hand_pose",
+               "path": "/user/hand/left/pose/raw"
+            },
+            {
+               "output": "/actions/wm/in/hand_pose_hand_grip",
+               "path": "/user/hand/right/pose/handgrip"
+            },
+            {
+               "output": "/actions/wm/in/hand_pose_hand_grip",
+               "path": "/user/hand/left/pose/handgrip"
+            }
+         ],
+         "haptics": [
+            {
+               "output": "/actions/wm/out/haptic",
+               "path": "/user/hand/right/output/haptic"
+            },
+            {
+               "output": "/actions/wm/out/haptic",
+               "path": "/user/hand/left/output/haptic"
+            }
+         ],
+         "sources": [
+            {
+               "path": "/user/hand/right/input/trigger",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/grab_window"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/trigger/click",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/reset_orientation"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/trackpad",
+               "mode": "trackpad",
+               "inputs": {
+                  "position": {
+                     "output": "/actions/wm/in/push_pull_scale"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/application_menu",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/menu"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/grip",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/show_keyboard"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trigger",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/grab_window"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trigger/click",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/reset_orientation"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/trackpad",
+               "mode": "trackpad",
+               "inputs": {
+                  "position": {
+                     "output": "/actions/wm/in/push_pull_scale"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/left/input/application_menu",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/menu"
+                  }
+               }
+            },
+            {
+               "path": "/user/hand/right/input/grip",
+               "mode": "button",
+               "inputs": {
+                  "click": {
+                     "output": "/actions/wm/in/show_keyboard"
+                  }
+               }
+            }
+         ]
+      }
+   },
+   "controller_type" : "vive_controller",
+   "description" : "xrdesktop bindings for the Vive controller",
+   "name" : "xrdesktop Vive Controller"
+}

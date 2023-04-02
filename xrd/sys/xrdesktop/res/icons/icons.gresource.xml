@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/icons">
+    <file>align-sphere-symbolic.svg</file>
+    <file>edit-undo-symbolic.svg</file>
+    <file>object-hidden-symbolic.svg</file>
+    <file>object-select-symbolic.svg</file>
+    <file>object-visible-symbolic.svg</file>
+    <file>view-pin-symbolic.svg</file>
+    <file>input-mouse-symbolic.svg</file>
+    <file>input-no-mouse-symbolic.svg</file>
+  </gresource>
+</gresources>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<schemalist>
+
+  <enum id="org.xrdesktop.api">
+    <value nick="openvr" value="0"/>
+    <value nick="openxr" value="1"/>
+  </enum>
+
+  <enum id="org.xrdesktop.mode">
+    <value nick="overlay" value="0"/>
+    <value nick="scene" value="1"/>
+  </enum>
+
+  <schema path="/org/xrdesktop/" id="org.xrdesktop">
+
+    <key name='grab-window-threshold' type='d'>
+      <default>0.25</default>
+      <summary>How far the trigger has to be pulled to grab a window.</summary>
+      <description>
+        The trigger is resting at 0.0 and fully pulled at 1.0.
+        Windows will be grabbed at this setting's value.
+      </description>
+    </key>
+
+    <key name='input-poll-rate-ms' type='u'>
+      <default>3</default>
+      <summary>How often XR input events should be polled and processed</summary>
+      <description>
+        This affects events like polling the XR runtime for updated tracked device poses,
+        determining if a controller points at an overlay, and performing window management.
+        This value is also the basis for the overlay push/pull and scale functions to be fps independent.
+      </description>
+    </key>
+
+    <key name='shake-compensation-enabled' type='b'>
+      <default>true</default>
+      <summary>Whether slight shaking while pressing a button should be compensated for.</summary>
+      <description>
+        Clicking with a conventional mouse is usually possible without moving the mouse at all
+        because the mouse rests on a solid surface.
+        Holding motion controllers freely in the air makes it hard to keep the controller still
+        while pressing a button.
+        This setting compensates for this involuntary shaking while using left or right click.
+      </description>
+    </key>
+
+    <key name='shake-compensation-threshold' type='d'>
+      <default>2.0</default>
+      <summary>How strong the shake compensation should be.</summary>
+      <description>
+        Moving the cursor on a Window by shaking a controller is linearly amplified by distance.
+        Therefore this value is a percentage of the cursor's movement on the window in relation to
+        the distance of the window from the cursor.
+        A value of 2% means that on a window in e.g. 100 cm distance the threshold is 2 cm.
+      </description>
+    </key>
+
+    <key name='shake-compensation-duration-ms' type='i'>
+      <default>180</default>
+      <summary>How long the shake compensation waits for a button release before falling back to dragging.</summary>
+      <description>
+        The shake compensation is only meant for "stabilizing" a click, i.e. a quick button press and release.
+        If the time between button press and button release is longer than this time, the action will
+        always be interpreted a as a drag action.
+      </description>
+    </key>
+
+        <key name='scroll-threshold' type='d'>
+      <default>0.1</default>
+      <summary>How big of a touchpad movement should generate a scroll event</summary>
+      <description>
+        The touchpad values range from -1.0 to 1.0 in both directions.
+        Moving the finger about this value on the touchpad causes a scroll event
+        to be emitted akin to a mousewheel being turned one position.
+      </description>
+    </key>
+
+    <key name='scroll-to-push-ratio' type='d'>
+      <default>3.0</default>
+      <summary>How much the push/pull gesture should be amplified</summary>
+      <description>
+        While dragging a window, the touchpad's or thumbstick's y axis can push/pull a window away or nearer.
+        This value determines how fast this happens.
+      </description>
+    </key>
+
+    <key name='scroll-to-scale-ratio' type='d'>
+      <default>1.0</default>
+      <summary>How much the scale gesture should be amplified</summary>
+      <description>
+        While dragging a window, the touchpad's or thumbstick's x axis can scale a window's size.
+        This value determines how fast this happens.
+      </description>
+    </key>
+
+    <key name='analog-threshold' type='d'>
+      <default>0.00001</default>
+      <summary>Analog input below this threshold is ignored</summary>
+      <description>
+        A thumbstick might not rest at perfectly (0,0). This setting specifies a deadzone in which values are ignored.
+      </description>
+    </key>
+
+    <key name='pointer-tip-resolution' type='(ii)'>
+      <default>(64,64)</default>
+      <summary>The pixel resolution of the pointer tip.</summary>
+      <description>
+        This option has no effect on the visible size of the pointer tip.
+        Higher resolutions only result in improved quality.
+        Note: Texture resolution will be largert than this value for being able to render animations
+        without having to allocate larger textures.
+      </description>
+    </key>
+
+    <key name='pointer-tip-keep-apparent-size' type='b'>
+      <default>true</default>
+      <summary>Whether the pointer tip should have the same apparent size, independent from the distance to the user.</summary>
+      <description>
+        This option disables the expected perspective of the pointer tip getting
+        smaller when it is farther away.
+      </description>
+    </key>
+
+    <key name='pointer-tip-width-meters' type='d'>
+      <default>0.05</default>
+      <summary>The width of the tip in meters or the apparent width at distance of 3 meters.</summary>
+      <description>
+        When pointer-tip-keep-apparent-size is disabled, this option sets the width in meters of the pointer tip.
+        When pointer-tip-keep-apparent-size is enabled, this option sets the apparent width such
+        that it always appears to have this width as if seen in 3 meters distance.
+      </description>
+    </key>
+
+    <key name='desktop-cursor-width-meters' type='d'>
+      <default>0.25</default>
+      <summary>The width of the cursor that is copied from the desktop, respects pointer-tip-apparent-width-is-constant.</summary>
+      <description>
+        When pointer-tip-apparent-width-is-constant is disabled, this option sets the width of the cursor.
+        When pointer-tip-apparent-width-is-constant is enabled, this option sets the apparent width such
+        that it always appears to have this width as if seen in 3 meter distance.
+      </description>
+    </key>
+
+    <key name='pointer-tip-active-color' type='(ddd)'>
+      <default>(0.078,0.471,0.675)</default>
+      <summary>The color of an active pointer tip e.g. pointing at an overlay</summary>
+      <description>
+      </description>
+    </key>
+
+    <key name='pointer-tip-pulse-alpha' type='d'>
+      <default>0.25</default>
+      <summary>The opaqueness of the pointer tip pulse animation.</summary>
+      <description>
+      </description>
+    </key>
+
+    <key name='pointer-tip-passive-color' type='(ddd)'>
+      <default>(1.0,1.0,1.0)</default>
+      <summary>The color of an inactive pointer tip i.e. not point at anything</summary>
+      <description>
+      </description>
+    </key>
+
+    <key name="default-api" enum='org.xrdesktop.api'>
+      <aliases>
+        <alias value='GXR_API_OPENVR' target='openvr'/>
+        <alias value='GXR_API_OPENXR' target='openxr'/>
+      </aliases>
+      <default>'openvr'</default>
+      <summary>The XR API that is used by default.</summary>
+      <description>This can be also overridden by GXR_API=openvr environment variable.</description>
+    </key>
+
+    <key name="default-mode" enum='org.xrdesktop.mode'>
+      <aliases>
+        <alias value='XRD_CLIENT_OVERLAY' target='overlay'/>
+        <alias value='XRD_CLIENT_SCENE' target='scene'/>
+      </aliases>
+      <default>'overlay'</default>
+      <summary>The type of mode that is used by default.</summary>
+      <description>This decides if xrdesktop will render it's own full scene or just provide overlays to the runtime.</description>
+    </key>
+
+    <key name='pointer-ray-enabled' type='b'>
+      <default>false</default>
+      <summary>Toggles the pointer ray.</summary>
+      <description>
+        If enabled a ray is drawn from the controllers.
+      </description>
+    </key>
+    <key name='pin-new-windows' type='b'>
+      <default>false</default>
+      <summary>Toggles the option to pin new windows in show only pinned windows mode.</summary>
+      <description>
+        If enabled it will automaticly pin new windows that are created if show only pinned windows mode is on
+      </description>
+    </key>
+    <key name='show-only-pinned-startup' type='b'>
+      <default>false</default>
+      <summary>On startup, show only pinned windows</summary>
+      <description>
+        If enabled xrdesktop will start in show only pinned windows mode
+      </description>
+    </key>
+  </schema>
+
+</schemalist>

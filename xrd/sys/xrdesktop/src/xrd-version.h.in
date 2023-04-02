@@ -1,0 +1,87 @@
+/*
+ * xrdesktop
+ * Copyright 2018 Collabora Ltd.
+ * Author: Lubosz Sarnecki <lubosz.sarnecki@collabora.com>
+ * SPDX-License-Identifier: MIT
+ */
+
+#ifndef XRD_VERSION_H
+#define XRD_VERSION_H
+
+#if !defined(XRD_INSIDE) && !defined(XRD_COMPILATION)
+# error "Only <xrd.h> can be included directly."
+#endif
+
+/**
+ * SECTION:xrdversion
+ * @short_description: xrdesktop version checking
+ *
+ * xrdesktop provides macros to check the version of the library
+ * at compile-time
+ */
+
+/**
+ * XRD_MAJOR_VERSION:
+ *
+ * xrdesktop major version component (e.g. 1 if %XRD_VERSION is 1.2.3)
+ */
+#define XRD_MAJOR_VERSION (@MAJOR_VERSION@)
+
+/**
+ * XRD_MINOR_VERSION:
+ *
+ * xrdesktop minor version component (e.g. 2 if %XRD_VERSION is 1.2.3)
+ */
+#define XRD_MINOR_VERSION (@MINOR_VERSION@)
+
+/**
+ * XRD_MICRO_VERSION:
+ *
+ * xrdesktop micro version component (e.g. 3 if %XRD_VERSION is 1.2.3)
+ */
+#define XRD_MICRO_VERSION (@MICRO_VERSION@)
+
+/**
+ * XRD_VERSION
+ *
+ * xrdesktop version.
+ */
+#define XRD_VERSION (@VERSION@)
+
+/**
+ * XRD_VERSION_S:
+ *
+ * xrdesktop version, encoded as a string, useful for printing and
+ * concatenation.
+ */
+#define XRD_VERSION_S "@VERSION@"
+
+#define XRD_ENCODE_VERSION(major,minor,micro) \
+        ((major) << 24 | (minor) << 16 | (micro) << 8)
+
+/**
+ * XRD_VERSION_HEX:
+ *
+ * xrdesktop version, encoded as an hexadecimal number, useful for
+ * integer comparisons.
+ */
+#define XRD_VERSION_HEX \
+        (XRD_ENCODE_VERSION (XRD_MAJOR_VERSION, XRD_MINOR_VERSION, XRD_MICRO_VERSION))
+
+/**
+ * XRD_CHECK_VERSION:
+ * @major: required major version
+ * @minor: required minor version
+ * @micro: required micro version
+ *
+ * Compile-time version checking. Evaluates to %TRUE if the version
+ * of xrdesktop is greater than the required one.
+ */
+#define XRD_CHECK_VERSION(major,minor,micro)   \
+        (XRD_MAJOR_VERSION > (major) || \
+         (XRD_MAJOR_VERSION == (major) && XRD_MINOR_VERSION > (minor)) || \
+         (XRD_MAJOR_VERSION == (major) && XRD_MINOR_VERSION == (minor) && \
+          XRD_MICRO_VERSION >= (micro)))
+
+#endif /* XRD_VERSION_H */
+

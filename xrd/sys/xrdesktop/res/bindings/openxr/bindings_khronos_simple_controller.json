@@ -1,0 +1,57 @@
+{
+  "interaction_profile": "/interaction_profiles/khr/simple_controller",
+
+  "bindings": {
+    "/actions/wm/": {
+      "sources": [
+        {
+          "path": "/user/hand/left/input/select",
+          "inputs": {
+            "click": {
+              "output": "/actions/wm/in/grab_window"
+            }
+          }
+        },
+
+        {
+          "path": "/user/hand/right/input/select",
+          "inputs": {
+            "click": {
+              "output": "/actions/wm/in/grab_window"
+            }
+          }
+        }
+      ],
+      "poses": [
+        {
+          "path": "/user/hand/left/input/aim/pose",
+          "output": "/actions/wm/in/hand_pose"
+        },
+        {
+          "path": "/user/hand/left/input/grip/pose",
+          "output": "/actions/wm/in/hand_pose_hand_grip"
+        },
+
+        {
+          "path": "/user/hand/right/input/aim/pose",
+          "output": "/actions/wm/in/hand_pose"
+        },
+        {
+          "path": "/user/hand/right/input/grip/pose",
+          "output": "/actions/wm/in/hand_pose_hand_grip"
+        }
+      ],
+      "haptics": [
+        {
+          "path": "/user/hand/left/output/haptic",
+          "output": "/actions/wm/out/haptic"
+        },
+
+        {
+          "path": "/user/hand/right/output/haptic",
+          "output": "/actions/wm/out/haptic"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=xrdesktop Settings
+Comment=Advanced Settings for xrdesktop
+Keywords=Settings;XR;
+Exec=xrd-settings
+Terminal=false
+Type=Application
+Icon=org.xrdesktop.settings
+StartupNotify=true
+Categories=Utility;

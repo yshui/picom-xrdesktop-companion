@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/res">
+    <file>bindings/openvr/actions.json</file>
+    <file>bindings/openvr/bindings_vive_controller.json</file>
+    <file>bindings/openvr/bindings_knuckles_controller.json</file>
+    <file>bindings/openxr/actions.json</file>
+    <file>bindings/openxr/bindings_khronos_simple_controller.json</file>
+    <file>bindings/openxr/bindings_htc_vive_controller.json</file>
+    <file>bindings/openxr/bindings_valve_index_controller.json</file>
+  </gresource>
+</gresources>
