@@ -76,7 +76,6 @@ gxr_deps = [
   gulkan_dep,
   gdk_dep,
   m_dep,
-  gmodule_dep,
   json_glib_dep
 ]
 

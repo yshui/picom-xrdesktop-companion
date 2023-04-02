@@ -828,6 +828,7 @@ impl ::std::fmt::Debug for GxrPointerTip {
     }
 }
 
+#[link(name = "gxr-0.15", kind = "static", modifiers = "-bundle")]
 extern "C" {
 
     //=========================================================================

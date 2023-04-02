@@ -54,7 +54,6 @@ m_dep = c.find_library('m')
 
 gulkan_dep = dependency('gulkan-0.15', version: '>= 0.15.0')
 gdk_dep = dependency('gdk-3.0', version: '>= 3.22')
-gmodule_dep = dependency('gmodule-2.0')
 json_glib_dep = dependency('json-glib-1.0')
 
 config_backends = get_option('backends')

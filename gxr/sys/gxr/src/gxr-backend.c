@@ -7,8 +7,6 @@
 
 #include "gxr-backend-private.h"
 
-#include <gmodule.h>
-
 #include "gxr-config.h"
 #include "gxr-context-private.h"
 #include "gxr-enums.h"

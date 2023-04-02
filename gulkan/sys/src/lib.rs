@@ -436,6 +436,7 @@ impl ::std::fmt::Debug for GulkanVertexBuffer {
     }
 }
 
+#[link(name = "gulkan-0.15", kind = "static", modifiers = "-bundle")]
 extern "C" {
 
     //=========================================================================
