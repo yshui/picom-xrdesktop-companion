@@ -31,6 +31,9 @@ fn main() {
         .unwrap();
     assert!(rc.success());
     println!("cargo:rerun-if-changed=gulkan");
-    println!("cargo:rustc-link-search=native={}", out_dir.join("gulkan").join("lib").display());
+    println!(
+        "cargo:rustc-link-search=native={}",
+        out_dir.join("gulkan").join("lib").display()
+    );
     println!("cargo:OUT_DIR={}", out_dir.join("gulkan").display());
 }

@@ -2772,6 +2772,28 @@ Ownership of this texture is transferred to the #XrdWindow.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="set_sort_order" invoker="set_sort_order">
+        <doc xml:space="preserve"
+             filename="src/xrd-window.c"
+             line="285">Sets the sort order of the window. Only works for overlay windows, has no effect
+on scene windows, returns true if the sort order was changed. Will return false for
+scene windows.</doc>
+	<source-position filename="../src/xrd-window.h" line="110"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="287">The #XrdWindow</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="sort_order" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="set_transformation" invoker="set_transformation">
         <source-position filename="../src/xrd-window.h" line="109"/>
         <return-value transfer-ownership="none">
@@ -3401,6 +3423,28 @@ keep track of further mode changes.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_sort_order" c:identifier="xrd_window_set_sort_order">
+        <doc xml:space="preserve"
+             filename="src/xrd-window.c"
+             line="285">Sets the sort order of the window. Only works for overlay windows, has no effect
+on scene windows, returns true if the sort order was changed. Will return false for
+scene windows.</doc>
+        <source-position filename="src/xrd-window.h" line="186"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/xrd-window.c"
+                 line="287">The #XrdWindow</doc>
+            <type name="Window" c:type="XrdWindow*"/>
+          </instance-parameter>
+          <parameter name="sort_order" transfer-ownership="none">
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_transformation"
               c:identifier="xrd_window_set_transformation">
         <source-position filename="../src/xrd-window.h" line="207"/>
@@ -3761,6 +3805,25 @@ After switching the overlay/scene mode, it will point to a new #XrdWindow.</doc>
              filename="../src/xrd-window.h"
              line="80">parent</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="set_sort_order">
+        <callback name="set_sort_order">
+          <source-position filename="src/xrd-window.h" line="110"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve"
+                   filename="src/xrd-window.c"
+                   line="287">The #XrdWindow</doc>
+              <type name="Window" c:type="XrdWindow*"/>
+            </parameter>
+            <parameter name="sort_order" transfer-ownership="none">
+              <type name="guint32" c:type="uint32_t"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
       <field name="set_transformation">
         <callback name="set_transformation">

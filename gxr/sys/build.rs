@@ -42,7 +42,10 @@ fn main() {
     assert!(rc.success());
     println!("cargo:rerun-if-changed=gxr");
     println!("cargo:rerun-if-env-changed=DEP_GULKAN_OUT_DIR");
-    println!("cargo:rustc-link-search=native={}", out_dir.join("gxr").join("lib").display());
+    println!(
+        "cargo:rustc-link-search=native={}",
+        out_dir.join("gxr").join("lib").display()
+    );
     println!("cargo:OUT_DIR={}", out_dir.join("gxr").display());
 
     let mut pc = PkgConfig::new();

@@ -283,6 +283,22 @@ xrd_window_submit_texture (XrdWindow *self)
 }
 
 /**
+ * xrd_window_set_sort_order:
+ * @self: The #XrdWindow
+ * @order: The new sort order
+ *
+ * Sets the sort order of the window. Only works for overlay windows, has no effect
+ * on scene windows, returns true if the sort order was changed. Will return false for
+ * scene windows.
+ */
+gboolean
+xrd_window_set_sort_order(XrdWindow *self, uint32_t order)
+{
+  XrdWindowInterface* iface = XRD_WINDOW_GET_IFACE (self);
+  return iface->set_sort_order (self, order);
+}
+
+/**
  * xrd_window_set_and_submit_texture:
  * @self: The #XrdWindow
  * @texture: A #GulkanTexture that is created by the caller.

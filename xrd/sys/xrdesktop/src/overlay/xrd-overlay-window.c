@@ -430,7 +430,13 @@ static gboolean _is_visible(XrdWindow *window) {
 	return gxr_overlay_is_visible(self->overlay);
 }
 
+static gboolean _set_sort_order(XrdWindow *window, uint32_t sort_order) {
+	XrdOverlayWindow *self = XRD_OVERLAY_WINDOW(window);
+	return gxr_overlay_set_sort_order(self->overlay, sort_order);
+}
+
 static void xrd_overlay_window_window_interface_init(XrdWindowInterface *iface) {
+	iface->set_sort_order = _set_sort_order;
 	iface->set_transformation = _set_transformation;
 	iface->get_transformation = _get_transformation;
 	iface->get_transformation_no_scale = _get_transformation_no_scale;

@@ -735,9 +735,18 @@ _get_data (XrdWindow *window)
   return priv->window_data;
 }
 
+static gboolean
+_set_sort_order(XrdWindow *window, uint32_t sort_order)
+{
+  (void)window;
+  (void)sort_order;
+  return FALSE;
+}
+
 static void
 xrd_scene_window_window_interface_init (XrdWindowInterface *iface)
 {
+  iface->set_sort_order = _set_sort_order;
   iface->set_transformation = _set_transformation;
   iface->get_transformation = _get_transformation;
   iface->get_transformation_no_scale = _get_transformation_no_scale;

@@ -25,5 +25,8 @@ pub fn setup() {
         .arg(schema_dir)
         .output()
         .expect("Failed to compile schema");
-    log::info!("glib-compile-schemas output: {}", String::from_utf8_lossy(&output.stdout));
+    log::info!(
+        "glib-compile-schemas output: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
 }

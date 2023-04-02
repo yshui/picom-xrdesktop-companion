@@ -78,6 +78,7 @@ typedef struct XrdWindowData {
 /**
  * XrdWindowInterface:
  * @parent: parent
+ * @set_sort_order: Set the sort order of the window. (Overlay only)
  * @set_transformation: Set a #graphene_matrix_t transformation.
  * @get_transformation: Get a #graphene_matrix_t transformation including scale.
  * @get_transformation_no_scale: Get a #graphene_matrix_t transformation without scale.
@@ -104,6 +105,10 @@ typedef struct XrdWindowData {
 struct _XrdWindowInterface
 {
   GTypeInterface parent;
+
+  gboolean
+  (*set_sort_order) (XrdWindow *self,
+                     uint32_t sort_order);
 
   gboolean
   (*set_transformation) (XrdWindow         *self,
@@ -177,6 +182,9 @@ struct _XrdWindowInterface
   guint windows_created;
 };
 
+gboolean
+xrd_window_set_sort_order (XrdWindow *self,
+                           uint32_t sort_order);
 XrdWindow *
 xrd_window_new_from_data (XrdClient     *self,
                           XrdWindowData *data);

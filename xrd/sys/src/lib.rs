@@ -391,6 +391,7 @@ impl ::std::fmt::Debug for XrdWindowData {
 #[repr(C)]
 pub struct XrdWindowInterface {
     pub parent: gobject::GTypeInterface,
+    pub set_sort_order: Option<unsafe extern "C" fn(*mut XrdWindow, u32) -> gboolean>,
     pub set_transformation:
         Option<unsafe extern "C" fn(*mut XrdWindow, *mut graphene::graphene_matrix_t) -> gboolean>,
     pub get_transformation:
@@ -425,6 +426,7 @@ impl ::std::fmt::Debug for XrdWindowInterface {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("XrdWindowInterface @ {self:p}"))
             .field("parent", &self.parent)
+            .field("set_sort_order", &self.set_sort_order)
             .field("set_transformation", &self.set_transformation)
             .field("get_transformation", &self.get_transformation)
             .field(
@@ -559,7 +561,11 @@ impl ::std::fmt::Debug for XrdWindow {
     }
 }
 
-#[link(name = "xrdesktop-0.15", modifiers = "-bundle,+whole-archive", kind = "static")]
+#[link(
+    name = "xrdesktop-0.15",
+    modifiers = "-bundle,+whole-archive",
+    kind = "static"
+)]
 extern "C" {
 
     //=========================================================================
@@ -886,6 +892,7 @@ extern "C" {
         self_: *mut XrdWindow,
         transform: *mut graphene::graphene_matrix_t,
     );
+    pub fn xrd_window_set_sort_order(self_: *mut XrdWindow, sort_order: u32) -> gboolean;
     pub fn xrd_window_set_transformation(
         self_: *mut XrdWindow,
         mat: *mut graphene::graphene_matrix_t,
@@ -976,5 +983,7 @@ extern "C" {
 
 }
 
-pub const SCHEMA: &'static str =
-    include_str!(concat!(env!("OUT_DIR"), "/xrd/share/glib-2.0/schemas/org.xrdesktop.gschema.xml"));
+pub const SCHEMA: &'static str = include_str!(concat!(
+    env!("OUT_DIR"),
+    "/xrd/share/glib-2.0/schemas/org.xrdesktop.gschema.xml"
+));

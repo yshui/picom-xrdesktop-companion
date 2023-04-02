@@ -30,8 +30,8 @@ use xrd::{ClientExt, ClientExtExt, DesktopCursorExt, WindowExt};
 mod gl;
 mod input;
 mod picom;
-mod utils;
 mod setup;
+mod utils;
 
 const PIXELS_PER_METER: f32 = 600.0;
 type Result<T> = anyhow::Result<T>;
@@ -303,6 +303,8 @@ impl App {
         }
         // We need to make sure cursor_window is hidden iff last_set_cursor is Some
         cursor_window.show();
+        // Put cursor on top of everything
+        cursor_window.set_sort_order(100);
         Ok(Self {
             gl: gl::Gl::new(x11.clone(), screen as u32).await?,
             dbus,
@@ -376,7 +378,9 @@ impl App {
         xrd_cursor.set_and_submit_texture(cursor.texture.clone());
         xrd_cursor.set_hotspot(cursor.hotspot_x as _, cursor.hotspot_y as _);
 
-        if cursor.width as f32 > PIXELS_PER_METER / 100. && cursor.height as f32 > PIXELS_PER_METER / 100. {
+        if cursor.width as f32 > PIXELS_PER_METER / 100.
+            && cursor.height as f32 > PIXELS_PER_METER / 100.
+        {
             // xrdesktop doesn't like windows smaller than 0.01 x 0.01
             let cursor_window = self.cursor_window.lock().await;
             cursor_window.set_and_submit_texture(cursor.texture.clone());
