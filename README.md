@@ -43,12 +43,11 @@ Then, make sure SteamVR is running. And after that, start this program. You shou
 ### Dependencies
 
 * Rust (Nightly channel) [installation options](https://www.rust-lang.org/tools/install)
-* [xrdesktop](https://gitlab.freedesktop.org/xrdesktop/xrdesktop)([AUR](https://aur.archlinux.org/packages/xrdesktop)) and its dependencies:
-  * [gxr](https://gitlab.freedesktop.org/xrdesktop/gxr)([AUR](https://aur.archlinux.org/packages/gxr))
-  * [gulkan](https://gitlab.freedesktop.org/xrdesktop/gulkan)([AUR](https://aur.archlinux.org/packages/gulkan))
 * Vulkan
 * OpenGL
 * gtk3
+
+(xrdesktop comes included in this repository, no need to install it).
 
 ### Building
 
@@ -74,7 +73,7 @@ It also changes how your windows are stacked and doesn't attempt to restore it a
 
 ### Scene mode
 
-Scene mode isn't supported currently. Please change default mode to "overlay" in xrdesktop settings.
+Scene mode has not been tested. Please change default mode to "overlay" in xrdesktop settings.
 
 ## Questions
 
