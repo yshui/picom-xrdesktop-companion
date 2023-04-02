@@ -28,6 +28,7 @@ use x11rb::{
 use xrd::{ClientExt, ClientExtExt, DesktopCursorExt, WindowExt};
 
 mod gl;
+mod input;
 mod picom;
 mod utils;
 
@@ -79,6 +80,7 @@ impl TextureSet {
 struct Window {
     id: xproto::Window,
     gl: gl::Gl,
+    name: String,
     damage: damage::Damage,
     x11: Arc<RustConnection>,
     xrd: Arc<Mutex<xrd::Client>>,
@@ -169,11 +171,13 @@ impl Window {
 #[derive(Debug)]
 struct Cursor {
     texture: gulkan::Texture,
+    width: u16,
+    height: u16,
     hotspot_x: u32,
     hotspot_y: u32,
 }
 
-#[derive(Default, Debug)]
+#[derive(Debug, Default)]
 struct WindowState {
     windows: HashMap<u32, RwLock<Window>>,
     client_window_to_window: HashMap<u32, u32>,
@@ -189,17 +193,18 @@ struct App {
     display: String,
     cursors: Mutex<std::collections::HashMap<u32, Cursor>>,
     atoms: AtomCollection,
+    cursor_window: Mutex<xrd::Window>,
+    /// What's the last position we set the cursor to?
+    last_set_cursor: RwLock<Option<(u32, i16, i16)>>,
     window_state: RwLock<WindowState>,
     pending_windows: Mutex<HashMap<u32, JoinHandle<()>>>,
 }
 
 #[derive(Debug)]
 enum InputEvent {
-    Move {
-        wid: u32,
-        x: f32,
-        y: f32,
-    },
+    /// Cursor moved by xrdesktop
+    Move { wid: u32, x: f32, y: f32 },
+    /// Click event from xrdesktop
     Click {
         wid: u32,
         x: f32,
@@ -207,9 +212,10 @@ enum InputEvent {
         button: xrd::sys::XrdInputSynthButton,
         pressed: bool,
     },
-    KeyPresses {
-        string: Vec<i8>,
-    },
+    /// Key presses from xrdesktop
+    KeyPresses { string: Vec<i8> },
+    /// Cursor moved by X11
+    X11Move { wid: u32, x: i16, y: i16 },
 }
 
 impl std::fmt::Debug for App {
@@ -270,6 +276,32 @@ impl App {
         })?;
         let atoms = AtomCollection::new(&*x11)?.reply()?;
 
+        let cursor_window = xrd::Window::new_from_pixels(
+            &client,
+            "x11-cursor-mirror",
+            (PIXELS_PER_METER / 10.) as u32,
+            (PIXELS_PER_METER / 10.) as u32,
+            PIXELS_PER_METER,
+        )
+        .ok_or_else(|| anyhow!("Failed to create cursor window"))?;
+        unsafe {
+            gobject_sys::g_object_set(
+                cursor_window.as_object_ref().to_glib_none().0,
+                "native\0".as_bytes().as_ptr() as *const _,
+                u64::MAX as *const std::ffi::c_void,
+                0,
+            );
+        }
+        unsafe {
+            xrd::sys::xrd_client_add_window(
+                client.as_ptr(),
+                cursor_window.as_ptr(),
+                false as _,
+                std::ptr::null_mut(),
+            );
+        }
+        // We need to make sure cursor_window is hidden iff last_set_cursor is Some
+        cursor_window.show();
         Ok(Self {
             gl: gl::Gl::new(x11.clone(), screen as u32).await?,
             dbus,
@@ -281,6 +313,8 @@ impl App {
             display: std::env::var("DISPLAY").unwrap().replace([':', '.'], "_"),
             cursors: Default::default(),
             atoms,
+            last_set_cursor: Default::default(),
+            cursor_window: cursor_window.into(),
             pending_windows: Default::default(),
         })
     }
@@ -332,12 +366,20 @@ impl App {
             cursors.entry(cursor_image.cursor_serial).or_insert(Cursor {
                 hotspot_x: cursor_image.xhot.into(),
                 hotspot_y: cursor_image.yhot.into(),
+                width: cursor_image.width,
+                height: cursor_image.height,
                 texture,
             })
         };
         let xrd_cursor = xrd_client.desktop_cursor().unwrap();
         xrd_cursor.set_and_submit_texture(cursor.texture.clone());
         xrd_cursor.set_hotspot(cursor.hotspot_x as _, cursor.hotspot_y as _);
+
+        if cursor.width as f32 > PIXELS_PER_METER / 100. && cursor.height as f32 > PIXELS_PER_METER / 100. {
+            // xrdesktop doesn't like windows smaller than 0.01 x 0.01
+            let cursor_window = self.cursor_window.lock().await;
+            cursor_window.set_and_submit_texture(cursor.texture.clone());
+        }
         Ok(())
     }
 
@@ -349,10 +391,12 @@ impl App {
                 let window_state = self.window_state.read().await;
                 if let Some(w) = window_state.windows.get(&drawable) {
                     // we might not be able to find the window if:
-                    // we receive a damage notify from X, but have processed it;
+                    // we receive a damage notify from X, but is yet to processed it;
                     // then we receive a WinUnmapped signal from picom, and we processed it;
                     // then we dequeue the damage notify from x11rb.
                     // this is not an error.
+                    //
+                    // problem caused by picom and X events are not synchronized.
                     let mut w = w.write().await;
 
                     // Window could've closed between damage_notify and here, handle that case.
@@ -373,7 +417,7 @@ impl App {
             Event::XfixesCursorNotify(xfixes::CursorNotifyEvent { cursor_serial, .. }) => {
                 self.refresh_cursor(cursor_serial).await?;
             }
-            _ => (),
+            e => log::debug!("unhandled event: {:?}", e),
         }
         Ok(())
     }
@@ -398,46 +442,112 @@ impl App {
             })?;
             let x = (geometry.x as f32 + x) as _;
             let y = (geometry.y as f32 + y) as _;
-            Result::Ok((x, y))
+            Result::Ok((x, y, x - geometry.x, y - geometry.y))
         };
 
         let input_synth = self.input_synth.lock().await;
-        let result = match input_event {
-            InputEvent::Move { x, y, wid } => {
-                raise_window_and_resolve_position(wid, x, y).and_then(|(x, y)| {
-                    // The window could have been closed, in that case we stop
-                    input_synth.move_cursor(x, y).map_err(Into::into)
-                })
-            }
+        let result =
+            match input_event {
+                InputEvent::Move { x, y, wid } => {
+                    match raise_window_and_resolve_position(wid, x, y) {
+                        Ok((x, y, x_off, y_off)) => {
+                            if self.last_set_cursor.read().await.is_none() {
+                                // We moved the cursor from xrdesktop, so hide the X11 cursor mirror
+                                self.cursor_window.lock().await.hide();
+                            }
+                            *self.last_set_cursor.write().await = Some((wid, x_off, y_off));
+                            // The window could have been closed, in that case we stop
+                            input_synth.move_cursor(x, y).map_err(Into::into)
+                        }
+                        Err(e) => Err(e.into()),
+                    }
+                }
 
-            InputEvent::Click {
-                x,
-                y,
-                wid,
-                button,
-                pressed,
-            } => {
-                raise_window_and_resolve_position(wid, x, y).and_then(|(x, y)| {
-                    // The window could have been closed, in that case we stop
-                    input_synth
-                        .click(x, y, button as _, pressed)
-                        .map_err(Into::into)
-                })
-            }
-            InputEvent::KeyPresses { string } => {
-                debug!("key press {:?}", string);
-                block_in_place(|| {
-                    string.into_iter().try_for_each(|ch| {
-                        (if ch == b'\n' as _ {
-                            input_synth.ascii_char(b'\r' as _)
-                        } else {
-                            input_synth.ascii_char(ch as _)
-                        })
-                        .map_err(Into::into)
+                InputEvent::Click {
+                    x,
+                    y,
+                    wid,
+                    button,
+                    pressed,
+                } => {
+                    raise_window_and_resolve_position(wid, x, y).and_then(|(x, y, _, _)| {
+                        // The window could have been closed, in that case we stop
+                        input_synth
+                            .click(x, y, button as _, pressed)
+                            .map_err(Into::into)
                     })
-                })
-            }
-        };
+                }
+                InputEvent::KeyPresses { string } => {
+                    debug!("key press {:?}", string);
+                    block_in_place(|| {
+                        string.into_iter().try_for_each(|ch| {
+                            (if ch == b'\n' as _ {
+                                input_synth.ascii_char(b'\r' as _)
+                            } else {
+                                input_synth.ascii_char(ch as _)
+                            })
+                            .map_err(Into::into)
+                        })
+                    })
+                }
+                InputEvent::X11Move { wid, x, y } => {
+                    let last_set_cursor = *self.last_set_cursor.read().await;
+                    if last_set_cursor == Some((wid, x, y)) {
+                        // X11 reported back the cursor motion we synthesized, ignore it.
+                        Ok(())
+                    } else {
+                        // TODO: user moved mouse in X, draw a cursor in VR for it.
+                        let windows = self.window_state.read().await;
+                        if let Some(window) = windows.windows.get(&wid) {
+                            let window = window.read().await;
+                            let Some((width, height)) = window
+                                .textures
+                                .as_ref()
+                                .map(|ts| (ts.x11_texture.width(), ts.x11_texture.height()))
+                            else {
+                                return
+                            };
+                            // X11 is x to the right, y down, (0, 0) at top left
+                            // xrdesktop is x to the right, y up, (0, 0) at center
+                            let x = x as f32 / width as f32 - 0.5;
+                            let y = 0.5 - y as f32 / height as f32;
+                            log::info!("mouse: {x} {y}");
+                            let mut transform = graphene::Matrix::new_identity();
+                            let (width_meters, height_meters) = {
+                                let xrd_window = window.xrd_window.lock().await;
+
+                                if !xrd_window.is_transformation_no_scale(&mut transform) {
+                                    return;
+                                }
+                                (
+                                    xrd_window.current_width_meters(),
+                                    xrd_window.current_height_meters(),
+                                )
+                            };
+                            let translate = graphene::Matrix::new_translate(
+                                &graphene::Point3D::new(x * width_meters, y * height_meters, 0.1),
+                            );
+                            let mut transform = translate.multiply(&transform);
+                            log::info!("transform: {:?}, window: {}", transform, window.name);
+                            {
+                                let cursor_window = self.cursor_window.lock().await;
+                                cursor_window.set_transformation(&mut transform);
+                                cursor_window.set_reset_transformation(&mut transform);
+                                if last_set_cursor.is_some() {
+                                    // Show the X11 cursor mirror
+                                    cursor_window.show();
+                                }
+                            }
+                            *self.last_set_cursor.write().await = None;
+                            Ok(())
+                        } else {
+                            // Not a window managed by us, ignore it.
+                            log::warn!("X11 reported cursor move for unknown window {}", wid);
+                            Ok(())
+                        }
+                    }
+                }
+            };
         if let Err(e) = result {
             error!("Failed to synthesis input {}", e);
         }
@@ -468,6 +578,47 @@ impl App {
 
         let native: u64 = unsafe { (*parent).native } as _;
         Some(window_state.windows.get(&(native as _)).unwrap())
+    }
+
+    fn start_input_thread(self: Arc<Self>, input_tx: tokio::sync::mpsc::Sender<InputEvent>) {
+        use ::input::{event::PointerEvent, Event};
+        let root = self.x11.setup().roots[self.screen as usize].root;
+        std::thread::spawn(move || -> Result<()> {
+            let mut input = ::input::Libinput::new_with_udev(crate::input::Interface);
+            input.udev_assign_seat("seat0").unwrap();
+            loop {
+                input.dispatch().unwrap();
+                for event in &mut input {
+                    match event {
+                        Event::Pointer(PointerEvent::Motion(_)) => {
+                            let mut current_window = root;
+                            while current_window != x11rb::NONE {
+                                // We don't care about the coordinates, we will query that from X
+                                let pointer = self.x11.query_pointer(current_window)?.reply()?;
+                                if self
+                                    .window_state
+                                    .blocking_read()
+                                    .windows
+                                    .get(&current_window)
+                                    .is_some()
+                                {
+                                    input_tx.blocking_send(InputEvent::X11Move {
+                                        wid: current_window,
+                                        x: pointer.win_x,
+                                        y: pointer.win_y,
+                                    })?;
+                                }
+                                if current_window == pointer.child {
+                                    break;
+                                }
+                                current_window = pointer.child;
+                            }
+                        }
+                        _ => (),
+                    }
+                }
+            }
+        });
     }
 
     pub async fn run(self: Arc<Self>) -> Result<()> {
@@ -519,12 +670,14 @@ impl App {
                         0,
                     );
                 };
-                // If the queue is full, we drop the event
-                let _: std::result::Result<_, _> = tx.try_send(InputEvent::Move {
-                    wid: native as u32,
-                    x: point.x(),
-                    y: point.y(),
-                });
+                if native != u64::MAX {
+                    // If the queue is full, we drop the event
+                    let _: std::result::Result<_, _> = tx.try_send(InputEvent::Move {
+                        wid: native as u32,
+                        x: point.x(),
+                        y: point.y(),
+                    });
+                }
             });
             // if send() errors, that means run() has returned. so ignore those errors
             let tx = input_tx.clone();
@@ -541,16 +694,18 @@ impl App {
                         0,
                     );
                 };
-                // We don't want to lose click events
-                let _ = tx.blocking_send(InputEvent::Click {
-                    wid: native as u32,
-                    x: point.x(),
-                    y: point.y(),
-                    button: event.button,
-                    pressed: event.state != 0,
-                });
+                if native != u64::MAX {
+                    // We don't want to lose click events
+                    let _ = tx.blocking_send(InputEvent::Click {
+                        wid: native as u32,
+                        x: point.x(),
+                        y: point.y(),
+                        button: event.button,
+                        pressed: event.state != 0,
+                    });
+                }
             });
-            let tx = input_tx;
+            let tx = input_tx.clone();
             xrd_client.connect_keyboard_press_event(move |_, event| {
                 let event: &gdk::EventKey = event.downcast_ref().unwrap();
                 let string = unsafe {
@@ -559,6 +714,7 @@ impl App {
                 let string = string.to_owned();
                 let _ = tx.blocking_send(InputEvent::KeyPresses { string });
             });
+            self.clone().start_input_thread(input_tx);
 
             let (tx, exit_rx) = tokio::sync::mpsc::channel(1);
             xrd_client.connect_request_quit_event(move |_, reason| {
@@ -640,7 +796,6 @@ impl App {
                 input_event = input_rx.recv() => {
                     let input_event = input_event.unwrap();
                     let this = self.clone();
-                    #[allow(clippy::redundant_async_block)]
                     tokio::spawn(async move { this.handle_input_events(input_event).await });
                 }
                 exit = exit_rx.recv() => {
@@ -855,7 +1010,7 @@ impl App {
                 } else {
                     let hovered = xrd_client.synth_hovered();
                     debug!("no leader, hovered is {:?}", hovered);
-                    hovered.map(|hovered| {
+                    hovered.and_then(|hovered| {
                         let mut native = 0u64;
                         unsafe {
                             gobject_sys::g_object_get(
@@ -866,7 +1021,8 @@ impl App {
                             );
                         }
                         debug!("hovered is native {}", native);
-                        window_state.windows.get(&(native as _)).unwrap()
+                        window_state.windows.get(&(native as _)) // would be None is hover is the
+                                                                 // cursor window
                     })
                 }
             } else {
@@ -935,6 +1091,7 @@ impl App {
             let xrd_window = Mutex::new(xrd_window);
             let window = Window {
                 id: wid,
+                name: window_name,
                 gl: self.gl.clone(),
                 damage,
                 x11: self.x11.clone(),
@@ -1048,12 +1205,19 @@ fn locker(mut ctx: Weak<App>) {
         ctx = if let Some(ctx) = ctx.upgrade() {
             let mut _window_state = ctx.window_state.blocking_write();
             let mut _xrd_client = ctx.xrd_client.blocking_lock();
+            let mut _cursor_window = ctx.cursor_window.blocking_lock();
             yield_!(()); // Yield when locked
             ctx.downgrade()
         } else {
             break;
         };
         yield_!(()); // Yield when unlocked
+    }
+
+    // ctx has been dropped, there is no need to lock anything anymore.
+    // yield in a loop to prevent lockwheel async fn from completing.
+    loop {
+        yield_!(());
     }
 }
 fn main() -> Result<()> {
